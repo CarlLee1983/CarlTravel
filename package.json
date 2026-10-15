@@ -28,7 +28,9 @@
     "research": "node --experimental-strip-types scripts/research.ts",
     "publish:content": "node --experimental-strip-types scripts/publish.ts",
     "check:index": "node --experimental-strip-types scripts/check-index.ts",
-    "check:worker": "wrangler deploy --dry-run"
+    "check:worker": "wrangler deploy --dry-run",
+    "check:deployment": "node --experimental-strip-types scripts/check-deployment.ts",
+    "prepare:deployment": "pnpm build && pnpm check:deployment && pnpm check:worker"
   },
   "dependencies": {
     "astro": "7.2.9",

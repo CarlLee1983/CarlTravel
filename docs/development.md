@@ -127,3 +127,7 @@ Astro integration 根據實際 `dev` 指令注入編譯常數 `__CARLTRAVEL_DRAF
 第 07 票驗收：完整 `E2E_PORT=4337 pnpm verify` 通過 58 個 Node、43 個 Playwright 與全部共用關卡（包含 Wrangler dry-run）。審查後補強固定 commit 推送、私人錯誤輸出、ready 後摘要核對及孤立草稿連結。重複發布演練另在單獨執行時重現 Pagefind metadata 空檔：既有原生 writeFiles 寫入後 close 會立即終止後端，現改用 getFiles 取得檔案資料，由 Node await 寫入後再 close；沿用原來的明確景點白名單。介面依 [Pagefind Node API](https://pagefind.app/docs/node-api/)，原生行為核對 [v1.5.2 output](https://github.com/pagefind/pagefind/blob/v1.5.2/pagefind/src/output/mod.rs)。
 
 最終增量驗證通過 10 個相關 Node 測試、10 個搜尋 Playwright 案例、型別檢查（零診斷）、正式重建、輸出／實際索引與 Wrangler dry-run。標準軸四項發現與索引寫檔問題已由原 reviewer 複查結案；規格軸無實質發現。沒有推送、真實 PR 或正式部署；雲端 CI 的實際執行仍待真實 PR。
+
+## 正式部署準備
+
+第 08 票的 main 流程、部署門檻、dry-run 與待補雲端設定見 [部署文件](deployment.md)。`pnpm verify` 允許零正式景點；`pnpm prepare:deployment` 必須至少一個核准景點，且只準備產物、不執行正式部署。

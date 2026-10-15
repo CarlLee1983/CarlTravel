@@ -11,7 +11,7 @@
 | 私人原文／備註重疊 | 第 06 票提供可重用本機入口；12 字、引文含私人備註、多來源、核准不可讀、原文遺失與改標均以虛構案例驗證 |
 | 發布 PR 與完整私人索引外洩檢查 | 第 07 票本機實作；隔離 Git 與模擬 GitHub、dev→正式建置及實際 Pagefind 正反測試；沒有真實發布 PR |
 | PR CI 與 dry-run | 第 07 票提供 PR verification 與共用 verify 的真實 Wrangler dry-run；雲端 CI 執行待真實 PR |
-| 自動部署、Cloudflare 與網域 | 待第 08 票；尚未部署 |
+| 自動部署、Cloudflare 與網域 | 第 08 票本機實作：main 專用部署流程、正式內容／隔離關卡與 Wrangler dry-run；依 Carl 選擇，雲端設定留待補齊，清單見 [部署文件](deployment.md)。尚未部署或驗證公開網域 |
 | 真實來源完整上線 | 待第 09 票；正式內容目前為零，尚無真人來源的研究到上線證據 |
 
 各票詳細執行證據見[工作票索引](../.scratch/carltravel-v1-build/README.md)及[開發驗收紀錄](development.md)。私人研究、完整原文及命中診斷留在本機，不附於本文件或公開報告。
