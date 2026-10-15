@@ -1,10 +1,9 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import { loadSpots } from "../content/load.ts";
-import { contentMode } from "../content/mode.ts";
+import { loadPageSpots } from "../content/preview.ts";
 import { ageBands, ageBandRanges } from "../content/search.ts";
 import { ageLabel } from "../content/schema.ts";
-const spots = await loadSpots(contentMode().root);
+const spots = await loadPageSpots(__CARLTRAVEL_DRAFT_PREVIEW__);
 const usedAges = new Set(spots.flatMap((spot) => ageBands(spot.ageRange)));
 const filters = [
   {
@@ -129,6 +128,9 @@ const filters = [
                     <h3>
                       <a href={`/spots/${spot.id}/`}>{spot.name}</a>
                     </h3>
+                    {spot.preview && (
+                      <p class="preview-label">{spot.preview} · 尚未發布</p>
+                    )}
                     <p class="meta">
                       {spot.county} · {spot.district} / {spot.kind}
                     </p>

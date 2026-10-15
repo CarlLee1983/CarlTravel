@@ -1,4 +1,13 @@
 import { spawn } from "node:child_process";
+import { createRequire } from "node:module";
+import { dirname, resolve } from "node:path";
+
+const require = createRequire(import.meta.url);
+const astroPackage = require.resolve("astro/package.json");
+const astroBin = resolve(
+  dirname(astroPackage),
+  require(astroPackage).bin.astro,
+);
 
 const command = process.argv[2] ?? "";
 const options = process.argv.slice(3);
@@ -22,15 +31,8 @@ if (fixture) env.CARLTRAVEL_FIXTURE = "1";
 const args =
   command === "check-content"
     ? ["--experimental-strip-types", "scripts/check-content.ts"]
-    : [
-        "exec",
-        "astro",
-        command,
-        ...(command === "build" ? ["--force"] : []),
-        ...rest,
-      ];
-const executable = command === "check-content" ? process.execPath : "pnpm";
-const child = spawn(executable, args, { env, stdio: "inherit" });
+    : [astroBin, command, ...(command === "build" ? ["--force"] : []), ...rest];
+const child = spawn(process.execPath, args, { env, stdio: "inherit" });
 child.on("error", (error) => {
   console.error(error);
   process.exitCode = 1;

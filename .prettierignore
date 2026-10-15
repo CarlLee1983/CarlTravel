@@ -12,3 +12,7 @@ README.md
 pnpm-lock.yaml
 test-results
 playwright-report
+
+# Private drafts and research are outside repository formatting.
+/drafts/
+/research/

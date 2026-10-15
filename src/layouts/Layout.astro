@@ -6,6 +6,7 @@ interface Props {
 }
 const { title, noindex = false } = Astro.props;
 const { fixture } = contentMode();
+const preview = __CARLTRAVEL_DRAFT_PREVIEW__;
 ---
 
 <!doctype html>
@@ -17,7 +18,11 @@ const { fixture } = contentMode();
       name="description"
       content="以官方資訊、原作者心得與 Agent 建議，整理台灣親子景點。"
     />
-    {(fixture || noindex) && <meta name="robots" content="noindex, nofollow" />}
+    {
+      (fixture || preview || noindex) && (
+        <meta name="robots" content="noindex, nofollow" />
+      )
+    }
     <link
       rel="license"
       href="https://creativecommons.org/licenses/by-nc/4.0/"
@@ -45,6 +50,13 @@ const { fixture } = contentMode();
       fixture && (
         <aside class="fixture" aria-label="開發展示">
           開發展示 · 虛構景點與出處，僅供測試，不能作為出遊資訊。
+        </aside>
+      )
+    }
+    {
+      preview && (
+        <aside class="fixture" aria-label="本機草稿預覽">
+          本機草稿預覽 · 含尚未審閱內容，僅供 Carl 本機確認。
         </aside>
       )
     }
@@ -160,6 +172,12 @@ const { fixture } = contentMode();
     background: #f5e9ca;
     color: #5b4216;
     padding-block: 12px;
+  }
+  .preview-label {
+    color: #5b4216;
+    background: #f5e9ca;
+    padding: 4px 8px;
+    font-weight: 600;
   }
   .eyebrow {
     font-size: 0.85rem;

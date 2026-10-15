@@ -4,7 +4,7 @@
 
 ## 單檔與基本資訊
 
-正式景點放在 `content/spots/<id>/spot.yaml`。id 取自資料夾，必須符合小寫 ASCII 英數字與連字號分隔；發布後保持穩定。資料夾只能有 `spot.yaml`，不接收圖片或附件。草稿模式留後續票處理。
+正式景點放在 `content/spots/<id>/spot.yaml`。id 取自資料夾，必須符合小寫 ASCII 英數字與連字號分隔；發布後保持穩定。資料夾只能有 `spot.yaml`，不接收圖片或附件。本機草稿放在 `drafts/spots/<id>/spot.yaml`，共用此 schema，YAML 不加入 draft 欄位；位置決定草稿身分。開發預覽同 id 草稿優先，正式建置只讀 `content/spots/`。詳見[草稿操作](development.md#第-05-票本機草稿與修訂預覽)。
 
 必填 `name`、`address`、`county`、`district`、`kind`、`setting`、`summary`、`ageRange`、`officialRefs`、`transport`、`hoursAndFees`、`familyChecklist`。縣市是 22 縣市列舉，行政區比對[官方快照](../src/data/README.md)，一律使用「臺」。摘要最多 30 個 Unicode 碼點。`kind` 與 `setting` 的封閉值域見 schema，不接受任意標籤。
 

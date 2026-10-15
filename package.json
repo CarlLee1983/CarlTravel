@@ -22,7 +22,9 @@
     "check:output": "node --experimental-strip-types scripts/check-output.ts",
     "test": "node --experimental-strip-types --test tests/*.test.ts",
     "test:e2e": "pnpm build:fixture && playwright test",
-    "verify": "node scripts/verify.mjs"
+    "verify": "node scripts/verify.mjs",
+    "draft:copy": "node --experimental-strip-types scripts/draft.ts copy",
+    "draft:diff": "node --experimental-strip-types scripts/draft.ts diff"
   },
   "dependencies": {
     "astro": "7.2.9",

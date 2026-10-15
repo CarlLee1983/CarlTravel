@@ -3,6 +3,7 @@ import { buildSearchIndex } from "./scripts/search-index.ts";
 import { defineConfig } from "astro/config";
 import { siteUrl } from "./src/site.ts";
 
+import { localPreview } from "./scripts/local-preview.ts";
 import { contentMode } from "./src/content/mode.ts";
 
 export default defineConfig({
@@ -12,6 +13,7 @@ export default defineConfig({
   vite: { build: { assetsInlineLimit: 0 } },
   outDir: contentMode().outDir,
   integrations: [
+    localPreview(),
     {
       name: "spot-search",
       hooks: {

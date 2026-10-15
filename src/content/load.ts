@@ -32,9 +32,12 @@ export async function loadSpots(root: string): Promise<Spot[]> {
       );
     }
   }
-  return spots.sort(
-    (a, b) =>
-      counties.indexOf(a.county) - counties.indexOf(b.county) ||
-      a.name.localeCompare(b.name, "zh-Hant"),
+  return spots.sort(compareSpots);
+}
+
+export function compareSpots(a: Spot, b: Spot) {
+  return (
+    counties.indexOf(a.county) - counties.indexOf(b.county) ||
+    a.name.localeCompare(b.name, "zh-Hant")
   );
 }
