@@ -23,14 +23,15 @@ Status: open
 - [台灣景點官方資料來源盤點](issues/02-official-sources-survey.md)：查證順序為景點官網 → 主管機關 → 觀光署／縣市觀光網；觀光署開放資料只用來定位景點，Google 地圖與部落格不算官方；政府開放資料必須標示提供機關；部分官方網站 Agent 讀不到，需要替代做法。
 - [引用、轉述與著作權界線](issues/03-quotation-copyright-bounds.md)：每段約 50 字、每個來源最多兩段的上限維持不變，但引文只能用來佐證、不得引用清單或行程；不逐句換字改寫原文，非引文部分做 12 字重疊檢查；地圖只放 Google Maps URLs 與 OSM 連結，不嵌入。
 - [景點內容檔的格式](issues/04-spot-content-format.md)：採用單一 `spot.yaml`，敘述也寫在 YAML 裡，讓 schema 能擋下出處、引文與參照錯誤。id 用英文名或拼音，縣市以列舉值表示。官方事實分成 ok／unpublished／conflict 三種狀態，並以 ref 指向官方出處；「建議年齡」移出有／無清單，改成範圍欄位。
+- [carltravel-research 的研究與撰文流程](issues/05-research-skill-workflow.md)：一次只處理一個來源，在拆分景點後和送審時各停下一次等 Carl。讀取失敗時依序換工具，最後交給 Carl 決定。同一性依觀光署 ID、名稱、地址比對；官方資料查完三層才標「官方未公布」。補充已發布景點時，先複製成同 id 草稿。原文全文只存在本機。發布另由 `carltravel-publish` 處理。
 
 ## Not yet specified
 
 - **視覺方向**：版面風格、字型、地圖連結的呈現方式。要等網站頁面範圍與瀏覽方式定案後，才能看出要決定什麼。
-- **補充已發布景點的版本呈現**：公開頁是否要顯示「更新紀錄」。要等研究流程決定補充方式之後再看。
 
 ## Out of scope
 
 - LINE Bot 與任何動態收件服務，D1、Queues、MCP Events、網站後台、自動排程，以及自動重新查證。LINE 會在後續另立地圖，作為新的收件入口。
 - 景點照片、生成圖片、海外景點、多語系。
+- Carl 的親身經驗作為公開內容的一類（[研究流程](issues/05-research-skill-workflow.md)決定：Carl 的備註只當查證線索；若要公開，屬於新的資訊類別）。
 - 實際建站、部署，以及首篇真實內容的製作，這些在實作階段依 v1 規格進行。
