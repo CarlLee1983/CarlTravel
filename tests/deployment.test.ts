@@ -140,3 +140,44 @@ test("deployment freshness gate rejects old main, empty replies and lookup failu
     await rm(root, { recursive: true, force: true });
   }
 });
+
+test("production deploy uses the configured account with only a token secret", async () => {
+  const { parse } = await import("yaml");
+  const flow = parse(await readFile(".github/workflows/deploy.yml", "utf8"));
+  const step = flow.jobs.deploy.steps.find((step: { run?: string }) =>
+    step.run?.includes("pnpm exec wrangler deploy"),
+  );
+  assert.deepEqual(step.env, {
+    CLOUDFLARE_API_TOKEN: "${{ secrets.CLOUDFLARE_API_TOKEN }}",
+  });
+  const config = await readFile("wrangler.jsonc", "utf8");
+  assert.match(config, /"account_id"\s*:\s*"[a-f0-9]{32}"/);
+  assert.doesNotMatch(JSON.stringify(flow), /CLOUDFLARE_ACCOUNT_ID/);
+  const root = await mkdtemp(join(tmpdir(), "carltravel-token-only-"));
+  const marker = join(root, "deploy-called");
+  try {
+    await writeFile(
+      join(root, "pnpm"),
+      '#!/bin/sh\n[ "$*" = "exec wrangler deploy" ] || exit 2\nprintf called > "$TEST_DEPLOY_MARKER"\n',
+      { mode: 0o755 },
+    );
+    const run = (token: string) =>
+      exec(
+        "bash",
+        ["--noprofile", "--norc", "-e", "-o", "pipefail", "-c", step.run],
+        {
+          env: {
+            PATH: `${root}:/usr/bin:/bin`,
+            CLOUDFLARE_API_TOKEN: token,
+            TEST_DEPLOY_MARKER: marker,
+          },
+        },
+      );
+    await assert.rejects(run(""));
+    await assert.rejects(readFile(marker), { code: "ENOENT" });
+    await run("fictional-test-token");
+    assert.equal(await readFile(marker, "utf8"), "called");
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
