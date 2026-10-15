@@ -1,0 +1,248 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import CheckedAt from "../../components/CheckedAt.astro";
+import OfficialSection from "../../components/OfficialSection.astro";
+import { loadSpots } from "../../content/load.ts";
+import { contentMode } from "../../content/mode.ts";
+import { mapLinks } from "../../content/presentation.ts";
+import { ageLabel, type Spot } from "../../content/schema.ts";
+export async function getStaticPaths() {
+  return (await loadSpots(contentMode().root)).map((spot) => ({
+    params: { id: spot.id },
+    props: { spot },
+  }));
+}
+interface Props {
+  spot: Spot;
+}
+const { spot } = Astro.props;
+const buildDate = new Date().toISOString().slice(0, 10);
+const official = (id: string) =>
+  spot.officialRefs.find((ref) => ref.id === id)!;
+const source = (id: string) => spot.sources.find((item) => item.id === id)!;
+const maps = mapLinks(spot.name, spot.address, spot.location);
+const checklist = [
+  ["推車友善", spot.familyChecklist.stroller],
+  ["哺乳室", spot.familyChecklist.nursingRoom],
+  ["親子廁所", spot.familyChecklist.familyToilet],
+  ["雨天備案", spot.familyChecklist.rainyDay],
+  ["無障礙設施", spot.familyChecklist.accessibility],
+] as const;
+const checklistStatus = { yes: "有", no: "無", unknown: "未知" } as const;
+const nearbyKind = { food: "餐飲", stay: "住宿", activity: "活動" } as const;
+---
+
+<Layout title={spot.name}>
+  <nav aria-label="麵包屑"><a href="/">全部景點</a> / {spot.name}</nav>
+  <p class="eyebrow">{spot.county} · {spot.district} / {spot.kind}</p>
+  <h1>{spot.name}</h1>
+  <p>{spot.summary}</p>
+  <p>{spot.address}</p>
+  <p class="meta">{spot.setting} · {ageLabel(spot.ageRange)}</p>
+  {
+    spot.ageRange.status === "known" && (
+      <a href={official(spot.ageRange.ref).url}>建議年齡官方出處</a>
+    )
+  }
+  <p class="map-links">
+    <a href={maps.google}>Google Maps 開啟地圖</a> ·
+    <a href={maps.osm}>OpenStreetMap 開啟地圖</a>
+  </p>
+  <section aria-labelledby="checklist-heading">
+    <h2 id="checklist-heading">親子清單</h2>
+    <CheckedAt
+      checkedAt={spot.familyChecklist.checkedAt}
+      buildDate={buildDate}
+    />
+    <dl>
+      {
+        checklist.map(([label, item]) => (
+          <div>
+            <dt>{label}</dt>
+            <dd>
+              {checklistStatus[item.status]}
+              {item.status !== "unknown" && (
+                <>
+                  {item.note && ` · ${item.note}`}　
+                  <a href={official(item.ref).url}>
+                    出處：{official(item.ref).title}
+                  </a>
+                </>
+              )}
+            </dd>
+          </div>
+        ))
+      }
+    </dl>
+    {spot.familyChecklist.notes && <p>{spot.familyChecklist.notes}</p>}
+  </section>
+  <OfficialSection
+    title="開放時間與費用"
+    section={spot.hoursAndFees}
+    refs={spot.officialRefs}
+    buildDate={buildDate}
+  />
+  <OfficialSection
+    title="交通與停車"
+    section={spot.transport}
+    refs={spot.officialRefs}
+    buildDate={buildDate}
+  />
+  {
+    spot.facilities && (
+      <OfficialSection
+        title="設施"
+        section={spot.facilities}
+        refs={spot.officialRefs}
+        buildDate={buildDate}
+      />
+    )
+  }
+  {
+    spot.withKids && (
+      <section aria-labelledby="with-kids-heading">
+        <h2 id="with-kids-heading">跟孩子一起看</h2>
+        <CheckedAt checkedAt={spot.withKids.checkedAt} buildDate={buildDate} />
+        <ul>
+          {spot.withKids.facts.map((fact) => (
+            <li>
+              {fact.text}{" "}
+              <a href={official(fact.ref).url}>
+                出處：{official(fact.ref).title}
+              </a>
+            </li>
+          ))}
+        </ul>
+        {spot.withKids.activities.length > 0 && (
+          <div>
+            <h3>Agent 建議的觀察活動</h3>
+            <ul>
+              {spot.withKids.activities.map((activity) => (
+                <li>{activity}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </section>
+    )
+  }
+  {
+    spot.authorNotes.length > 0 && (
+      <section aria-labelledby="author-heading">
+        <h2 id="author-heading">原作者心得</h2>
+        {spot.authorNotes.map((note) => (
+          <article>
+            <p>{note.summary}</p>
+            {note.quotes.map((quote) => (
+              <blockquote>{quote}</blockquote>
+            ))}
+            <p class="meta">
+              原作者：
+              <a href={source(note.source).url}>
+                {source(note.source).author} · {source(note.source).title}
+              </a>
+            </p>
+          </article>
+        ))}
+      </section>
+    )
+  }
+  {
+    spot.agentTips.length > 0 && (
+      <section aria-labelledby="tips-heading">
+        <h2 id="tips-heading">Agent 建議</h2>
+        <ul>
+          {spot.agentTips.map((tip) => (
+            <li>{tip}</li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+  {
+    spot.nearby.length > 0 && (
+      <section aria-labelledby="nearby-heading">
+        <h2 id="nearby-heading">周邊安排</h2>
+        <ul>
+          {spot.nearby.map((item) => (
+            <li>
+              <strong>{item.name}</strong> · {nearbyKind[item.kind]}：
+              {item.note}
+              {item.source && (
+                <>
+                  {" "}
+                  <a href={source(item.source).url}>
+                    來源：{source(item.source).title}
+                  </a>
+                </>
+              )}
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+  <section aria-labelledby="references-heading">
+    <h2 id="references-heading">來源與官方出處</h2>
+    <h3>官方出處</h3>
+    <ul>
+      {
+        spot.officialRefs.map((ref) => (
+          <li>
+            <a href={ref.url}>{ref.title}</a> · {ref.organization}
+            {ref.kind === "openData" && (
+              <span>
+                {" "}
+                · 開放資料顯名：{ref.attribution.provider}（
+                {ref.attribution.year}）「{ref.attribution.dataset}」版本{" "}
+                {ref.attribution.version}
+              </span>
+            )}
+          </li>
+        ))
+      }
+    </ul>
+    {
+      spot.tourismId && (
+        <p>
+          觀光署定位 ID：{spot.tourismId.value} ·{" "}
+          <a href={official(spot.tourismId.ref).url}>
+            出處：{official(spot.tourismId.ref).title}
+          </a>
+        </p>
+      )
+    }
+    {
+      spot.sources.length > 0 && (
+        <>
+          <h3>原始來源</h3>
+          <ul>
+            {spot.sources.map((item) => (
+              <li>
+                <a href={item.url}>{item.title}</a> · {item.author} · 讀取日期{" "}
+                {item.readAt}
+                {!item.readable && " · 原文無法讀取"}
+              </li>
+            ))}
+          </ul>
+        </>
+      )
+    }
+  </section>
+</Layout>
+<style>
+  dt {
+    font-weight: 600;
+  }
+  dd {
+    margin: 4px 0 20px;
+  }
+  .map-links {
+    margin-block: 20px;
+  }
+  blockquote {
+    border-inline-start: 3px solid #9a651b;
+    margin-inline: 0;
+    padding-inline: 16px;
+  }
+</style>

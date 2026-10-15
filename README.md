@@ -4,7 +4,9 @@
 
 ## 目前狀態
 
-規劃階段，尚未建站。v1 的實作前決策記錄在 [規格決策地圖](.scratch/carltravel-v1/map.md)，完成後會產出一份 v1 規格，再依規格實作。技術基線預計沿用 CarlKitchen（Astro、Cloudflare）。
+已完成第 01 票基底與第 02 票「完整景點內容與資訊狀態」：完整景點閱讀、三種資訊標示、來源與顯名、過期提示及內容關卡。正式景點目前為零，尚未部署。完整範圍見 [v1 規格](.scratch/carltravel-v1/issues/11-carltravel-v1-spec.md) 與 [工作票索引](.scratch/carltravel-v1-build/README.md)。
+
+啟動：`pnpm install --frozen-lockfile`、`pnpm dev:fixture`。驗證：首次先 `pnpm exec playwright install chromium`，再 `pnpm verify`。詳見[本機開發與資料邊界](docs/development.md)。
 
 ## 文件
 

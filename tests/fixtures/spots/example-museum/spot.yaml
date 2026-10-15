@@ -1,0 +1,116 @@
+name: 範例探索館
+address: 新北市板橋區範例路二號（虛構）
+county: 新北市
+district: 板橋區
+kind: 博物館
+setting: 室內外皆有
+summary: 從葉片與建築細節開始觀察。
+ageRange:
+  status: known
+  min: 3
+  max: 12
+  ref: office
+location:
+  lat: 25.01
+  lng: 121.46
+tourismId:
+  value: EXAMPLE-001
+  ref: tourism
+officialRefs:
+  - id: office
+    kind: page
+    title: 範例探索館公告
+    url: https://example.org/museum
+    organization: 範例探索館
+  - id: second-office
+    kind: page
+    title: 範例主管機關公告
+    url: https://example.org/agency
+    organization: 範例主管機關
+  - id: tourism
+    kind: openData
+    purpose: positioning
+    title: 範例景點定位資料
+    url: https://example.org/data
+    organization: 範例資料提供機關
+    attribution:
+      provider: 範例資料提供機關
+      year: 2026
+      dataset: 範例定位資料集
+      version: "1"
+sources:
+  - id: reader
+    title: 範例家庭探索紀錄
+    url: https://example.org/story
+    author: 範例作者
+    readAt: "2026-10-15"
+    readable: true
+  - id: unreadable
+    title: 無法讀取的範例遊記
+    url: https://example.org/unreadable
+    author: 另一位範例作者
+    readAt: "2026-10-15"
+    readable: false
+familyChecklist:
+  checkedAt: "2020-01-01"
+  stroller:
+    status: "yes"
+    ref: office
+    note: 平面入口可通行推車。
+  nursingRoom:
+    status: "no"
+    ref: office
+  familyToilet:
+    status: unknown
+  rainyDay:
+    status: "yes"
+    ref: office
+  accessibility:
+    status: unknown
+  notes: 出發前可洽詢動線是否調整。
+hoursAndFees:
+  checkedAt: "2020-01-01"
+  facts:
+    - status: ok
+      label: 開放時間
+      value: 上午九點至下午五點。
+      ref: office
+    - status: conflict
+      label: 門票
+      claims:
+        - value: 全票一百元。
+          ref: office
+        - value: 全票一百二十元。
+          ref: second-office
+      contact: 票價說法不一致，出發前請聯絡範例探索館確認。
+transport:
+  checkedAt: "2020-01-01"
+  facts:
+    - status: unpublished
+      label: 停車費用
+facilities:
+  checkedAt: "2020-01-01"
+  facts:
+    - status: ok
+      label: 飲水設施
+      value: 一樓設有飲水台。
+      ref: office
+withKids:
+  checkedAt: "2020-01-01"
+  facts:
+    - text: 展區展示葉片形狀的差異。
+      ref: office
+  activities:
+    - 找出兩種不同形狀的葉片。
+authorNotes:
+  - source: reader
+    summary: 展區的觀察步驟簡單，適合分段停留。
+    quotes:
+      - 我們在葉片展區停留了一段時間。
+agentTips:
+  - 預留休息時間，依孩子的步調安排參觀。
+nearby:
+  - name: 範例食堂
+    kind: food
+    note: 可作為參觀後的用餐安排。
+    source: reader

@@ -4,9 +4,13 @@
 
 node_modules/
 /dist/
+/dist-fixture/
 .astro/
 .wrangler/
 .env
 .env.*
 !.env.example
 .DS_Store
+
+test-results/
+playwright-report/

@@ -1,0 +1,72 @@
+import type { Dirent } from "node:fs";
+import { readdir, readFile } from "node:fs/promises";
+import { join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+import { loadSpots } from "../src/content/load.ts";
+
+export async function checkOutput(
+  output = "dist",
+  content = "content/spots",
+  fixtures = "tests/fixtures/spots",
+) {
+  const formal = await loadSpots(content);
+  const formalIds = formal.map((spot) => spot.id).sort();
+  async function requirePage(path: string) {
+    const html = await readFile(path, "utf8");
+    if (!/<html[\s>]/i.test(html) || !/<main[\s>]/i.test(html))
+      throw new Error(`${path}: missing HTML page content`);
+  }
+  await requirePage(join(output, "index.html"));
+  let spotEntries: Dirent[];
+  try {
+    spotEntries = await readdir(join(output, "spots"), { withFileTypes: true });
+  } catch (error) {
+    if (error instanceof Error && "code" in error && error.code === "ENOENT")
+      spotEntries = [];
+    else throw error;
+  }
+  const actualIds = spotEntries.map((entry) => entry.name).sort();
+  if (JSON.stringify(actualIds) !== JSON.stringify(formalIds))
+    throw new Error(
+      `Formal spot pages differ from content/spots: expected ${formalIds.join(", ") || "none"}; found ${actualIds.join(", ") || "none"}`,
+    );
+  for (const id of formalIds)
+    await requirePage(join(output, "spots", id, "index.html"));
+  const fixture = await loadSpots(fixtures);
+  const fixtureNames = fixture
+    .filter((spot) => !formalIds.includes(spot.id))
+    .map((spot) => spot.name);
+  async function checkHtml(dir: string): Promise<void> {
+    for (const entry of await readdir(dir, { withFileTypes: true })) {
+      const path = join(dir, entry.name);
+      if (
+        /\.(?:avif|bmp|gif|heic|ico|jpe?g|png|svg|tiff?|webp)$/i.test(
+          entry.name,
+        )
+      )
+        throw new Error(`${path}: 正式輸出不得包含景點圖片資產`);
+      if (entry.isSymbolicLink())
+        throw new Error(`${path}: symbolic link in formal output`);
+      if (entry.isDirectory()) await checkHtml(path);
+      else if (entry.isFile() && entry.name.endsWith(".html")) {
+        const html = await readFile(path, "utf8");
+        for (const name of [...fixtureNames, "開發展示 · 虛構景點與出處"])
+          if (html.includes(name))
+            throw new Error(
+              `${path}: fixture marker leaked into formal output`,
+            );
+      }
+    }
+  }
+  await checkHtml(output);
+  return formalIds.length;
+}
+if (
+  process.argv[1] &&
+  resolve(process.argv[1]) === fileURLToPath(import.meta.url)
+) {
+  const count = await checkOutput();
+  console.log(
+    `Formal output contains exactly ${count} spot page(s), with no fixture markers.`,
+  );
+}

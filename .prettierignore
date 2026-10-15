@@ -1,0 +1,14 @@
+node_modules
+dist
+dist-fixture
+.astro
+.scratch
+graft
+docs
+CONTEXT.md
+README.md
+.ignore
+.gitignore
+pnpm-lock.yaml
+test-results
+playwright-report

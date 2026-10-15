@@ -1,0 +1,58 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { loadSpots } from "../content/load.ts";
+import { contentMode } from "../content/mode.ts";
+import { ageLabel } from "../content/schema.ts";
+const spots = await loadSpots(contentMode().root);
+---
+
+<Layout title="找一處，一起出發">
+  <p class="eyebrow">探索台灣 · 和孩子一起</p>
+  <h1>找一處，一起出發。</h1>
+  <p>
+    整理台灣親子景點，讓出遊前的準備更清楚。官方資訊附上出處與查證日期；原作者心得與
+    Agent 建議分開呈現，內容經 Carl 審閱後公開。
+  </p>
+  <section aria-labelledby="spots-heading">
+    <h2 id="spots-heading">景點 <span class="meta">{spots.length}</span></h2>
+    {
+      spots.length === 0 ? (
+        <p>目前尚無公開景點，待內容完成查證與審閱後陸續加入。</p>
+      ) : (
+        <ul class="spots">
+          {spots.map((spot) => (
+            <li>
+              <article>
+                <p class="meta">
+                  {spot.county} · {spot.district} / {spot.kind}
+                </p>
+                <h3>
+                  <a href={`/spots/${spot.id}/`}>{spot.name}</a>
+                </h3>
+                <p>{spot.summary}</p>
+                <p class="meta">{ageLabel(spot.ageRange)}</p>
+              </article>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </section>
+</Layout>
+<style>
+  .spots {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+    gap: 24px;
+  }
+  li {
+    border-top: 2px solid #8da6b0;
+    padding-block: 12px;
+  }
+  h3 {
+    font-size: 1.4rem;
+    margin: 8px 0;
+  }
+</style>

@@ -1,0 +1,32 @@
+name: 範例親子公園
+address: 臺北市中正區範例路一號（虛構）
+county: 臺北市
+district: 中正區
+kind: 公園
+setting: 戶外
+summary: 沿著步道觀察樹木與季節變化。
+ageRange:
+  status: unknown
+officialRefs:
+  - id: example-office
+    kind: page
+    title: 範例管理處公告（虛構）
+    url: https://example.org/park
+    organization: 範例管理處
+sources: []
+transport:
+  checkedAt: "2026-10-15"
+  facts:
+    - status: ok
+      label: 入口
+      value: 入口位於範例路一號。
+      ref: example-office
+hoursAndFees:
+  checkedAt: "2026-10-15"
+  facts:
+    - status: ok
+      label: 開放時間
+      value: 每日上午九點至下午五點。
+      ref: example-office
+familyChecklist:
+  checkedAt: "2026-10-15"

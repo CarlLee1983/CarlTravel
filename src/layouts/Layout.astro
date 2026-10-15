@@ -1,0 +1,142 @@
+---
+import { contentMode } from "../content/mode.ts";
+interface Props {
+  title: string;
+}
+const { title } = Astro.props;
+const { fixture } = contentMode();
+---
+
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta
+      name="description"
+      content="以官方資訊、原作者心得與 Agent 建議，整理台灣親子景點。"
+    />
+    {fixture && <meta name="robots" content="noindex, nofollow" />}
+    <title>{title} · CarlTravel</title>
+  </head>
+  <body>
+    <a class="skip" href="#main">跳到主要內容</a>
+    <header>
+      <a href="/" class="brand">CarlTravel <span>台灣親子出遊筆記</span></a>
+    </header>
+    {
+      fixture && (
+        <aside class="fixture" aria-label="開發展示">
+          開發展示 · 虛構景點與出處，僅供測試，不能作為出遊資訊。
+        </aside>
+      )
+    }
+    <main id="main"><slot /></main>
+    <footer>出發前，請再確認官方公告。查證日期不代表資訊的有效期限。</footer>
+  </body>
+</html>
+<style is:global>
+  :root {
+    font-family: system-ui, sans-serif;
+    color: #243b49;
+    background: #f7f8f6;
+    line-height: 1.8;
+    font-synthesis: none;
+  }
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    margin: 0;
+  }
+  a {
+    color: #245b70;
+    text-underline-offset: 0.2em;
+    overflow-wrap: anywhere;
+  }
+  a:focus-visible {
+    outline: 3px solid #9a651b;
+    outline-offset: 5px;
+  }
+  header,
+  main,
+  footer,
+  .fixture {
+    max-width: 1080px;
+    margin: auto;
+    padding: 24px;
+  }
+  header {
+    border-bottom: 1px solid #cbd4d5;
+  }
+  .brand {
+    font-weight: 700;
+    text-decoration: none;
+    font-size: 1.35rem;
+  }
+  .brand span {
+    font-size: 0.8rem;
+    font-weight: 400;
+    margin-left: 1rem;
+    display: inline-block;
+  }
+  main {
+    min-height: 60vh;
+    padding-block: 56px;
+  }
+  h1,
+  h2 {
+    font-family: "Noto Serif TC", "Songti TC", serif;
+    line-height: 1.4;
+  }
+  h1 {
+    font-size: clamp(2rem, 5vw, 3.4rem);
+    margin: 0 0 24px;
+  }
+  h2 {
+    font-size: 1.5rem;
+  }
+  p {
+    max-width: 65ch;
+  }
+  footer {
+    border-top: 1px solid #cbd4d5;
+    font-size: 0.875rem;
+  }
+  .fixture {
+    background: #f5e9ca;
+    color: #5b4216;
+    padding-block: 12px;
+  }
+  .eyebrow {
+    font-size: 0.85rem;
+    letter-spacing: 0.12em;
+  }
+  .meta {
+    color: #52636c;
+  }
+  .skip {
+    position: absolute;
+    left: 12px;
+    top: -80px;
+    padding: 10px;
+    background: white;
+  }
+  .skip:focus {
+    top: 8px;
+  }
+  section {
+    margin-top: 40px;
+  }
+  @media (max-width: 600px) {
+    header,
+    main,
+    footer,
+    .fixture {
+      padding-inline: 20px;
+    }
+    main {
+      padding-block: 32px;
+    }
+  }
+</style>

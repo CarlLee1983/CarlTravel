@@ -1,0 +1,17 @@
+---
+import { isStale } from "../content/presentation.ts";
+interface Props {
+  checkedAt: string;
+  buildDate: string;
+}
+const { checkedAt, buildDate } = Astro.props;
+---
+
+<p class="meta">
+  官方資訊 · 查證日期 <time datetime={checkedAt}>{checkedAt}</time>
+</p>
+{
+  isStale(checkedAt, buildDate) && (
+    <p>資料可能過期，出發前請重新確認官方公告。</p>
+  )
+}
