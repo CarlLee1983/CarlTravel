@@ -26,6 +26,7 @@ Status: open
 - [carltravel-research 的研究與撰文流程](issues/05-research-skill-workflow.md)：一次只處理一個來源，在拆分景點後和送審時各停下一次等 Carl。讀取失敗時依序換工具，最後交給 Carl 決定。同一性依觀光署 ID、名稱、地址比對；官方資料查完三層才標「官方未公布」。補充已發布景點時，先複製成同 id 草稿。原文全文只存在本機。發布另由 `carltravel-publish` 處理。
 - [自動品質檢查與發布關卡](issues/06-quality-gates.md)：公開內容的結構、外洩與圖片檢查放進 CI，擋合入與部署；照抄比對、Carl 備註比對與草稿外洩比對只能在本機跑，由 `carltravel-publish` 在開 PR 前擋下。過期只警告，不設景點數量門檻，axe 涵蓋票 07 列出的每種頁面。
 - [網站頁面範圍與瀏覽方式](issues/07-site-pages-and-browsing.md)：v1 只做首頁、景點頁、關於頁與 404。首頁提供搜尋，並可依縣市、類型、環境、年齡帶篩選；景點頁的分節順序已固定。`tags` 拆成 `kind`／`setting`，並新增 `summary`（修正票 04）。免責聲明放在關於頁，v1 不做更新紀錄。
+- [網站內容的授權宣告](issues/09-site-content-license.md)：本站撰寫的景點內容採 CC BY-NC 4.0，程式碼、schema 與 skill 採 MIT（[ADR-0002](../../docs/adr/0002-content-license-cc-by-nc.md)）。宣告放在頁尾一行與關於頁完整版，並在 `<head>` 加 `rel=license`。引文、官方事實與開放資料不在授權範圍內；有 `tourismId` 的景點，schema 強制要求一筆 `kind: openData` 顯名（修正票 04）。
 
 ## Not yet specified
 
