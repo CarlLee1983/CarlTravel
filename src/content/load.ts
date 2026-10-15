@@ -2,6 +2,7 @@ import { readdir, readFile, lstat } from "node:fs/promises";
 import { join } from "node:path";
 import { parse } from "yaml";
 import { spotSchema, counties, type Spot } from "./schema.ts";
+import { illustrationFilename, readIllustration } from "./illustration.ts";
 
 export async function loadSpots(root: string): Promise<Spot[]> {
   const entries = await readdir(root, { withFileTypes: true });
@@ -12,10 +13,6 @@ export async function loadSpots(root: string): Promise<Spot[]> {
       throw new Error(`${root}/${entry.name}: 景點必須是有效 id 的資料夾`);
     const file = join(root, entry.name, "spot.yaml");
     try {
-      for (const asset of await readdir(join(root, entry.name))) {
-        if (asset !== "spot.yaml")
-          throw new Error(`${asset}: 單一 YAML 景點不允許圖片或其他附件`);
-      }
       if (!(await lstat(file)).isFile())
         throw new Error("spot.yaml 必須是一般檔案");
       const result = spotSchema.safeParse(parse(await readFile(file, "utf8")));
@@ -24,6 +21,18 @@ export async function loadSpots(root: string): Promise<Spot[]> {
           result.error.issues
             .map((i) => `${i.path.join(".")}: ${i.message}`)
             .join("\n"),
+        );
+      for (const asset of await readdir(join(root, entry.name))) {
+        if (
+          asset !== "spot.yaml" &&
+          !(asset === illustrationFilename && result.data.illustration)
+        )
+          throw new Error(`${asset}: 景點不允許未宣告的圖片或其他附件`);
+      }
+      if (result.data.illustration)
+        await readIllustration(
+          join(root, entry.name),
+          result.data.illustration,
         );
       spots.push({ ...result.data, id: entry.name });
     } catch (error) {

@@ -1,4 +1,8 @@
 ---
+import {
+  illustrationUrl,
+  illustrationCaption,
+} from "../../content/illustration.ts";
 import Layout from "../../layouts/Layout.astro";
 import CheckedAt from "../../components/CheckedAt.astro";
 import OfficialSection from "../../components/OfficialSection.astro";
@@ -85,6 +89,20 @@ const nearbyKind = { food: "餐飲", stay: "住宿", activity: "活動" } as con
           <a href={maps.osm}>OpenStreetMap 開啟地圖</a>
         </p>
       </header>
+      {
+        spot.illustration && (
+          <figure class="spot-illustration" data-pagefind-ignore>
+            <img
+              src={`${illustrationUrl(spot.id)}?v=${spot.illustration.sha256}`}
+              alt={spot.illustration.alt}
+              width={spot.illustration.width}
+              height={spot.illustration.height}
+              decoding="async"
+            />
+            <figcaption>{illustrationCaption}</figcaption>
+          </figure>
+        )
+      }
       <section id="checklist" tabindex="-1" aria-labelledby="checklist-heading">
         <span class="info-label official">官方資訊</span>
         <h2 id="checklist-heading">親子清單</h2>
@@ -302,6 +320,20 @@ const nearbyKind = { food: "餐飲", stay: "住宿", activity: "活動" } as con
   </div>
 </Layout>
 <style>
+  .spot-illustration {
+    margin: 24px 0 0;
+  }
+  .spot-illustration img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 20px 20px 20px 6px;
+  }
+  .spot-illustration figcaption {
+    margin-top: 10px;
+    color: var(--muted);
+    font-size: 14px;
+  }
   .breadcrumb {
     max-width: 1200px;
     margin-inline: auto;

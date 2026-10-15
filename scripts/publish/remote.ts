@@ -1,10 +1,14 @@
 import { execFileSync } from "node:child_process";
 import { join } from "node:path";
-import { mkdir } from "node:fs/promises";
+import { mkdir, rm } from "node:fs/promises";
 import { parse, stringify } from "yaml";
 import { spotSchema } from "../../src/content/schema.ts";
 import { approvedBatch, checkBatch, checkPublicText, digest } from "./batch.ts";
 import { readLocal, writeLocal } from "../research/files.ts";
+import {
+  illustrationFilename,
+  validateIllustration,
+} from "../../src/content/illustration.ts";
 
 export type Run = (command: "git" | "gh", args: string[]) => string;
 export const repository = "CarlLee1983/CarlTravel";
@@ -56,6 +60,10 @@ export async function prepare(root: string, batch: string, run = runner(root)) {
   }
   for (const [id, content] of Object.entries(result.content)) {
     await mkdir(join(root, "content/spots", id), { recursive: true });
+    const imagePath = join(root, "content/spots", id, illustrationFilename);
+    if (result.illustrations[id])
+      await writeLocal(imagePath, result.illustrations[id]);
+    else await rm(imagePath, { force: true });
     await writeLocal(join(root, "content/spots", id, "spot.yaml"), content);
   }
   return result.ids;
@@ -66,7 +74,10 @@ async function auditHistory(
   result: Awaited<ReturnType<typeof checkBatch>>,
   run: Run,
 ) {
-  const allowed = result.ids.map((id) => `content/spots/${id}/spot.yaml`);
+  const allowed = result.ids.flatMap((id) => [
+    `content/spots/${id}/spot.yaml`,
+    `content/spots/${id}/${illustrationFilename}`,
+  ]);
   const commits = run("git", ["rev-list", "--reverse", "origin/main..HEAD"])
     .split("\n")
     .filter(Boolean);
@@ -92,10 +103,11 @@ async function auditHistory(
       .filter(Boolean);
     if (!files.length || files.some((file) => !allowed.includes(file)))
       throw new Error("提交歷史含未核准檔案，禁止推送");
-    const blobs = files.map(
-      (file) => run("git", ["show", `${commit}:${file}`]) + "\n",
-    );
-    for (const blob of blobs) {
+    const blobs: string[] = [];
+    for (const id of new Set(files.map((file) => file.split("/")[2]!))) {
+      const file = `content/spots/${id}/spot.yaml`;
+      const blob = run("git", ["show", `${commit}:${file}`]) + "\n";
+      blobs.push(blob);
       if (
         !versions
           .split("\n")
@@ -105,6 +117,18 @@ async function auditHistory(
       const parsed = spotSchema.parse(parse(blob));
       if (stringify(parsed) !== blob)
         throw new Error("歷史內容含非標準 YAML 或私人註解，禁止推送");
+      const imagePath = `content/spots/${id}/${illustrationFilename}`;
+      const imageEntry = run("git", ["ls-tree", commit, "--", imagePath]);
+      if (parsed.illustration) {
+        if (!/^100644 blob /.test(imageEntry))
+          throw new Error("歷史插畫缺少一般檔案，禁止推送");
+        // The text runner trims UTF-8 and must never read binary image blobs.
+        const bytes = execFileSync("git", ["show", `${commit}:${imagePath}`], {
+          cwd: root,
+          maxBuffer: 9 * 1024 * 1024,
+        });
+        validateIllustration(bytes, parsed.illustration);
+      } else if (imageEntry) throw new Error("歷史內容含未宣告插畫，禁止推送");
     }
     await checkPublicText(root, result.ids, blobs);
     await checkPublicText(

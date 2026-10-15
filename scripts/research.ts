@@ -8,11 +8,13 @@ import {
   type Method,
 } from "./research/records.ts";
 import { checkResearch } from "./research/check.ts";
+import { initOfficial } from "./research/official.ts";
 import { matchIdentity } from "./research/identity.ts";
 import { readLocal, researchDirectory, writeLocal } from "./research/files.ts";
 
 const usage = `Usage: pnpm research <command>
   init <YYYY-MM-DD> <slug> <source-url>
+  init-official <YYYY-MM-DD> <spot-id> <notes-file>
   attempt <source-id> <defuddle|WebFetch|browser> <failed|unavailable> <evidence-file>
   capture <source-id> <defuddle|WebFetch|browser|carl> <original-file>
   accept-unreadable <source-id> <YYYY-MM-DD> <Carl-decision-file>
@@ -36,7 +38,10 @@ async function main() {
         sourceId: await initResearch(root, args[0]!, args[1]!, args[2]!),
       }),
     );
-  else if (
+  else if (command === "init-official" && args.length === 3) {
+    await initOfficial(root, args[0]!, args[1]!, (await readLocal(args[2]!))!);
+    console.log("純官方研究紀錄已建立；仍待記錄 Carl 勾選與官方查證。");
+  } else if (
     command === "attempt" &&
     args.length === 4 &&
     ["failed", "unavailable"].includes(args[2]!)

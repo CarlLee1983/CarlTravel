@@ -455,3 +455,96 @@ test(
     }
   },
 );
+
+test(
+  "illustration approval binds bytes and publication audits binary history",
+  { timeout: 120_000 },
+  async () => {
+    const { root, cleanup, draft, approve } = await scenario();
+    const { execFileSync } = await import("node:child_process");
+    const { createHash } = await import("node:crypto");
+    const { prepare, submit } = await import("../scripts/publish/remote.ts");
+    const png = Buffer.from(
+      "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII=",
+      "base64",
+    );
+    const data = parse(await readFile(draft, "utf8"));
+    data.illustration = {
+      kind: "ai-generated",
+      alt: "虛構圖片",
+      width: 1,
+      height: 1,
+      sha256: createHash("sha256").update(png).digest("hex"),
+    };
+    const draftImage = join(
+      root,
+      "drafts/spots/approved-park/illustration.png",
+    );
+    const formalImage = join(
+      root,
+      "content/spots/approved-park/illustration.png",
+    );
+    const git = (args: string[]) =>
+      execFileSync("git", args, {
+        cwd: root,
+        encoding: "utf8",
+        stdio: "pipe",
+      }).trim();
+    const writes: string[] = [];
+    const run = (command: "git" | "gh", args: string[]) => {
+      if (command === "gh") {
+        if (args[1] === "list") return "[]";
+        throw new Error("unexpected GitHub write");
+      }
+      if (args[0] === "remote")
+        return "https://github.com/CarlLee1983/CarlTravel.git";
+      if (args[0] === "fetch") return "";
+      if (args[0] === "push") {
+        writes.push("push");
+        throw new Error("synthetic push boundary");
+      }
+      return git(args);
+    };
+    try {
+      await writeFile(draft, stringify(data));
+      await writeFile(draftImage, png);
+      await snapshot(root, "batch-one", ["approved-park"], true);
+      await approve();
+      await writeFile(
+        draftImage,
+        Buffer.concat([png, Buffer.from("unapproved")]),
+      );
+      await assert.rejects(checkBatch(root, "batch-one"), /重疊／來源／schema/);
+      await writeFile(draftImage, png);
+      git(["init", "-b", "main"]);
+      git(["config", "user.email", "fixture@example.invalid"]);
+      git(["config", "user.name", "Synthetic test"]);
+      git(["add", "."]);
+      git(["commit", "-m", "fixture baseline"]);
+      git(["update-ref", "refs/remotes/origin/main", "HEAD"]);
+      git(["switch", "-c", "publish/batch-one"]);
+      await prepare(root, "batch-one", run);
+      assert.deepEqual(await readFile(formalImage), png);
+      git(["add", "content/spots/approved-park"]);
+      git(["commit", "-m", "approved illustration"]);
+      await assert.rejects(
+        submit(root, "batch-one", run),
+        /synthetic push boundary/,
+      );
+      assert.deepEqual(writes, ["push"]);
+      await writeFile(
+        formalImage,
+        Buffer.concat([png, Buffer.from("private historical image")]),
+      );
+      git(["add", "content/spots/approved-park/illustration.png"]);
+      git(["commit", "-m", "unapproved image"]);
+      await writeFile(formalImage, png);
+      git(["add", "content/spots/approved-park/illustration.png"]);
+      git(["commit", "-m", "restore approved image"]);
+      await assert.rejects(submit(root, "batch-one", run), /PNG/);
+      assert.deepEqual(writes, ["push"]);
+    } finally {
+      await cleanup();
+    }
+  },
+);

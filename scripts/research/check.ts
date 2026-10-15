@@ -1,4 +1,5 @@
 import { join } from "node:path";
+import { readdir } from "node:fs/promises";
 import { readLocal, researchDirectory, validId, writeLocal } from "./files.ts";
 import {
   allSpots,
@@ -9,12 +10,18 @@ import {
   observeOriginal,
 } from "./records.ts";
 import { overlap } from "./overlap.ts";
+import { officialRecords, readOfficial } from "./official.ts";
 import type { Spot } from "../../src/content/schema.ts";
 
 type Status = "pass" | "fail" | "not_run_approved_unreadable";
 export interface ResearchResult {
   ok: boolean;
   sources: { id: string; original: Status; notes: "pass" | "fail" }[];
+  officialOnly: {
+    id: string;
+    original: "not_applicable";
+    notes: "pass" | "fail";
+  }[];
   report: string;
 }
 function fields(value: unknown, path = ""): { path: string; text: string }[] {
@@ -38,6 +45,7 @@ export async function checkResearch(
   const result: ResearchResult = {
     ok: true,
     sources: [],
+    officialOnly: [],
     report: "research/overlap-report.md",
   };
   const details: string[] = [];
@@ -50,12 +58,84 @@ export async function checkResearch(
     const spots = ids.map((id) => {
       const spot = drafts.find((item) => item.id === id);
       if (!spot) throw new Error(`${id}: 找不到指定草稿`);
-      if (!spot.sources.length) throw new Error(`${id}: 研究草稿缺少來源參照`);
       return spot;
     });
     const texts = spots.flatMap((spot) =>
       fields(spot).map((field) => ({ ...field, spot: spot.id })),
     );
+    const officialSpots = spots.filter((spot) => !spot.sources.length);
+    for (const spot of officialSpots) {
+      result.officialOnly.push({
+        id: spot.id,
+        original: "not_applicable",
+        notes: "fail",
+      });
+      await readOfficial(root, spot.id, true);
+    }
+    // Official-only research still carries private instructions, including notes
+    // from other local batches. Never use an empty sources array to skip them.
+    for (const record of await officialRecords(root)) {
+      for (const field of texts) {
+        const hit = overlap(
+          record.notes === "無" ? "" : record.notes,
+          field.text,
+        );
+        if (hit) {
+          result.ok = false;
+          details.push(
+            `${record.id}: 純官方私人備註命中 ${field.spot}.${field.path}: ${hit}`,
+          );
+        }
+      }
+    }
+    if (result.ok) result.officialOnly.forEach((item) => (item.notes = "pass"));
+    // Retained travel evidence remains relevant after a draft drops its source
+    // references. This does not turn official pages into authored travel sources.
+    if (officialSpots.length) {
+      const retained = new Set(knownSources.map((source) => source.id));
+      for (const entry of await readdir(research, { withFileTypes: true })) {
+        if (entry.name === "official" || entry.name === "publish") continue;
+        if (entry.isSymbolicLink()) throw new Error("研究紀錄不得是符號連結");
+        if (entry.isDirectory()) {
+          const dir = join(research, entry.name);
+          const source = await readLocal(join(dir, "source.md"), true);
+          if (source !== undefined) retained.add(entry.name);
+          else if (
+            (await readLocal(join(dir, "original.txt"), true)) !== undefined
+          )
+            throw new Error(`${entry.name}: 原文仍在但來源紀錄已遺失`);
+        }
+      }
+      const officialTexts = texts.filter((field) =>
+        officialSpots.some((spot) => spot.id === field.spot),
+      );
+      for (const id of retained) {
+        const record = await readSource(root, id);
+        const notes = section(record.text, "Carl 備註").value;
+        if (!notes) throw new Error(`${id}: Carl 備註不可空白`);
+        const original = await readLocal(
+          join(record.dir, "original.txt"),
+          true,
+        );
+        if (original === undefined && everObtained(record.text))
+          throw new Error(`${id}: 原文曾取得但已遺失`);
+        if (original !== undefined) {
+          if (!original.trim()) throw new Error(`${id}: 原文檔為空`);
+          await observeOriginal(record.dir, record.text, original);
+        }
+        for (const field of officialTexts) {
+          const hit =
+            overlap(notes === "無" ? "" : notes, field.text) ||
+            (original && prose(field) && overlap(original, field.text));
+          if (hit) {
+            result.ok = false;
+            details.push(
+              `${id}: 保留來源命中 ${field.spot}.${field.path}: ${hit}`,
+            );
+          }
+        }
+      }
+    }
     const sources = new Map<string, Spot["sources"][number]>();
     for (const source of spots.flatMap((spot) => spot.sources)) {
       const previous = sources.get(source.id);
@@ -135,9 +215,10 @@ export async function checkResearch(
   result.ok &&= result.sources.every(
     (source) => source.original !== "fail" && source.notes === "pass",
   );
+  result.ok &&= result.officialOnly.every((spot) => spot.notes === "pass");
   await writeLocal(
     join(research, "overlap-report.md"),
-    `# 本機重疊檢查\n\n時間：${new Date().toISOString()}\n結果：${result.ok ? "可送審（仍待 Carl 決定）" : "阻擋"}\n\n${result.sources.map((source) => `- ${source.id}: 原文 ${source.original}；備註 ${source.notes}`).join("\n")}\n\n## 私人診斷（只留本機）\n${details.map((detail) => `- ${detail}`).join("\n") || "無"}\n`,
+    `# 本機重疊檢查\n\n時間：${new Date().toISOString()}\n結果：${result.ok ? "可送審（仍待 Carl 決定）" : "阻擋"}\n\n${result.sources.map((source) => `- ${source.id}: 原文 ${source.original}；備註 ${source.notes}`).join("\n")}\n${result.officialOnly.map((spot) => `- ${spot.id}: 未執行：純官方資料無旅遊原文（not_applicable）；備註 ${spot.notes}`).join("\n")}\n\n## 私人診斷（只留本機）\n${details.map((detail) => `- ${detail}`).join("\n") || "無"}\n`,
   );
   return result;
 }

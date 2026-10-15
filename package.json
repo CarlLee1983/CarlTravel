@@ -30,7 +30,8 @@
     "check:index": "node --experimental-strip-types scripts/check-index.ts",
     "check:worker": "wrangler deploy --dry-run",
     "check:deployment": "node --experimental-strip-types scripts/check-deployment.ts",
-    "prepare:deployment": "pnpm build && pnpm check:deployment && pnpm check:worker"
+    "prepare:deployment": "pnpm build && pnpm check:deployment && pnpm check:worker",
+    "draft:illustrate": "node --experimental-strip-types scripts/illustration.ts"
   },
   "dependencies": {
     "astro": "7.2.9",

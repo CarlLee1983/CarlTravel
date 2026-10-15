@@ -14,7 +14,9 @@ import {
 } from "../research/files.ts";
 import { checkResearch } from "../research/check.ts";
 import { overlap } from "../research/overlap.ts";
+import { officialRecords } from "../research/official.ts";
 import { checkIsolation } from "./isolation.ts";
+import { readIllustration } from "../../src/content/illustration.ts";
 
 export const digest = (text: string) =>
   createHash("sha256").update(text).digest("hex");
@@ -131,18 +133,27 @@ export async function checkPublicText(
       spot.sources.map((source) => source.id),
     ),
   );
+  for (const record of await officialRecords(root)) {
+    for (const text of texts) {
+      if (
+        record.notes !== "無" &&
+        (overlap(record.notes, text) || text.includes(record.notes.trim()))
+      )
+        throw new Error(`${record.id}: 公開內容含純官方研究私人備註`);
+    }
+  }
   for (const entry of await readdir(join(root, "research"), {
     withFileTypes: true,
   })) {
-    if (
-      entry.isDirectory() &&
-      entry.name !== "publish" &&
-      (await readLocal(
-        join(root, "research", entry.name, "source.md"),
-        true,
-      )) !== undefined
-    )
-      sourceIds.add(entry.name);
+    if (entry.name === "publish" || entry.name === "official") continue;
+    if (entry.isSymbolicLink()) throw new Error("研究紀錄不得是符號連結");
+    if (entry.isDirectory()) {
+      const dir = join(root, "research", entry.name);
+      const source = await readLocal(join(dir, "source.md"), true);
+      if (source !== undefined) sourceIds.add(entry.name);
+      else if ((await readLocal(join(dir, "original.txt"), true)) !== undefined)
+        throw new Error(`${entry.name}: 原文仍在但來源紀錄已遺失`);
+    }
   }
   for (const sourceId of sourceIds) {
     const record = await readSource(root, sourceId);
@@ -176,9 +187,15 @@ export async function checkBatch(root: string, batch: string) {
     );
   const { drafts } = await allSpots(root);
   const content: Record<string, string> = {};
+  const illustrations: Record<string, Buffer> = {};
   for (const id of approved.ids) {
     const { id: _id, ...data } = drafts.find((spot) => spot.id === id)!;
     content[id] = stringify(data);
+    if (data.illustration)
+      illustrations[id] = await readIllustration(
+        join(root, "drafts/spots", id),
+        data.illustration,
+      );
     const formal = await readLocal(
       join(root, "content/spots", id, "spot.yaml"),
       true,
@@ -187,7 +204,7 @@ export async function checkBatch(root: string, batch: string) {
     if (hash !== approved.bases[id] && hash !== digest(content[id]))
       throw new Error(`${id}: 正式內容已不同於審閱基準，先檢查差異並重新審閱`);
   }
-  const body = `## Summary\n\n核准景點：${approved.ids.map((id) => `\`${id}\``).join("、")}\n\n\`\`\`text\nCarl 審閱 → 本機關卡 → draft PR → CI → Carl 合入\n\`\`\`\n\n## Evidence\n\n- **Before:** 指定內容只存在本機草稿。\n  **After:** 本機核准版本、schema、來源、重疊與正式輸出隔離檢查通過。\n${research.sources.map((source) => `- ${source.id}: original=${source.original}${source.original === "not_run_approved_unreadable" ? "（未執行：原文無法讀取）" : ""}; notes=${source.notes}`).join("\n")}\n\n## Merge Danger\n\n**Door:** two-way\n\n回復需另開 PR，由 Carl 合入。\n\n**Blast Radius:** content\n\n合入後仍須部署成功與公開頁驗證，才算完成上線。\n`;
+  const body = `## Summary\n\n核准景點：${approved.ids.map((id) => `\`${id}\``).join("、")}\n\n\`\`\`text\nCarl 審閱 → 本機關卡 → draft PR → CI → Carl 合入\n\`\`\`\n\n## Evidence\n\n- **Before:** 指定內容只存在本機草稿。\n  **After:** 本機核准版本、schema、來源、重疊與正式輸出隔離檢查通過。\n${research.officialOnly.map((spot) => `- ${spot.id}: official_only; original=not_applicable（未執行：純官方資料無旅遊原文）; notes=${spot.notes}`).join("\n")}\n${research.sources.map((source) => `- ${source.id}: original=${source.original}${source.original === "not_run_approved_unreadable" ? "（未執行：原文無法讀取）" : ""}; notes=${source.notes}`).join("\n")}\n\n## Merge Danger\n\n**Door:** two-way\n\n回復需另開 PR，由 Carl 合入。\n\n**Blast Radius:** content\n\n合入後仍須部署成功與公開頁驗證，才算完成上線。\n`;
   await checkPublicText(root, approved.ids, [...Object.values(content), body]);
   try {
     execFileSync(process.execPath, ["scripts/site.mjs", "build"], {
@@ -213,5 +230,12 @@ export async function checkBatch(root: string, batch: string) {
   }
   await writeLocal(versionsFile, versions);
   await writeLocal(join(approved.dir, "pr-body.md"), body);
-  return { ...approved, content, body, sources: research.sources };
+  return {
+    ...approved,
+    content,
+    illustrations,
+    body,
+    sources: research.sources,
+    officialOnly: research.officialOnly,
+  };
 }

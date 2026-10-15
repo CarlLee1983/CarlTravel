@@ -81,7 +81,7 @@ export async function readLocal(
 }
 export async function writeLocal(
   path: string,
-  text: string,
+  text: string | Uint8Array,
   exclusive = false,
 ) {
   // Finish and sync a sibling file before replacing the sole local evidence.

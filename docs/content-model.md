@@ -4,7 +4,7 @@
 
 ## 單檔與基本資訊
 
-正式景點放在 `content/spots/<id>/spot.yaml`。id 取自資料夾，必須符合小寫 ASCII 英數字與連字號分隔；發布後保持穩定。資料夾只能有 `spot.yaml`，不接收圖片或附件。本機草稿放在 `drafts/spots/<id>/spot.yaml`，共用此 schema，YAML 不加入 draft 欄位；位置決定草稿身分。開發預覽同 id 草稿優先，正式建置只讀 `content/spots/`。詳見[草稿操作](development.md#第-05-票本機草稿與修訂預覽)。
+正式景點放在 `content/spots/<id>/spot.yaml`。id 取自資料夾，必須符合小寫 ASCII 英數字與連字號分隔；發布後保持穩定。目錄只接受 `spot.yaml`，以及有選填 `illustration` 時與 YAML 同層的 `illustration.png`。本機草稿放在 `drafts/spots/<id>/spot.yaml`，共用此 schema，YAML 不加入 draft 欄位；位置決定草稿身分。開發預覽同 id 草稿優先，正式建置只讀 `content/spots/`。詳見[草稿操作](development.md#第-05-票本機草稿與修訂預覽)。
 
 必填 `name`、`address`、`county`、`district`、`kind`、`setting`、`summary`、`ageRange`、`officialRefs`、`transport`、`hoursAndFees`、`familyChecklist`。縣市是 22 縣市列舉，行政區比對[官方快照](../src/data/README.md)，一律使用「臺」。摘要最多 30 個 Unicode 碼點。`kind` 與 `setting` 的封閉值域見 schema，不接受任意標籤。
 
@@ -32,17 +32,21 @@
 
 ## 來源、心得與建議
 
-`sources` 預設空陣列，每筆包含 `id`、`title`、HTTP(S) `url`、`author`、`readAt`、`readable`。與官方出處分開，各清單內 id 不可重複。不可讀來源在公開來源清單標示「原文無法讀取」，本身算有效溯源；不能用它產生心得或引文。其 Carl 核准紀錄由後續本機發布關卡驗證，不寫入公開 YAML。
+`sources` 預設空陣列；純官方資料景點保持 `sources: []`、`authorNotes: []`，其官方事實仍須使用 `officialRefs`。有旅遊來源時，每筆包含 `id`、`title`、HTTP(S) `url`、`author`、`readAt`、`readable`。與官方出處分開，各清單內 id 不可重複。不可讀來源在公開來源清單標示「原文無法讀取」，本身算有效溯源；不能用它產生心得或引文。其 Carl 核准紀錄由後續本機發布關卡驗證，不寫入公開 YAML。
 
 `authorNotes` 預設空陣列，每筆為 `{ source, summary, quotes? }`，指向可讀來源，轉述後可附引文。頁面附原作者與連結。每個來源跨所有心得筆數合計最多兩段引文，每段最多 60 個 Unicode 碼點（標點及內部換行也計入），寫作目標仍是約 50 字以內。引文之外的公開文字欄位不得含「我」（包含「我們」）；標題、署名等顯示文字也接受此檢查，連結網址不當作敘述文字。
 
 `agentTips` 是獨立的字串陣列。`nearby` 每筆為 `{ name, kind, note, source? }`，`kind` 只能是 `food`、`stay`、`activity`，選填來源必須存在。原作者心得、Agent 建議、周邊安排省略或空陣列時不產生空白分節。可讀來源必須被心得或周邊安排使用，不能任意堆積未用來源。
 
+## 景點情境插畫
+
+選填 `illustration: { kind: 'ai-generated', alt, sha256, width, height }` 只指向同目錄的 `illustration.png`，不接受圖片網址、照片或圖庫。替代文字 `alt` 描述畫面；頁面固定顯示「AI 生成情境插畫，非實際展區」。載入器檢查 PNG 區塊、CRC 與解壓後像素，只接受非交錯的 8-bit 灰階或 RGB（可含 alpha）；拒絕夾帶的輔助中繼資料，並驗證 SHA-256 與宣告尺寸相符。檔案不超過 8 MiB，寬高均不超過 4096px；缺檔、額外附件或不符宣告均拒絕。插畫是情境示意，不能作為設施或展區事實的證據。`kind` 是內容標示，不是來源或權利的保證；匯入前仍須人工確認圖像內容及使用權利。
+
 ## 驗證邊界
 
 - 載入入口拒絕未知欄位、錯誤資料型別、無效參照、未使用來源／出處、缺出處、無效行政區與日期、引文超限及第一人稱。
-- 圖片欄位、Markdown 圖片與 HTML 圖片標記（包含引文內）、景點目錄附件均被拒絕。正式輸出關卡另拒絕景點圖片資產，防止從靜態資產目錄繞過 YAML；唯一例外是以指定路徑與雜湊核准的[網站情境插畫](public-interface.md#網站插畫的公開邊界)。
+- 除上述 `illustration` 與成對 PNG，其他圖片欄位、Markdown 圖片與 HTML 圖片標記（包含引文內）、景點目錄附件均被拒絕。正式輸出只接受與正式 YAML 宣告雜湊完全相符的景點 PNG；網站共用插畫另依[公開資產邊界](public-interface.md#網站插畫的公開邊界)檢查。
 - 所有敘述以文字輸出，不執行 YAML 內 HTML。網址只允許 HTTP(S)。網站不在建置時抓取外部出處；可連結不代表已查證其真實性。
 - `pnpm check:content` 檢查正式內容；`pnpm verify` 整合內容、型別、單元、正式建置、fixture 瀏覽器與正式輸出檢查。錯誤列出檔案與欄位。
 
-完整虛構案例在 `tests/fixtures/spots/example-museum/spot.yaml`；最小案例仍是 `example-park`。測試只用虛構資料，不混入 `content/spots`。真實查證、來源可讀核准、重疊檢查與發布授權仍由後續票處理；schema 不代替人工審閱。
+完整虛構案例在 `tests/fixtures/spots/example-museum/spot.yaml`；最小案例仍是 `example-park`。測試只用虛構資料，不混入 `content/spots`。真實查證、旅遊來源可讀核准、純官方資料的勾選與備註檢查、重疊檢查及發布授權由本機流程處理；schema 不代替人工審閱。

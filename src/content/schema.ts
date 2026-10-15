@@ -100,6 +100,16 @@ export const spotSchema = z
     ]),
     setting: z.enum(["室內", "戶外", "室內外皆有"]),
     summary: text.refine((v) => [...v].length <= 30, "摘要最多 30 字"),
+    illustration: z
+      .object({
+        kind: z.literal("ai-generated"),
+        alt: text,
+        sha256: z.string().regex(/^[a-f0-9]{64}$/),
+        width: z.number().int().positive().max(4096),
+        height: z.number().int().positive().max(4096),
+      })
+      .strict()
+      .optional(),
     ageRange: z.discriminatedUnion("status", [
       z.object({ status: z.literal("unknown") }).strict(),
       z

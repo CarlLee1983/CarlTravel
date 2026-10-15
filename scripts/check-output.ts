@@ -5,6 +5,10 @@ import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { siteUrl } from "../src/site.ts";
 import { loadSpots } from "../src/content/load.ts";
+import {
+  illustrationUrl,
+  validateIllustration,
+} from "../src/content/illustration.ts";
 
 export async function checkOutput(
   output = "dist",
@@ -13,6 +17,16 @@ export async function checkOutput(
 ) {
   const formal = await loadSpots(content);
   const formalIds = formal.map((spot) => spot.id).sort();
+  const images = new Map(
+    formal
+      .filter((spot) => spot.illustration)
+      .map((spot) => [
+        resolve(output, `.${illustrationUrl(spot.id)}`),
+        spot.illustration!,
+      ]),
+  );
+  for (const [path, meta] of images)
+    validateIllustration(await readFile(path), meta);
   async function requirePage(path: string) {
     const html = await readFile(path, "utf8");
     if (!/<html[\s>]/i.test(html) || !/<main[\s>]/i.test(html))
@@ -82,7 +96,11 @@ export async function checkOutput(
         /\.(?:avif|bmp|gif|heic|ico|jpe?g|png|svg|tiff?|webp)$/i.test(
           entry.name,
         ) &&
-        !(entry.isFile() && (await isApprovedSiteAsset(output, path)))
+        !(
+          entry.isFile() &&
+          (images.has(resolve(path)) ||
+            (await isApprovedSiteAsset(output, path)))
+        )
       )
         throw new Error(`${path}: 正式輸出不得包含景點圖片資產`);
       if (entry.isDirectory()) await checkHtml(path);

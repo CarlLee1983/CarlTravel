@@ -1,8 +1,9 @@
 import { constants } from "node:fs";
-import { copyFile, lstat, mkdir, rmdir } from "node:fs/promises";
+import { copyFile, lstat, mkdir, rm } from "node:fs/promises";
 import { join } from "node:path";
 import { spawnSync } from "node:child_process";
 import { loadSpots } from "../src/content/load.ts";
+import { illustrationFilename } from "../src/content/illustration.ts";
 
 async function main() {
   const [command, id, ...extra] = process.argv.slice(2);
@@ -34,8 +35,14 @@ async function main() {
     }
     try {
       await copyFile(original, draft, constants.COPYFILE_EXCL);
+      if (formal.find((spot) => spot.id === id)!.illustration)
+        await copyFile(
+          join("content/spots", id, illustrationFilename),
+          join(directory, illustrationFilename),
+          constants.COPYFILE_EXCL,
+        );
     } catch (error) {
-      await rmdir(directory);
+      await rm(directory, { recursive: true, force: true });
       throw error;
     }
     console.log(`已建立 ${draft}；正式內容未修改。`);
@@ -60,6 +67,11 @@ async function main() {
     if (result.status !== 0 && result.status !== 1)
       throw new Error("無法取得景點差異");
     if (result.status === 0) console.log("草稿與正式內容相同。 ");
+    const before =
+      formal.find((spot) => spot.id === id)!.illustration?.sha256 ?? "無";
+    const after =
+      drafts.find((spot) => spot.id === id)!.illustration?.sha256 ?? "無";
+    if (before !== after) console.log(`插畫 SHA256：${before} → ${after}`);
   }
 }
 main().catch((error) => {
