@@ -24,6 +24,7 @@ Status: open
 - [引用、轉述與著作權界線](issues/03-quotation-copyright-bounds.md)：每段約 50 字、每個來源最多兩段的上限維持不變，但引文只能用來佐證、不得引用清單或行程；不逐句換字改寫原文，非引文部分做 12 字重疊檢查；地圖只放 Google Maps URLs 與 OSM 連結，不嵌入。
 - [景點內容檔的格式](issues/04-spot-content-format.md)：採用單一 `spot.yaml`，敘述也寫在 YAML 裡，讓 schema 能擋下出處、引文與參照錯誤。id 用英文名或拼音，縣市以列舉值表示。官方事實分成 ok／unpublished／conflict 三種狀態，並以 ref 指向官方出處；「建議年齡」移出有／無清單，改成範圍欄位。
 - [carltravel-research 的研究與撰文流程](issues/05-research-skill-workflow.md)：一次只處理一個來源，在拆分景點後和送審時各停下一次等 Carl。讀取失敗時依序換工具，最後交給 Carl 決定。同一性依觀光署 ID、名稱、地址比對；官方資料查完三層才標「官方未公布」。補充已發布景點時，先複製成同 id 草稿。原文全文只存在本機。發布另由 `carltravel-publish` 處理。
+- [自動品質檢查與發布關卡](issues/06-quality-gates.md)：公開內容的結構、外洩與圖片檢查放進 CI，擋合入與部署；照抄比對、Carl 備註比對與草稿外洩比對只能在本機跑，由 `carltravel-publish` 在開 PR 前擋下。過期只警告，不設景點數量門檻，axe 涵蓋票 07 列出的每種頁面。
 
 ## Not yet specified
 

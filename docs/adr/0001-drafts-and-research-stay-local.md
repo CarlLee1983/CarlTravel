@@ -12,4 +12,6 @@ CarlTravel 的草稿放在 `drafts/`，研究紀錄（原文摘錄、Carl 的私
 
 研究紀錄包含原文全文（`research/<來源 id>/original.txt`），供 12 字重疊檢查與日後回查使用。全文只存在本機，不公開；它是個人研究用途的重製，與公開頁面上受票 03 限制的引用無關。
 
+因此，凡是必須讀到草稿或研究紀錄的檢查（12 字照抄比對、Carl 備註的重疊比對、未發布草稿的外洩比對），都只能在本機執行，由 `carltravel-publish` 在開 PR 前擋下，CI 只做公開內容的結構檢查（見票 06）。CarlKitchen 在 CI 外重新抓取來源網址做比對；CarlTravel 刻意不這麼做，因為那會讓檢查結果受來源網站封鎖或改版影響，也無法涵蓋 Carl 的備註。
+
 **Falsified if:** `.gitignore` 不再排除 `drafts/` 或 `research/`，或者需要多台機器、多人協作撰寫草稿。
