@@ -114,6 +114,43 @@ test("compact home shows its browsing scope beside the list on desktop and above
   }
 });
 
+for (const width of [390, 1024, 1200, 1366]) {
+  test(`cover action reaches keyboard-operable search with reduced motion at ${width}`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto("/");
+    const action = page.getByRole("link", { name: "瀏覽景點" });
+    await expect(action).toBeInViewport();
+    const actionBox = (await action.boundingBox())!;
+    const artwork = page.locator(".outing-art img");
+    await expect(artwork).toBeVisible();
+    await expect
+      .poll(() =>
+        artwork.evaluate((image: HTMLImageElement) => image.naturalWidth),
+      )
+      .toBe(1536);
+    const artBox = (await artwork.boundingBox())!;
+    expect(artBox.y + artBox.height).toBeLessThanOrEqual(actionBox.y);
+    const titleBox = (await page.locator(".outing-title").boundingBox())!;
+    if (width > 700)
+      expect(titleBox.x + titleBox.width).toBeLessThanOrEqual(artBox.x);
+    else expect(titleBox.y + titleBox.height).toBeLessThanOrEqual(artBox.y);
+    await action.focus();
+    await page.keyboard.press("Enter");
+    await expect(page.locator("#browse")).toBeFocused();
+    await page.keyboard.press("Tab");
+    await expect(
+      page.getByRole("searchbox", { name: "搜尋景點" }),
+    ).toBeFocused();
+    await expect(
+      page.getByRole("searchbox", { name: "搜尋景點" }),
+    ).toBeInViewport();
+    expect(await page.evaluate(() => document.getAnimations().length)).toBe(0);
+  });
+}
+
 for (const route of [
   "/",
   "/spots/example-park/",

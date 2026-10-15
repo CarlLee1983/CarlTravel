@@ -16,3 +16,6 @@ node_modules/
 graft/
 test-results/
 playwright-report/
+
+# Local visual design evidence and browser captures.
+.taste-skill/

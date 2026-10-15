@@ -1,6 +1,13 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { mkdtemp, mkdir, writeFile, rm, copyFile } from "node:fs/promises";
+import {
+  mkdtemp,
+  mkdir,
+  writeFile,
+  rm,
+  copyFile,
+  symlink,
+} from "node:fs/promises";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { checkOutput } from "../scripts/check-output.ts";
@@ -158,6 +165,43 @@ test("formal output rejects a missing or fixture-sized search index", async () =
     await assert.rejects(checkOutput(root, content), /ENOENT/);
     await writeSearchEntry(root);
     assert.equal(await checkOutput(root, content), 0);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("formal output allows only the reviewed site artwork at its exact path", async () => {
+  const root = await mkdtemp(join(tmpdir(), "carltravel-artwork-output-"));
+  const output = join(root, "dist");
+  const content = join(root, "content");
+  const original = "public/illustrations/family-outing.png";
+  const allowed = join(output, "illustrations/family-outing.png");
+  try {
+    await mkdir(content);
+    await mkdir(join(output, "illustrations"), { recursive: true });
+    await writeFile(
+      join(output, "index.html"),
+      "<html><main>首頁</main></html>",
+    );
+    await writeBasicPages(output);
+    await copyFile(original, allowed);
+    assert.equal(await checkOutput(output, content), 0);
+    for (const name of [
+      "extra.png",
+      "illustrations/renamed.png",
+      "nested/illustrations/family-outing.png",
+    ]) {
+      const target = join(output, name);
+      await mkdir(join(target, ".."), { recursive: true });
+      await copyFile(original, target);
+      await assert.rejects(checkOutput(output, content), /圖片/);
+      await rm(target);
+    }
+    await writeFile(allowed, "unreviewed replacement");
+    await assert.rejects(checkOutput(output, content), /圖片/);
+    await rm(allowed);
+    await symlink(join(process.cwd(), original), allowed);
+    await assert.rejects(checkOutput(output, content), /symbolic link/);
   } finally {
     await rm(root, { recursive: true, force: true });
   }

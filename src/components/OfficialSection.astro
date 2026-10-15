@@ -33,7 +33,7 @@ const reference = (id: string) => refs.find((r) => r.id === id)!;
               "官方未公布"
             ) : (
               <>
-                <p>官方資訊有衝突</p>
+                <p class="conflict">官方資訊有衝突</p>
                 <ul>
                   {fact.claims.map((claim) => (
                     <li>
@@ -54,14 +54,40 @@ const reference = (id: string) => refs.find((r) => r.id === id)!;
   </dl>
 </section>
 <style>
+  dl {
+    margin-block: 24px 0;
+  }
+  dl > div {
+    display: grid;
+    grid-template-columns: minmax(110px, 0.4fr) minmax(0, 1fr);
+    gap: 20px;
+    padding-block: 20px;
+    border-bottom: 1px solid var(--line);
+  }
   dt {
     font-weight: 600;
   }
   dd {
-    margin: 4px 0 20px;
+    margin: 0;
+    min-width: 0;
+    line-height: 1.85;
   }
   dl a {
-    display: inline-block;
+    display: block;
+    margin-top: 8px;
     font-size: 0.875rem;
+  }
+  .conflict {
+    margin-top: 0;
+    font-weight: 600;
+    background: var(--surface);
+    padding: 6px 10px;
+    border-radius: 6px;
+  }
+  @media (max-width: 600px) {
+    dl > div {
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
   }
 </style>

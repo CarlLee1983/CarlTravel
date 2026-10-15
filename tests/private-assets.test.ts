@@ -1,7 +1,16 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import { mkdir, writeFile, symlink, rm } from "node:fs/promises";
+import {
+  mkdir,
+  writeFile,
+  symlink,
+  rm,
+  copyFile,
+  mkdtemp,
+} from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { checkPublicAssets } from "../scripts/private-assets.ts";
 import { join } from "node:path";
 import { workspace } from "./helpers/workspace.ts";
 
@@ -39,3 +48,32 @@ test(
     }
   },
 );
+
+test("public artwork allowance requires approved bytes and exact path without symlinks", async () => {
+  const root = await mkdtemp(join(tmpdir(), "carltravel-artwork-"));
+  const original = "public/illustrations/family-outing.png";
+  const allowed = join(root, "illustrations/family-outing.png");
+  try {
+    await mkdir(join(root, "illustrations"));
+    await copyFile(original, allowed);
+    await checkPublicAssets(root);
+    for (const name of [
+      "extra.png",
+      "illustrations/renamed.png",
+      "nested/illustrations/family-outing.png",
+    ]) {
+      const target = join(root, name);
+      await mkdir(join(target, ".."), { recursive: true });
+      await copyFile(original, target);
+      await assert.rejects(checkPublicAssets(root), /圖片/);
+      await rm(target);
+    }
+    await writeFile(allowed, "unreviewed replacement");
+    await assert.rejects(checkPublicAssets(root), /圖片/);
+    await rm(allowed);
+    await symlink(join(process.cwd(), original), allowed);
+    await assert.rejects(checkPublicAssets(root), /符號連結/);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});

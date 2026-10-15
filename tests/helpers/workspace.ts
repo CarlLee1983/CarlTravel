@@ -7,6 +7,7 @@ export async function workspace() {
   const root = await mkdtemp(join(tmpdir(), "carltravel-preview-"));
   for (const path of [
     "src",
+    "public",
     "scripts",
     "astro.config.mjs",
     "package.json",

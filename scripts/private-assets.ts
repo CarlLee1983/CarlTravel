@@ -1,7 +1,11 @@
 import { lstat, readdir } from "node:fs/promises";
 import { join } from "node:path";
+import { isApprovedSiteAsset } from "./site-assets.ts";
 
-export async function checkPublicAssets(root: string): Promise<void> {
+export async function checkPublicAssets(
+  root: string,
+  base = root,
+): Promise<void> {
   try {
     const stat = await lstat(root);
     if (!stat.isDirectory())
@@ -18,9 +22,12 @@ export async function checkPublicAssets(root: string): Promise<void> {
     if (["drafts", "research"].includes(entry.name.toLowerCase()))
       throw new Error(`${path}: 私人目錄不得放入公開資產`);
     if (
-      /\.(?:avif|bmp|gif|heic|ico|jpe?g|png|svg|tiff?|webp)$/i.test(entry.name)
+      /\.(?:avif|bmp|gif|heic|ico|jpe?g|png|svg|tiff?|webp)$/i.test(
+        entry.name,
+      ) &&
+      !(entry.isFile() && (await isApprovedSiteAsset(base, path)))
     )
       throw new Error(`${path}: 公開資產不得包含景點圖片`);
-    if (entry.isDirectory()) await checkPublicAssets(path);
+    if (entry.isDirectory()) await checkPublicAssets(path, base);
   }
 }

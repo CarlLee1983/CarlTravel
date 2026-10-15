@@ -18,6 +18,7 @@ let request = 0;
 let timer: number | undefined;
 
 function showResults(matches: Set<string> | null) {
+  status.dataset.state = "ready";
   let visible = 0;
   for (const card of cards) {
     const accepted =
@@ -48,6 +49,7 @@ function update(delay = 0) {
   }
   // Keep the list usable during loading or errors, without claiming it matches the query.
   showResults(null);
+  status.dataset.state = "loading";
   status.textContent = "搜尋中…";
   timer = window.setTimeout(async () => {
     try {
@@ -63,6 +65,7 @@ function update(delay = 0) {
       if (current !== request) return;
       index = undefined;
       showResults(null);
+      status.dataset.state = "error";
       status.textContent =
         "搜尋暫時無法使用，已顯示符合篩選的景點。可清除條件或稍後重試。";
     }
@@ -79,9 +82,11 @@ input.addEventListener("input", (event) => {
 input.addEventListener("compositionend", () => update(200));
 for (const select of selects) select.addEventListener("change", () => update());
 form.addEventListener("reset", () => {
+  const recoverFocus = empty.contains(document.activeElement);
   input.value = "";
   for (const select of selects) select.value = "";
   update();
+  if (recoverFocus) input.focus();
 });
 form.querySelector<HTMLFieldSetElement>("fieldset")!.disabled = false;
 document.querySelector<HTMLElement>("#search-help")!.hidden = true;

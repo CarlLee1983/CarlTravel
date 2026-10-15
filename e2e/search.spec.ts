@@ -151,6 +151,10 @@ test("clearing an in-flight search prevents its late result from replacing the c
   await page.getByRole("searchbox").fill("summaryprobe");
   await page.getByRole("searchbox").press("Enter");
   await requested;
+  await expect(page.getByRole("status")).toHaveAttribute(
+    "data-state",
+    "loading",
+  );
   await page.getByRole("button", { name: "清除條件" }).click();
   await page.getByLabel("縣市", { exact: true }).selectOption("臺北市");
   const completed = page.waitForResponse(
@@ -177,6 +181,7 @@ test("search failure preserves browsing and clearing restores normal filtering",
   await page.getByRole("searchbox").fill("summaryprobe");
   await page.getByRole("searchbox").press("Enter");
   await expect(page.getByRole("status")).toContainText("搜尋暫時無法使用");
+  await expect(page.getByRole("status")).toHaveAttribute("data-state", "error");
   await expect(
     page
       .getByRole("region", { name: /景點列表/ })
@@ -239,3 +244,21 @@ for (const width of [360, 390, 430, 1366, 1920]) {
     ).toBe(true);
   });
 }
+
+test("empty-results recovery resets query and filters together", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.getByLabel("縣市", { exact: true }).selectOption("新北市");
+  await page.getByLabel("類型", { exact: true }).selectOption("公園");
+  const recovery = page.getByRole("button", { name: "重新瀏覽全部景點" });
+  await expect(recovery).toBeVisible();
+  await recovery.focus();
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("searchbox")).toBeFocused();
+  await expect(page.getByRole("status")).toHaveText("找到 2 個景點。");
+  await expect(page.getByRole("status")).toHaveAttribute("data-state", "ready");
+  await expect(page.getByLabel("縣市", { exact: true })).toHaveValue("");
+  await expect(page.getByLabel("類型", { exact: true })).toHaveValue("");
+  await expect(recovery).toBeHidden();
+});

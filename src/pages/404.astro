@@ -3,13 +3,103 @@ import Layout from "../layouts/Layout.astro";
 ---
 
 <Layout title="找不到這個頁面" noindex>
-  <div class="prose">
-    <p class="eyebrow">404 · 頁面不存在</p>
-    <h1>這條路，還沒有筆記。</h1>
-    <p>
-      網址可能有誤，或頁面已不存在。可以回到景點索引，繼續找下一處想去的地方。
-    </p>
-    <p><a href="/">回到景點索引</a></p>
-    <p><a href="/about/">認識 CarlTravel</a></p>
-  </div>
+  <section class="not-found" aria-labelledby="not-found-title">
+    <div class="not-found-copy">
+      <p class="eyebrow">404 · 頁面不存在</p>
+      <h1 id="not-found-title">這條路，<br />還沒有筆記。</h1>
+      <p class="description">
+        網址可能有誤，或頁面已不存在。可以回到景點索引，繼續找下一處想去的地方。
+      </p>
+      <nav class="next-steps" aria-label="接下來可以前往">
+        <a class="home-link" href="/">回到景點索引</a>
+        <a class="about-link" href="/about/">認識 CarlTravel</a>
+      </nav>
+    </div>
+    <img
+      src="/illustrations/family-outing.png"
+      alt="一家三口走在山間步道，遠處有列車經過"
+      width="1536"
+      height="1024"
+    />
+  </section>
 </Layout>
+<style>
+  .not-found {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.95fr);
+    align-items: center;
+    gap: clamp(2rem, 5vw, 5rem);
+    max-width: 76rem;
+    min-height: min(65vh, 42rem);
+    margin: 0 auto;
+    padding-block: clamp(1rem, 4vw, 3rem);
+  }
+  .not-found-copy {
+    position: relative;
+    z-index: 1;
+  }
+  .eyebrow {
+    margin: 0 0 1.25rem;
+    color: var(--ground);
+    font-size: 0.85rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+  }
+  h1 {
+    max-width: none;
+    margin-bottom: 1.5rem;
+  }
+  .description {
+    max-width: 31ch;
+    margin: 0;
+    font-size: clamp(1.05rem, 1.5vw, 1.25rem);
+    line-height: 1.8;
+  }
+  .next-steps {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1.5rem;
+    margin-top: 2rem;
+  }
+  .next-steps a {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    font-weight: 700;
+  }
+  .home-link {
+    padding: 0.65rem 1.25rem;
+    border-radius: 0.75rem;
+    color: var(--paper);
+    background: var(--ground);
+    text-decoration: none;
+  }
+  .home-link:focus-visible {
+    outline-color: var(--ground);
+  }
+  .home-link:hover {
+    background: var(--ink);
+  }
+  .about-link {
+    color: var(--ground);
+  }
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 1.25rem;
+  }
+  @media (max-width: 760px) {
+    .not-found {
+      grid-template-columns: 1fr;
+      min-height: auto;
+      gap: 2rem;
+    }
+    img {
+      max-height: 18rem;
+      object-fit: cover;
+      object-position: center 55%;
+    }
+  }
+</style>

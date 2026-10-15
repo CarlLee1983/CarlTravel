@@ -1,3 +1,4 @@
+import { isApprovedSiteAsset } from "./site-assets.ts";
 import type { Dirent } from "node:fs";
 import { readdir, readFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
@@ -75,14 +76,15 @@ export async function checkOutput(
   async function checkHtml(dir: string): Promise<void> {
     for (const entry of await readdir(dir, { withFileTypes: true })) {
       const path = join(dir, entry.name);
+      if (entry.isSymbolicLink())
+        throw new Error(`${path}: symbolic link in formal output`);
       if (
         /\.(?:avif|bmp|gif|heic|ico|jpe?g|png|svg|tiff?|webp)$/i.test(
           entry.name,
-        )
+        ) &&
+        !(entry.isFile() && (await isApprovedSiteAsset(output, path)))
       )
         throw new Error(`${path}: 正式輸出不得包含景點圖片資產`);
-      if (entry.isSymbolicLink())
-        throw new Error(`${path}: symbolic link in formal output`);
       if (entry.isDirectory()) await checkHtml(path);
       else if (entry.isFile() && entry.name.endsWith(".html")) {
         const html = await readFile(path, "utf8");

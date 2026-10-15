@@ -36,29 +36,26 @@ const filters = [
 ---
 
 <Layout title="找一處，一起出發">
-  <div class="browse-layout">
-    <div class="browse-rail">
-      <p class="eyebrow">探索台灣 · 和孩子一起</p>
-      <h1>找一處，<br />一起出發。</h1>
+  <section class="cover" aria-label="台灣親子出遊筆記">
+    <h1 class="outing-title">找一處，<br />一起出發。</h1>
+    <div class="cover-intro">
+      <figure class="outing-art">
+        <img
+          src="/illustrations/family-outing.png"
+          width="1536"
+          height="1024"
+          alt="親子沿步道散步、觀察蝴蝶，背景有小火車與山林的出遊情境插畫"
+          fetchpriority="high"
+        />
+      </figure>
       <p>整理台灣親子景點，讓出遊前的準備更清楚。</p>
-      <p>Agent 研究查證、整理草稿，經 Carl 審閱後公開。</p>
-      <ul class="information-types">
-        <li>
-          <span class="info-label official">官方資訊</span><p>
-            事實附官方出處與查證日期。
-          </p>
-        </li>
-        <li>
-          <span class="info-label author">原作者心得</span><p>
-            轉述造訪觀點，連回完整原文。
-          </p>
-        </li>
-        <li>
-          <span class="info-label agent">Agent 建議</span><p>
-            提供規劃參考，與事實分開。
-          </p>
-        </li>
-      </ul>
+      <a class="primary-action" href="#browse"
+        >瀏覽景點 <span aria-hidden="true">↗</span></a
+      >
+    </div>
+  </section>
+  <div class="browse-layout" id="browse" tabindex="-1">
+    <div class="browse-rail">
       <aside aria-labelledby="browse-heading" class="browse-tools">
         <h2 id="browse-heading">搜尋與篩選</h2>
         <form id="spot-search" role="search" aria-label="景點搜尋與篩選">
@@ -105,13 +102,19 @@ const filters = [
       </div>
       <p id="search-status" role="status" aria-live="polite" aria-atomic="true">
       </p>
-      <p id="no-results" class="empty" hidden>
-        沒有符合條件的景點，請調整搜尋文字或清除條件。
-      </p>
+      <div id="no-results" class="empty" hidden>
+        <h3>換個條件，再找找。</h3>
+        <p>沒有符合條件的景點，請調整搜尋文字或清除條件。</p>
+        <button type="reset" form="spot-search">重新瀏覽全部景點</button>
+      </div>
       {
         spots.length === 0 ? (
           <div class="empty">
+            <h3>下一次出發，從這裡開始。</h3>
             <p>目前尚無公開景點，待內容完成查證與審閱後陸續加入。</p>
+            <a href="/about/">
+              了解景點如何整理 <span aria-hidden="true">↗</span>
+            </a>
           </div>
         ) : (
           <ul class="spots">
@@ -126,7 +129,10 @@ const filters = [
                 <article>
                   <div>
                     <h3>
-                      <a href={`/spots/${spot.id}/`}>{spot.name}</a>
+                      <a href={`/spots/${spot.id}/`}>
+                        {spot.name}
+                        <span class="spot-arrow" aria-hidden="true" />
+                      </a>
                     </h3>
                     {spot.preview && (
                       <p class="preview-label">{spot.preview} · 尚未發布</p>
@@ -148,61 +154,169 @@ const filters = [
       }
     </section>
   </div>
+  <section class="reading-note" aria-labelledby="reading-heading">
+    <div>
+      <h2 id="reading-heading">出發之前，<br />讀得清楚。</h2>
+      <p>Agent 研究查證、整理草稿，經 Carl 審閱後公開。</p>
+      <a href="/about/">認識本站的整理方式</a>
+    </div>
+    <dl class="information-types">
+      <div><dt>官方資訊</dt><dd>事實附官方出處與查證日期。</dd></div>
+      <div><dt>原作者心得</dt><dd>轉述造訪觀點，連回完整原文。</dd></div>
+      <div><dt>Agent 建議</dt><dd>提供規劃參考，與事實分開。</dd></div>
+    </dl>
+  </section>
 </Layout>
 <script>
   import "../browser/search.ts";
 </script>
 <style>
+  :global(main:has(.cover)) {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  .cover {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    gap: 32px;
+    min-height: 430px;
+    margin: 0 calc(-1 * var(--gutter));
+    padding: 40px max(var(--gutter), calc((100% - 1360px) / 2 + var(--gutter)))
+      48px;
+    background: var(--cover);
+    color: var(--ground);
+  }
+  .outing-title {
+    margin: 0;
+    font-size: clamp(48px, 7vw, 104px);
+    line-height: 1.18;
+  }
+  .outing-art {
+    margin: 0 0 20px;
+    width: 100%;
+  }
+  .outing-art img {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 340px;
+    object-fit: contain;
+  }
+  .cover-intro > p {
+    font-size: 18px;
+    line-height: 1.7;
+    max-width: 22em;
+    margin: 0 0 20px;
+  }
+  .primary-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 36px;
+    min-height: 48px;
+    padding: 12px 20px;
+    background: var(--ground);
+    color: var(--paper);
+    border-radius: 999px;
+    text-decoration: none;
+  }
+  .primary-action:focus-visible {
+    outline-color: var(--ground);
+  }
+  button:focus-visible {
+    outline-color: var(--ink);
+  }
+  .browse-layout {
+    max-width: 1360px;
+    margin-inline: auto;
+    display: grid;
+    grid-template-columns: minmax(280px, 0.72fr) minmax(0, 2fr);
+    gap: clamp(32px, 4vw, 64px);
+    padding-block: 80px;
+    scroll-margin-top: 24px;
+  }
+  .browse-rail {
+    min-width: 0;
+  }
+  .browse-tools {
+    padding: 24px;
+    border: 1px solid var(--line);
+    border-radius: 20px;
+  }
+  .browse-tools h2 {
+    margin: 0 0 24px;
+    font-size: 24px;
+  }
   fieldset {
     border: 0;
     padding: 0;
-    margin: 16px 0 0;
+    margin: 0;
     min-width: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  fieldset > label,
+  fieldset > input,
+  .search-actions {
+    grid-column: 1 / -1;
   }
   label {
     display: block;
-    font-size: 0.875rem;
-    font-weight: 600;
-    margin-top: 12px;
+    font-size: 16px;
+    margin-bottom: 6px;
+    font-weight: 500;
+  }
+  fieldset > label {
+    margin-bottom: -8px;
   }
   input,
   select,
   button {
     font: inherit;
-    font-size: 1rem;
+    font-size: 16px;
   }
   input,
   select {
     width: 100%;
     min-width: 0;
-    min-height: 44px;
-    border: 1px solid #7a8e96;
-    border-radius: 3px;
-    padding: 8px;
-    background: #fff;
-    color: #213039;
+    min-height: 48px;
+    border: 1px solid #7b98a8;
+    border-radius: 10px;
+    padding: 10px;
+    background: var(--paper);
+    color: var(--ink);
   }
   .search-actions {
     display: flex;
-    gap: 8px;
+    gap: 12px;
     flex-wrap: wrap;
-    margin-top: 20px;
+    margin-top: 8px;
   }
   button {
-    min-height: 44px;
-    padding: 8px 14px;
-    border: 1px solid #153849;
-    border-radius: 3px;
-    background: #fff;
-    color: #153849;
+    min-height: 48px;
+    padding: 10px 20px;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--ink);
+    text-decoration: underline;
+    text-underline-offset: 4px;
     cursor: pointer;
   }
   button[type="submit"] {
-    background: #153849;
-    color: #fff;
+    background: var(--ground);
+    color: var(--paper);
+    text-decoration: none;
   }
   button:disabled {
     cursor: default;
+  }
+  #search-help {
+    font-size: 14px;
+    color: var(--muted);
+    margin-top: 20px;
   }
   .sr-only {
     position: absolute;
@@ -214,57 +328,8 @@ const filters = [
     clip-path: inset(50%);
     white-space: nowrap;
   }
-  #search-status {
-    font-size: 0.875rem;
-  }
   [hidden] {
     display: none !important;
-  }
-  .browse-layout {
-    display: grid;
-    grid-template-columns: 280px minmax(0, 1fr);
-    gap: 24px;
-    align-items: start;
-  }
-  .browse-rail {
-    background: #fff;
-    border: 1px solid #ccd3d2;
-    padding: 24px;
-  }
-  .browse-rail h1 {
-    font-size: 2rem;
-    margin-bottom: 20px;
-  }
-  .browse-rail > p {
-    font-size: 0.9rem;
-  }
-  .information-types {
-    list-style: none;
-    padding: 0;
-    margin-block: 24px;
-  }
-  .information-types li {
-    margin-block: 10px;
-    font-size: 0.8rem;
-  }
-  .information-types .info-label {
-    margin-right: 6px;
-  }
-  .information-types p {
-    display: inline;
-    margin: 0;
-    font-size: inherit;
-  }
-  .browse-tools {
-    border-top: 1px solid #ccd3d2;
-    padding-top: 16px;
-  }
-  .browse-tools h2 {
-    margin: 0;
-    font-size: 1.25rem;
-  }
-  .browse-tools p {
-    font-size: 0.85rem;
   }
   .results {
     min-width: 0;
@@ -276,80 +341,233 @@ const filters = [
     align-items: baseline;
     justify-content: space-between;
     flex-wrap: wrap;
-    margin-bottom: 16px;
   }
-  .results-heading h2,
+  .results-heading h2 {
+    margin: 0;
+    font-size: 36px;
+  }
   .results-heading p {
     margin: 0;
-  }
-  .results-heading p {
-    font-size: 0.8rem;
+    font-size: 14px;
   }
   .results-heading span {
-    font-family: system-ui, sans-serif;
-    font-size: 1rem;
-    margin-left: 8px;
+    font-size: 16px;
+    margin-left: 12px;
+    display: inline-grid;
+    place-items: center;
+    min-width: 36px;
+    min-height: 36px;
+    padding: 4px 10px;
+    border-radius: 50%;
+    background: var(--paper-deep);
+  }
+  #search-status {
+    margin: 16px 0 24px;
+    min-height: 28px;
+    font-size: 15px;
+    color: var(--muted);
+  }
+  #search-status[data-state="loading"] {
+    font-weight: 600;
+    color: var(--ground);
+  }
+  #search-status[data-state="error"] {
+    padding: 12px 16px;
+    background: var(--surface);
+    border-left: 3px solid var(--ground);
+    border-radius: 0 8px 8px 0;
+    color: var(--ink);
   }
   .spots {
     list-style: none;
     margin: 0;
     padding: 0;
-    background: #fff;
-    border: 1px solid #ccd3d2;
+  }
+  .spots li {
+    padding: 28px;
+    border-radius: 20px 20px 20px 6px;
+    background: var(--paper-deep);
   }
   .spots li + li {
-    border-top: 1px solid #ccd3d2;
+    margin-top: 16px;
+  }
+  .spots li:nth-child(even) {
+    background: var(--surface);
   }
   .spots article {
     display: grid;
-    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) minmax(0, 0.65fr);
-    gap: 20px;
-    padding: 20px;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    gap: 24px;
     align-items: start;
   }
   .spots p {
-    font-size: 0.875rem;
+    font-size: 16px;
     margin: 0;
   }
   .spots h3 {
-    font-size: 1.25rem;
-    margin: 0 0 6px;
+    font-size: 24px;
+    margin: 0 0 12px;
+  }
+  .spots h3 a {
+    text-decoration: none;
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .spot-arrow::after {
+    content: "↗";
+  }
+  .spot-arrow {
+    font-size: 20px;
+    font-weight: 500;
+  }
+  .spots h3 a:hover {
+    text-decoration: underline;
   }
   .spot-details {
-    text-align: right;
+    grid-column: 1 / -1;
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
   }
   .empty {
-    background: #fff;
-    border: 1px solid #ccd3d2;
-    padding: 24px;
+    background: var(--paper-deep);
+    border-radius: 20px;
+    padding: clamp(24px, 4vw, 56px);
+  }
+  .empty h3 {
+    margin: 0 0 16px;
+  }
+  .empty a,
+  .empty button {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    margin-top: 20px;
   }
   .empty p {
     margin: 0;
   }
-  @media (max-width: 1100px) {
-    .spots article {
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  .reading-note {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: clamp(32px, 4vw, 64px);
+    background: var(--surface);
+    margin: 0 calc(-1 * var(--gutter));
+    padding: 64px max(var(--gutter), calc((100% - 1360px) / 2 + var(--gutter)));
+  }
+  .reading-note h2 {
+    margin: 0 0 24px;
+    font-size: 36px;
+  }
+  .information-types {
+    margin: 0;
+  }
+  .information-types > div {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 24px;
+    padding-block: 24px;
+    border-bottom: 1px solid #bfb3d4;
+  }
+  .information-types dt {
+    font-size: 24px;
+    font-family: var(--font-display);
+    font-weight: 700;
+  }
+  .information-types dd {
+    margin: 0;
+    align-self: center;
+  }
+  @media (hover: hover) {
+    .primary-action:hover,
+    button[type="submit"]:hover {
+      background: var(--ink);
+      text-decoration: none;
     }
-    .spot-details {
-      text-align: left;
-      grid-column: 1 / -1;
-      display: flex;
-      gap: 16px;
-      flex-wrap: wrap;
+    button[type="reset"]:hover {
+      background: var(--paper-deep);
+    }
+    input:hover,
+    select:hover {
+      border-color: var(--ground);
+    }
+    .spots li:hover .spot-arrow {
+      transform: translate(2px, -2px);
+    }
+  }
+  .spot-arrow {
+    transition: transform 180ms var(--ease-out);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .spot-arrow {
+      transition: none;
+    }
+    .spots li:hover .spot-arrow {
+      transform: none;
     }
   }
   @media (max-width: 900px) {
     .browse-layout {
-      grid-template-columns: minmax(0, 1fr);
+      max-width: 1360px;
+      margin-inline: auto;
+      grid-template-columns: 1fr;
+      gap: 48px;
+      padding-block: 48px;
     }
-    .browse-rail h1 br {
+    fieldset {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+    .reading-note {
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+    .reading-note h2 br {
       display: none;
     }
   }
   @media (max-width: 600px) {
+    .browse-tools {
+      padding: 20px;
+    }
+    fieldset {
+      grid-template-columns: 1fr 1fr;
+    }
+    .spots li {
+      padding: 24px 20px;
+    }
     .spots article {
-      grid-template-columns: minmax(0, 1fr);
-      gap: 10px;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+    .information-types > div {
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+    .reading-note {
+      padding-block: 40px;
+    }
+    .reading-note h2 {
+      font-size: 24px;
+    }
+  }
+  @media (max-width: 700px) {
+    .cover {
+      grid-template-columns: 1fr;
+      gap: 16px;
+      padding-block: 32px;
+    }
+    .outing-title {
+      font-size: 40px;
+    }
+    .outing-art {
+      margin-bottom: 16px;
+    }
+    .outing-art img {
+      max-height: 260px;
     }
   }
 </style>

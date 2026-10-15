@@ -1,4 +1,5 @@
 ---
+import { siteUrl } from "../site.ts";
 import { contentMode } from "../content/mode.ts";
 interface Props {
   title: string;
@@ -26,6 +27,24 @@ const preview = __CARLTRAVEL_DRAFT_PREVIEW__;
     <link
       rel="license"
       href="https://creativecommons.org/licenses/by-nc/4.0/"
+    />
+    <meta name="theme-color" content="#dff2ff" />
+    <meta property="og:title" content={`${title} · CarlTravel`} />
+    <meta
+      property="og:description"
+      content="整理台灣親子景點，讓出遊前的準備更清楚。"
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="zh_TW" />
+    <meta
+      property="og:image"
+      content={`${siteUrl}/illustrations/family-outing.png`}
+    />
+    <meta property="og:image:alt" content="親子沿步道散步的出遊情境插畫" />
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23dff2ff'/%3E%3Cpath d='M16 46h19c17 0 17-15 2-15H26c-13 0-13-14 2-14h18' fill='none' stroke='%23155979' stroke-width='6' stroke-linecap='round'/%3E%3Ccircle cx='46' cy='17' r='5' fill='%23155979'/%3E%3C/svg%3E"
     />
     <title>{title} · CarlTravel</title>
   </head>
@@ -61,25 +80,48 @@ const preview = __CARLTRAVEL_DRAFT_PREVIEW__;
       )
     }
     <main id="main"><slot /></main>
-    <footer>
-      <p>
-        出發前，請再確認官方公告。查證日期不代表資訊的有效期限。<a
-          href="/about/#disclaimer">完整免責聲明</a
-        >
-      </p>
-      <p>
-        本站撰寫的景點內容採 <a href="/about/#license">CC BY-NC 4.0</a
-        >，引文與官方資料除外。
-      </p>
+    <footer class="site-footer">
+      <div class="footer-copy">
+        <p>
+          出發前，請再確認官方公告。查證日期不代表資訊的有效期限。<a
+            href="/about/#disclaimer">完整免責聲明</a
+          >
+        </p>
+        <p>
+          本站撰寫的景點內容採 <a href="/about/#license">CC BY-NC 4.0</a
+          >，引文與官方資料除外。
+        </p>
+      </div>
+      <a class="footer-signature" href="/" aria-label="CarlTravel 首頁"
+        >台灣親子出遊筆記</a
+      >
     </footer>
   </body>
 </html>
+<script>
+  import "../browser/motion.ts";
+</script>
 <style is:global>
   :root {
-    font-family: system-ui, sans-serif;
-    color: #213039;
-    background: #e8ebeb;
-    line-height: 1.8;
+    --ground: #155979;
+    --cover: #dff2ff;
+    --surface: #e8e1f5;
+    --paper: #ffffff;
+    --paper-deep: #eaf5fa;
+    --ink: #183e51;
+    --accent: #e8e1f5;
+    --muted: #496472;
+    --font-body:
+      "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif;
+    --font-display:
+      ui-rounded, "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
+    --line: #c5d8e2;
+    --gutter: clamp(20px, 3vw, 48px);
+    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+    font-family: var(--font-body);
+    color: var(--ink);
+    background: var(--ground);
+    line-height: 1.7;
     font-synthesis: none;
   }
   * {
@@ -89,21 +131,20 @@ const preview = __CARLTRAVEL_DRAFT_PREVIEW__;
     margin: 0;
   }
   a {
-    color: #245b70;
-    text-underline-offset: 0.2em;
+    color: inherit;
+    text-underline-offset: 0.25em;
     overflow-wrap: anywhere;
   }
-  a:focus-visible {
-    outline: 3px solid #9a651b;
+  :focus-visible {
+    outline: 3px solid currentColor;
     outline-offset: 5px;
   }
-  header,
+  .site-header,
   main,
-  footer,
+  .site-footer,
   .fixture {
-    max-width: 1440px;
-    margin: auto;
-    padding: 24px;
+    margin-inline: auto;
+    padding-inline: max(var(--gutter), calc((100% - 1360px) / 2));
   }
   .site-header {
     display: flex;
@@ -111,80 +152,111 @@ const preview = __CARLTRAVEL_DRAFT_PREVIEW__;
     align-items: center;
     gap: 16px;
     flex-wrap: wrap;
-    background: #153849;
-    color: #fff;
-    padding-block: 18px;
-  }
-  .site-header a {
-    color: inherit;
+    color: var(--ground);
+    background: var(--paper);
+    padding-block: 24px;
   }
   .site-header nav {
     display: flex;
-    gap: 24px;
+    gap: 12px;
+  }
+  .site-header nav a {
+    min-height: 44px;
+    padding: 8px 14px;
+    border-radius: 12px;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
   }
   .site-header [aria-current="page"] {
-    text-decoration-thickness: 3px;
-  }
-  :focus-visible {
-    outline: 3px solid #9a651b;
-    outline-offset: 4px;
-  }
-  .site-header a:focus-visible {
-    outline-color: #ffdf96;
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    background: var(--paper-deep);
   }
   .brand {
-    font-weight: 700;
+    font-weight: 600;
     text-decoration: none;
-    font-size: 1.35rem;
+    font-size: 18px;
+    letter-spacing: -0.02em;
   }
   .brand span {
-    font-size: 0.8rem;
+    font-size: 16px;
     font-weight: 400;
-    margin-left: 1rem;
+    letter-spacing: 0;
+    margin-left: 24px;
     display: inline-block;
   }
   main {
+    padding-inline: var(--gutter);
     min-height: 60vh;
-    padding-block: 32px;
+    padding-block: 48px 96px;
+    background: var(--paper);
+    overflow-wrap: anywhere;
   }
   h1,
   h2,
   h3 {
-    font-weight: 600;
-    font-family: "Songti TC", "PMingLiU", "Noto Serif TC", serif;
-    line-height: 1.4;
+    font-weight: 800;
+    font-family: var(--font-display);
+    line-height: 1.2;
+    text-wrap: balance;
   }
   h1 {
-    font-size: clamp(2rem, 4vw, 3.2rem);
-    margin: 0 0 24px;
+    font-size: clamp(32px, 4.6vw, 64px);
+    margin: 0 0 32px;
+    letter-spacing: -0.04em;
   }
   h2 {
-    font-size: 1.5rem;
+    font-size: clamp(26px, 2.5vw, 36px);
+  }
+  h3 {
+    font-size: 24px;
   }
   p {
     max-width: 65ch;
+    text-wrap: pretty;
   }
-  footer {
-    border-top: 1px solid #cbd4d5;
-    font-size: 0.875rem;
+  .site-footer {
+    color: var(--paper);
+    padding-top: 48px;
+    padding-bottom: 40px;
+  }
+  .footer-copy {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+  }
+  .footer-copy p {
+    max-width: 44ch;
+    margin: 0;
+  }
+  .footer-signature {
+    display: block;
+    font-size: 18px;
+    text-decoration: none;
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid #79a0b2;
+    min-height: 44px;
   }
   .fixture {
-    background: #f5e9ca;
-    color: #5b4216;
+    background: var(--paper-deep);
+    color: var(--ground);
     padding-block: 12px;
   }
   .preview-label {
-    color: #5b4216;
-    background: #f5e9ca;
-    padding: 4px 8px;
-    font-weight: 600;
+    color: var(--ground);
+    background: var(--accent);
+    padding: 8px 12px;
+    font-weight: 800;
   }
-  .eyebrow {
-    font-size: 0.85rem;
-    letter-spacing: 0.12em;
+  time,
+  #result-count {
+    font-variant-numeric: tabular-nums;
   }
   .meta {
-    color: #52636c;
+    color: var(--muted);
   }
   .skip {
     position: absolute;
@@ -192,59 +264,133 @@ const preview = __CARLTRAVEL_DRAFT_PREVIEW__;
     top: -80px;
     z-index: 2;
     padding: 10px;
-    background: white;
+    background: var(--paper);
   }
   .skip:focus {
     top: 8px;
   }
   section {
-    margin-top: 32px;
+    margin-top: 48px;
   }
   h2[id],
   section[id] {
     scroll-margin-top: 24px;
   }
-  main {
-    overflow-wrap: anywhere;
-  }
   .prose {
-    max-width: 800px;
+    max-width: 960px;
     margin-inline: auto;
-    padding: clamp(20px, 4vw, 40px);
-    background: #fff;
-    border: 1px solid #ccd3d2;
+    padding: clamp(0px, 3vw, 40px);
   }
   .prose > :first-child {
     margin-top: 0;
   }
+  .prose section {
+    margin-top: 72px;
+  }
   .info-label {
     display: inline-block;
-    padding: 2px 8px;
-    border-left: 3px solid;
-    font-size: 0.8rem;
+    padding: 4px 10px;
+    font-size: 16px;
     font-weight: 600;
+    border-radius: 6px;
   }
   .official {
-    color: #165a55;
-    background: #e8f4ee;
+    color: var(--ground);
+    background: var(--paper-deep);
   }
   .author {
-    color: #855333;
-    background: #fbf0e7;
+    color: var(--ground);
+    background: var(--accent);
   }
   .agent {
-    color: #4a5689;
-    background: #eaeef9;
+    color: var(--ground);
+    background: var(--surface);
+  }
+  a,
+  button {
+    transition:
+      transform 180ms var(--ease-out),
+      background-color 180ms ease,
+      color 180ms ease;
+  }
+  a:active,
+  button:active {
+    transform: translateY(2px);
+  }
+  @media (hover: hover) {
+    .site-header nav a:hover {
+      background: var(--paper-deep);
+    }
+    a:hover {
+      text-decoration: underline;
+    }
   }
   @media (max-width: 600px) {
-    header,
-    main,
-    footer,
-    .fixture {
-      padding-inline: 20px;
+    .site-header {
+      padding-block: 16px;
+      gap: 4px;
+    }
+    .brand span {
+      display: block;
+      margin-left: 0;
+      font-size: 14px;
+    }
+    .site-header nav {
+      gap: 4px;
+    }
+    .site-header nav a {
+      padding-inline: 10px;
     }
     main {
-      padding-block: 32px;
+      padding-block: 32px 64px;
+    }
+    .footer-copy {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+    .prose h1 {
+      font-size: 32px;
+    }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .arrive {
+      animation: enter 700ms var(--ease-out) both;
+    }
+    .arrive:nth-child(2) {
+      animation-delay: 70ms;
+    }
+    .arrive:nth-child(3) {
+      animation-delay: 140ms;
+    }
+    .spots li.arrive,
+    .information-types > div.arrive {
+      animation-name: enter-row;
+    }
+    @keyframes enter {
+      from {
+        transform: translateY(20px);
+      }
+      to {
+        transform: none;
+      }
+    }
+    @keyframes enter-row {
+      from {
+        transform: translateX(16px);
+      }
+      to {
+        transform: none;
+      }
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    a,
+    button {
+      transition: none;
+    }
+    a:active,
+    button:active {
+      transform: none;
     }
   }
 </style>
