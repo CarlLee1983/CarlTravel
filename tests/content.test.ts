@@ -111,3 +111,26 @@ test("official age range requires citation and preserves open upper bound", asyn
     assert.equal(ageLabel((await loadSpots(root))[0]!.ageRange), "3 歲以上"),
   );
 });
+
+test("loaded list orders counties north to south and names within a county", async () => {
+  const root = await mkdtemp(join(tmpdir(), "carltravel-order-"));
+  try {
+    for (const [id, county, district, name] of [
+      ["a-south", "高雄市", "鼓山區", "一號園"],
+      ["b-north-second", "臺北市", "中正區", "二號園"],
+      ["c-north-first", "臺北市", "中正區", "一號園"],
+    ]) {
+      await mkdir(join(root, id!));
+      await writeFile(
+        join(root, id!, "spot.yaml"),
+        stringify({ ...fixture, county, district, name }),
+      );
+    }
+    assert.deepEqual(
+      (await loadSpots(root)).map((spot) => spot.id),
+      ["c-north-first", "b-north-second", "a-south"],
+    );
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});

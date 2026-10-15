@@ -1,0 +1,96 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="關於本站">
+  <article class="prose">
+    <p class="eyebrow">關於 CarlTravel</p>
+    <h1>讓出遊前的準備，更清楚。</h1>
+    <p>
+      CarlTravel 是個人、非營利的台灣親子旅遊知識網站。從旅遊來源出發，由 Agent
+      研究官方出處、整理草稿，再經 Carl 審閱後公開。
+    </p>
+    <section aria-labelledby="information">
+      <h2 id="information">三種資訊，分開閱讀</h2>
+      <dl>
+        <dt><span class="info-label official">官方資訊</span></dt>
+        <dd>
+          開放時間、費用、交通與設施等事實，逐條附上官方出處，各分節標示查證日期。
+        </dd>
+        <dt><span class="info-label author">原作者心得</span></dt>
+        <dd>
+          整理原作者的造訪觀點，附作者與來源連結。想讀完整分享，請前往原文。
+        </dd>
+        <dt><span class="info-label agent">Agent 建議</span></dt>
+        <dd>
+          依已知資料提出的出遊與觀察建議，不代表官方承諾，也不是 Carl
+          的親身心得。
+        </dd>
+      </dl>
+    </section>
+    <section aria-labelledby="disclaimer">
+      <h2 id="disclaimer" tabindex="-1">使用資訊前，請再確認</h2>
+      <p>
+        實際資訊以景點經營者或主管機關的官方公告為準。出發前，請再次確認開放時間、費用、交通及設施；遇到不同說法，請直接聯絡景點確認。
+      </p>
+      <p>
+        查證日期記錄 Agent
+        當時查閱與核對資訊的時間，不是資訊的有效期限，也不保證往後維持不變。超過十二個月的資訊會顯示「資料可能過期」。
+      </p>
+      <p>
+        親子與無障礙資訊僅供參考，請依家庭需求向景點確認。未知不代表沒有；「官方未公布」表示查不到足以確認的官方說明，不應當作設施不存在。
+      </p>
+      <p>
+        原作者心得只代表原作者當時的觀點與經驗；Agent
+        建議是規劃參考。標為「原文無法讀取」的來源，不代表本站已核實該作者的心得。
+      </p>
+    </section>
+    <section aria-labelledby="license">
+      <h2 id="license" tabindex="-1">內容授權與轉載</h2>
+      <p>
+        本站撰寫的公開景點內容，包括摘要、轉述、Agent
+        建議與親子清單的原創文字，採用 <a
+          href="https://creativecommons.org/licenses/by-nc/4.0/"
+          >CC BY-NC 4.0 授權條款</a
+        >（姓名標示－非商業性 4.0
+        國際）。在條款允許的範圍內，可非商業分享與改作；請適當署名、附上授權連結，並標示是否修改。
+      </p>
+      <p>建議署名格式：</p>
+      <blockquote>
+        〈景點名〉，CarlTravel，〈原景點頁面網址〉，CC BY-NC
+        4.0。若有修改，請另註明修改內容。
+      </blockquote>
+      <p>請將景點名與網址替換為實際轉載頁面，並連結至原頁與授權條款。</p>
+      <ul>
+        <li>
+          原作者引文不納入本站授權，著作權屬原作者。轉載時請移除引文，或分別標示並自行確認使用依據；本站的授權不代替原作者的許可。
+        </li>
+        <li>
+          官方事實本身不主張著作權；官方網頁的文字表達與其他第三方內容，仍依各自權利與條款處理。
+        </li>
+        <li>
+          政府開放資料不納入本站的 CC 授權，依 <a
+            href="https://data.gov.tw/license">政府資料開放授權條款第 1 版</a
+          >利用。景點頁的「來源與官方出處」會列出提供機關、年份、資料集名稱與版本，轉用時請保留相應顯名。
+        </li>
+      </ul>
+      <p>
+        網站程式、schema 與 skills 採 MIT 授權；MIT
+        不適用於上述景點內容。兩者範圍見 <a
+          href="https://github.com/CarlLee1983/CarlTravel">CarlTravel 儲存庫</a
+        >的 LICENSE 與 content/LICENSE.md。
+      </p>
+    </section>
+  </article>
+</Layout>
+<style>
+  dd {
+    margin: 8px 0 24px;
+  }
+  blockquote {
+    margin-inline: 0;
+    padding: 16px;
+    background: #eef4f4;
+    border-left: 3px solid #153849;
+  }
+</style>

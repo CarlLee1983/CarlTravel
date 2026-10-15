@@ -2,17 +2,19 @@
 import type { SpotData } from "../content/schema.ts";
 import CheckedAt from "./CheckedAt.astro";
 interface Props {
+  id: string;
   title: string;
   section: SpotData["transport"];
   refs: SpotData["officialRefs"];
   buildDate: string;
 }
-const { title, section, refs, buildDate } = Astro.props;
+const { id, title, section, refs, buildDate } = Astro.props;
 const reference = (id: string) => refs.find((r) => r.id === id)!;
 ---
 
-<section>
-  <h2>{title}</h2>
+<section id={id} tabindex="-1" aria-labelledby={`${id}-heading`}>
+  <span class="info-label official">官方資訊</span>
+  <h2 id={`${id}-heading`}>{title}</h2>
   <CheckedAt checkedAt={section.checkedAt} buildDate={buildDate} />
   <dl>
     {

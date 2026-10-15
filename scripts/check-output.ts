@@ -2,6 +2,7 @@ import type { Dirent } from "node:fs";
 import { readdir, readFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { siteUrl } from "../src/site.ts";
 import { loadSpots } from "../src/content/load.ts";
 
 export async function checkOutput(
@@ -17,6 +18,8 @@ export async function checkOutput(
       throw new Error(`${path}: missing HTML page content`);
   }
   await requirePage(join(output, "index.html"));
+  await requirePage(join(output, "about", "index.html"));
+  await requirePage(join(output, "404.html"));
   let spotEntries: Dirent[];
   try {
     spotEntries = await readdir(join(output, "spots"), { withFileTypes: true });
@@ -32,6 +35,21 @@ export async function checkOutput(
     );
   for (const id of formalIds)
     await requirePage(join(output, "spots", id, "index.html"));
+  const sitemap = await readFile(join(output, "sitemap.xml"), "utf8");
+  const sitemapUrls = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)]
+    .map((match) => match[1]!)
+    .sort();
+  const expectedUrls = [
+    "/",
+    "/about/",
+    ...formalIds.map((id) => `/spots/${id}/`),
+  ]
+    .map((path) => `${siteUrl}${path}`)
+    .sort();
+  if (JSON.stringify(sitemapUrls) !== JSON.stringify(expectedUrls))
+    throw new Error(
+      "sitemap must contain exactly home, about, and formal spot URLs",
+    );
   const fixture = await loadSpots(fixtures);
   const fixtureNames = fixture
     .filter((spot) => !formalIds.includes(spot.id))

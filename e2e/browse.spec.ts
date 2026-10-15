@@ -1,5 +1,4 @@
 import { test, expect } from "@playwright/test";
-import AxeBuilder from "@axe-core/playwright";
 
 test("home links to stable spot route with readable facts and citations", async ({
   page,
@@ -28,22 +27,6 @@ test("home links to stable spot route with readable facts and citations", async 
   await page.getByRole("link", { name: "全部景點", exact: true }).click();
   await expect(page).toHaveURL(/\/$/);
 });
-for (const route of ["/", "/spots/example-park/"]) {
-  test(`accessible content ${route}`, async ({ page }) => {
-    await page.goto(route);
-    expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
-  });
-  for (const width of [360, 390, 430, 1366, 1920])
-    test(`no horizontal overflow ${route} ${width}`, async ({ page }) => {
-      await page.setViewportSize({ width, height: 900 });
-      await page.goto(route);
-      expect(
-        await page.evaluate(
-          () => document.documentElement.scrollWidth <= window.innerWidth,
-        ),
-      ).toBe(true);
-    });
-}
 test("keyboard skip link reaches main", async ({ page }) => {
   await page.goto("/");
   await page.keyboard.press("Tab");

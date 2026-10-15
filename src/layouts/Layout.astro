@@ -2,8 +2,9 @@
 import { contentMode } from "../content/mode.ts";
 interface Props {
   title: string;
+  noindex?: boolean;
 }
-const { title } = Astro.props;
+const { title, noindex = false } = Astro.props;
 const { fixture } = contentMode();
 ---
 
@@ -16,13 +17,29 @@ const { fixture } = contentMode();
       name="description"
       content="以官方資訊、原作者心得與 Agent 建議，整理台灣親子景點。"
     />
-    {fixture && <meta name="robots" content="noindex, nofollow" />}
+    {(fixture || noindex) && <meta name="robots" content="noindex, nofollow" />}
+    <link
+      rel="license"
+      href="https://creativecommons.org/licenses/by-nc/4.0/"
+    />
     <title>{title} · CarlTravel</title>
   </head>
   <body>
     <a class="skip" href="#main">跳到主要內容</a>
-    <header>
+    <header class="site-header">
       <a href="/" class="brand">CarlTravel <span>台灣親子出遊筆記</span></a>
+      <nav aria-label="站內導覽">
+        <a
+          href="/"
+          aria-current={Astro.url.pathname === "/" ? "page" : undefined}
+          >景點索引</a
+        >
+        <a
+          href="/about/"
+          aria-current={Astro.url.pathname === "/about/" ? "page" : undefined}
+          >關於本站</a
+        >
+      </nav>
     </header>
     {
       fixture && (
@@ -32,14 +49,24 @@ const { fixture } = contentMode();
       )
     }
     <main id="main"><slot /></main>
-    <footer>出發前，請再確認官方公告。查證日期不代表資訊的有效期限。</footer>
+    <footer>
+      <p>
+        出發前，請再確認官方公告。查證日期不代表資訊的有效期限。<a
+          href="/about/#disclaimer">完整免責聲明</a
+        >
+      </p>
+      <p>
+        本站撰寫的景點內容採 <a href="/about/#license">CC BY-NC 4.0</a
+        >，引文與官方資料除外。
+      </p>
+    </footer>
   </body>
 </html>
 <style is:global>
   :root {
     font-family: system-ui, sans-serif;
-    color: #243b49;
-    background: #f7f8f6;
+    color: #213039;
+    background: #e8ebeb;
     line-height: 1.8;
     font-synthesis: none;
   }
@@ -62,12 +89,36 @@ const { fixture } = contentMode();
   main,
   footer,
   .fixture {
-    max-width: 1080px;
+    max-width: 1440px;
     margin: auto;
     padding: 24px;
   }
-  header {
-    border-bottom: 1px solid #cbd4d5;
+  .site-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    background: #153849;
+    color: #fff;
+    padding-block: 18px;
+  }
+  .site-header a {
+    color: inherit;
+  }
+  .site-header nav {
+    display: flex;
+    gap: 24px;
+  }
+  .site-header [aria-current="page"] {
+    text-decoration-thickness: 3px;
+  }
+  :focus-visible {
+    outline: 3px solid #9a651b;
+    outline-offset: 4px;
+  }
+  .site-header a:focus-visible {
+    outline-color: #ffdf96;
   }
   .brand {
     font-weight: 700;
@@ -82,15 +133,17 @@ const { fixture } = contentMode();
   }
   main {
     min-height: 60vh;
-    padding-block: 56px;
+    padding-block: 32px;
   }
   h1,
-  h2 {
-    font-family: "Noto Serif TC", "Songti TC", serif;
+  h2,
+  h3 {
+    font-weight: 600;
+    font-family: "Songti TC", "PMingLiU", "Noto Serif TC", serif;
     line-height: 1.4;
   }
   h1 {
-    font-size: clamp(2rem, 5vw, 3.4rem);
+    font-size: clamp(2rem, 4vw, 3.2rem);
     margin: 0 0 24px;
   }
   h2 {
@@ -119,6 +172,7 @@ const { fixture } = contentMode();
     position: absolute;
     left: 12px;
     top: -80px;
+    z-index: 2;
     padding: 10px;
     background: white;
   }
@@ -126,7 +180,43 @@ const { fixture } = contentMode();
     top: 8px;
   }
   section {
-    margin-top: 40px;
+    margin-top: 32px;
+  }
+  h2[id],
+  section[id] {
+    scroll-margin-top: 24px;
+  }
+  main {
+    overflow-wrap: anywhere;
+  }
+  .prose {
+    max-width: 800px;
+    margin-inline: auto;
+    padding: clamp(20px, 4vw, 40px);
+    background: #fff;
+    border: 1px solid #ccd3d2;
+  }
+  .prose > :first-child {
+    margin-top: 0;
+  }
+  .info-label {
+    display: inline-block;
+    padding: 2px 8px;
+    border-left: 3px solid;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+  .official {
+    color: #165a55;
+    background: #e8f4ee;
+  }
+  .author {
+    color: #855333;
+    background: #fbf0e7;
+  }
+  .agent {
+    color: #4a5689;
+    background: #eaeef9;
   }
   @media (max-width: 600px) {
     header,

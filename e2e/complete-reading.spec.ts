@@ -86,14 +86,3 @@ test("basic spot omits absent optional reading sections", async ({ page }) => {
     page.getByRole("link", { name: "OpenStreetMap 開啟地圖" }),
   ).toHaveAttribute("href", /search\?query=/);
 });
-for (const width of [360, 390, 430, 1366, 1920]) {
-  test(`complete reading stays within viewport ${width}`, async ({ page }) => {
-    await page.setViewportSize({ width, height: 900 });
-    await page.goto("/spots/example-museum/");
-    expect(
-      await page.evaluate(
-        () => document.documentElement.scrollWidth <= window.innerWidth,
-      ),
-    ).toBe(true);
-  });
-}

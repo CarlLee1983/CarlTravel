@@ -7,52 +7,207 @@ const spots = await loadSpots(contentMode().root);
 ---
 
 <Layout title="找一處，一起出發">
-  <p class="eyebrow">探索台灣 · 和孩子一起</p>
-  <h1>找一處，一起出發。</h1>
-  <p>
-    整理台灣親子景點，讓出遊前的準備更清楚。官方資訊附上出處與查證日期；原作者心得與
-    Agent 建議分開呈現，內容經 Carl 審閱後公開。
-  </p>
-  <section aria-labelledby="spots-heading">
-    <h2 id="spots-heading">景點 <span class="meta">{spots.length}</span></h2>
-    {
-      spots.length === 0 ? (
-        <p>目前尚無公開景點，待內容完成查證與審閱後陸續加入。</p>
-      ) : (
-        <ul class="spots">
-          {spots.map((spot) => (
-            <li>
-              <article>
-                <p class="meta">
-                  {spot.county} · {spot.district} / {spot.kind}
-                </p>
-                <h3>
-                  <a href={`/spots/${spot.id}/`}>{spot.name}</a>
-                </h3>
-                <p>{spot.summary}</p>
-                <p class="meta">{ageLabel(spot.ageRange)}</p>
-              </article>
-            </li>
-          ))}
-        </ul>
-      )
-    }
-  </section>
+  <div class="browse-layout">
+    <div class="browse-rail">
+      <p class="eyebrow">探索台灣 · 和孩子一起</p>
+      <h1>找一處，<br />一起出發。</h1>
+      <p>整理台灣親子景點，讓出遊前的準備更清楚。</p>
+      <p>Agent 研究查證、整理草稿，經 Carl 審閱後公開。</p>
+      <ul class="information-types">
+        <li>
+          <span class="info-label official">官方資訊</span><p>
+            事實附官方出處與查證日期。
+          </p>
+        </li>
+        <li>
+          <span class="info-label author">原作者心得</span><p>
+            轉述造訪觀點，連回完整原文。
+          </p>
+        </li>
+        <li>
+          <span class="info-label agent">Agent 建議</span><p>
+            提供規劃參考，與事實分開。
+          </p>
+        </li>
+      </ul>
+      <aside aria-labelledby="browse-heading" class="browse-tools">
+        <h2 id="browse-heading">搜尋與篩選</h2>
+        <p>搜尋與篩選尚未開放，目前可瀏覽全部景點。</p>
+        <p class="meta">
+          預計提供：景點搜尋，以及縣市、類型、環境、年齡帶篩選。
+        </p>
+      </aside>
+    </div>
+    <section aria-labelledby="spots-heading" class="results">
+      <div class="results-heading">
+        <h2 id="spots-heading">
+          景點列表 <span class="meta">{spots.length}</span>
+        </h2>
+        <p class="meta">依縣市北到南 · 同縣市依名稱</p>
+      </div>
+      {
+        spots.length === 0 ? (
+          <div class="empty">
+            <p>目前尚無公開景點，待內容完成查證與審閱後陸續加入。</p>
+          </div>
+        ) : (
+          <ul class="spots">
+            {spots.map((spot) => (
+              <li>
+                <article>
+                  <div>
+                    <h3>
+                      <a href={`/spots/${spot.id}/`}>{spot.name}</a>
+                    </h3>
+                    <p class="meta">
+                      {spot.county} · {spot.district} / {spot.kind}
+                    </p>
+                  </div>
+                  <p>{spot.summary}</p>
+                  <div class="spot-details">
+                    <p>{spot.setting}</p>
+                    <p class="meta">{ageLabel(spot.ageRange)}</p>
+                  </div>
+                </article>
+              </li>
+            ))}
+          </ul>
+        )
+      }
+    </section>
+  </div>
 </Layout>
 <style>
-  .spots {
+  .browse-layout {
+    display: grid;
+    grid-template-columns: 280px minmax(0, 1fr);
+    gap: 24px;
+    align-items: start;
+  }
+  .browse-rail {
+    background: #fff;
+    border: 1px solid #ccd3d2;
+    padding: 24px;
+  }
+  .browse-rail h1 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+  }
+  .browse-rail > p {
+    font-size: 0.9rem;
+  }
+  .information-types {
     list-style: none;
     padding: 0;
+    margin-block: 24px;
+  }
+  .information-types li {
+    margin-block: 10px;
+    font-size: 0.8rem;
+  }
+  .information-types .info-label {
+    margin-right: 6px;
+  }
+  .information-types p {
+    display: inline;
+    margin: 0;
+    font-size: inherit;
+  }
+  .browse-tools {
+    border-top: 1px solid #ccd3d2;
+    padding-top: 16px;
+  }
+  .browse-tools h2 {
+    margin: 0;
+    font-size: 1.25rem;
+  }
+  .browse-tools p {
+    font-size: 0.85rem;
+  }
+  .results {
+    min-width: 0;
+    margin-top: 0;
+  }
+  .results-heading {
+    display: flex;
+    gap: 16px;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+  .results-heading h2,
+  .results-heading p {
+    margin: 0;
+  }
+  .results-heading p {
+    font-size: 0.8rem;
+  }
+  .results-heading span {
+    font-family: system-ui, sans-serif;
+    font-size: 1rem;
+    margin-left: 8px;
+  }
+  .spots {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    background: #fff;
+    border: 1px solid #ccd3d2;
+  }
+  .spots li + li {
+    border-top: 1px solid #ccd3d2;
+  }
+  .spots article {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
-    gap: 24px;
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) minmax(0, 0.65fr);
+    gap: 20px;
+    padding: 20px;
+    align-items: start;
   }
-  li {
-    border-top: 2px solid #8da6b0;
-    padding-block: 12px;
+  .spots p {
+    font-size: 0.875rem;
+    margin: 0;
   }
-  h3 {
-    font-size: 1.4rem;
-    margin: 8px 0;
+  .spots h3 {
+    font-size: 1.25rem;
+    margin: 0 0 6px;
+  }
+  .spot-details {
+    text-align: right;
+  }
+  .empty {
+    background: #fff;
+    border: 1px solid #ccd3d2;
+    padding: 24px;
+  }
+  .empty p {
+    margin: 0;
+  }
+  @media (max-width: 1100px) {
+    .spots article {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    }
+    .spot-details {
+      text-align: left;
+      grid-column: 1 / -1;
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+  }
+  @media (max-width: 900px) {
+    .browse-layout {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .browse-rail h1 br {
+      display: none;
+    }
+  }
+  @media (max-width: 600px) {
+    .spots article {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 10px;
+    }
   }
 </style>
