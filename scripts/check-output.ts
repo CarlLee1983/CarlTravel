@@ -50,6 +50,24 @@ export async function checkOutput(
     throw new Error(
       "sitemap must contain exactly home, about, and formal spot URLs",
     );
+  const searchEntry = JSON.parse(
+    await readFile(join(output, "pagefind", "pagefind-entry.json"), "utf8"),
+  );
+  const languages: { page_count: number }[] = Object.values(
+    searchEntry.languages ?? {},
+  );
+  if (
+    languages.some(
+      (language) =>
+        !Number.isInteger(language.page_count) || language.page_count < 0,
+    ) ||
+    languages.reduce((total, language) => total + language.page_count, 0) !==
+      formalIds.length
+  )
+    throw new Error(
+      "Formal search index page count differs from content/spots",
+    );
+  await readFile(join(output, "pagefind", "pagefind.js"));
   const fixture = await loadSpots(fixtures);
   const fixtureNames = fixture
     .filter((spot) => !formalIds.includes(spot.id))

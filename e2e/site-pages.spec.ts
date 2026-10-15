@@ -99,10 +99,9 @@ test("compact home shows its browsing scope beside the list on desktop and above
     const browsing = page.getByRole("complementary", { name: "搜尋與篩選" });
     const results = page.getByRole("region", { name: /景點列表/ });
     await expect(
-      browsing.getByText("搜尋與篩選尚未開放，目前可瀏覽全部景點。"),
+      browsing.getByRole("searchbox", { name: "搜尋景點" }),
     ).toBeVisible();
-    await expect(browsing.getByRole("textbox")).toHaveCount(0);
-    await expect(browsing.getByRole("combobox")).toHaveCount(0);
+    await expect(browsing.getByRole("combobox")).toHaveCount(4);
     await expect(results.getByRole("heading", { level: 3 })).toHaveText([
       "範例親子公園",
       "範例探索館",

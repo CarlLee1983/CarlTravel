@@ -8,7 +8,9 @@ test("home links to stable spot route with readable facts and citations", async 
     page.getByText("開發展示 · 虛構景點與出處，僅供測試，不能作為出遊資訊。"),
   ).toBeVisible();
   await expect(page.getByText("臺北市 · 中正區 / 公園")).toBeVisible();
-  await expect(page.getByText("年齡未標示")).toBeVisible();
+  await expect(
+    page.getByRole("region", { name: /景點列表/ }).getByText("年齡未標示"),
+  ).toBeVisible();
   await expect(page.getByText("沿著步道觀察樹木與季節變化。")).toBeVisible();
   await page.getByRole("link", { name: "範例親子公園", exact: true }).click();
   await expect(page).toHaveURL(/\/spots\/example-park\/$/);

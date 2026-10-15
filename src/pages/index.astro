@@ -2,8 +2,38 @@
 import Layout from "../layouts/Layout.astro";
 import { loadSpots } from "../content/load.ts";
 import { contentMode } from "../content/mode.ts";
+import { ageBands, ageBandRanges } from "../content/search.ts";
 import { ageLabel } from "../content/schema.ts";
 const spots = await loadSpots(contentMode().root);
+const usedAges = new Set(spots.flatMap((spot) => ageBands(spot.ageRange)));
+const filters = [
+  {
+    name: "county",
+    label: "縣市",
+    all: "全部縣市",
+    values: [...new Set(spots.map((spot) => spot.county))],
+  },
+  {
+    name: "kind",
+    label: "類型",
+    all: "全部類型",
+    values: [...new Set(spots.map((spot) => spot.kind))],
+  },
+  {
+    name: "setting",
+    label: "環境",
+    all: "全部環境",
+    values: [...new Set(spots.map((spot) => spot.setting))],
+  },
+  {
+    name: "age",
+    label: "年齡帶",
+    all: "全部年齡",
+    values: [...ageBandRanges.map((band) => band.label), "年齡未標示"].filter(
+      (label) => usedAges.has(label),
+    ),
+  },
+];
 ---
 
 <Layout title="找一處，一起出發">
@@ -32,19 +62,53 @@ const spots = await loadSpots(contentMode().root);
       </ul>
       <aside aria-labelledby="browse-heading" class="browse-tools">
         <h2 id="browse-heading">搜尋與篩選</h2>
-        <p>搜尋與篩選尚未開放，目前可瀏覽全部景點。</p>
-        <p class="meta">
-          預計提供：景點搜尋，以及縣市、類型、環境、年齡帶篩選。
+        <form id="spot-search" role="search" aria-label="景點搜尋與篩選">
+          <fieldset disabled>
+            <legend class="sr-only">搜尋與出遊條件</legend>
+            <label for="query">搜尋景點</label>
+            <input
+              id="query"
+              name="query"
+              type="search"
+              placeholder="景點名稱或內容"
+              autocomplete="off"
+            />
+            {
+              filters.map((filter) => (
+                <div class="filter">
+                  <label for={`filter-${filter.name}`}>{filter.label}</label>
+                  <select id={`filter-${filter.name}`} name={filter.name}>
+                    <option value="">{filter.all}</option>
+                    {filter.values.map((value) => (
+                      <option value={value}>{value}</option>
+                    ))}
+                  </select>
+                </div>
+              ))
+            }
+            <div class="search-actions">
+              <button type="submit">搜尋</button>
+              <button type="reset">清除條件</button>
+            </div>
+          </fieldset>
+        </form>
+        <p id="search-help">
+          搜尋與篩選需要 JavaScript；仍可從下方瀏覽全部景點。
         </p>
       </aside>
     </div>
     <section aria-labelledby="spots-heading" class="results">
       <div class="results-heading">
         <h2 id="spots-heading">
-          景點列表 <span class="meta">{spots.length}</span>
+          景點列表 <span id="result-count" class="meta">{spots.length}</span>
         </h2>
         <p class="meta">依縣市北到南 · 同縣市依名稱</p>
       </div>
+      <p id="search-status" role="status" aria-live="polite" aria-atomic="true">
+      </p>
+      <p id="no-results" class="empty" hidden>
+        沒有符合條件的景點，請調整搜尋文字或清除條件。
+      </p>
       {
         spots.length === 0 ? (
           <div class="empty">
@@ -53,7 +117,13 @@ const spots = await loadSpots(contentMode().root);
         ) : (
           <ul class="spots">
             {spots.map((spot) => (
-              <li>
+              <li
+                data-spot-url={`/spots/${spot.id}/`}
+                data-county={spot.county}
+                data-kind={spot.kind}
+                data-setting={spot.setting}
+                data-age={ageBands(spot.ageRange).join("|")}
+              >
                 <article>
                   <div>
                     <h3>
@@ -77,7 +147,77 @@ const spots = await loadSpots(contentMode().root);
     </section>
   </div>
 </Layout>
+<script>
+  import "../browser/search.ts";
+</script>
 <style>
+  fieldset {
+    border: 0;
+    padding: 0;
+    margin: 16px 0 0;
+    min-width: 0;
+  }
+  label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-top: 12px;
+  }
+  input,
+  select,
+  button {
+    font: inherit;
+    font-size: 1rem;
+  }
+  input,
+  select {
+    width: 100%;
+    min-width: 0;
+    min-height: 44px;
+    border: 1px solid #7a8e96;
+    border-radius: 3px;
+    padding: 8px;
+    background: #fff;
+    color: #213039;
+  }
+  .search-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+  }
+  button {
+    min-height: 44px;
+    padding: 8px 14px;
+    border: 1px solid #153849;
+    border-radius: 3px;
+    background: #fff;
+    color: #153849;
+    cursor: pointer;
+  }
+  button[type="submit"] {
+    background: #153849;
+    color: #fff;
+  }
+  button:disabled {
+    cursor: default;
+  }
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  #search-status {
+    font-size: 0.875rem;
+  }
+  [hidden] {
+    display: none !important;
+  }
   .browse-layout {
     display: grid;
     grid-template-columns: 280px minmax(0, 1fr);

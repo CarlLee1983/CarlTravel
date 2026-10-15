@@ -5,7 +5,17 @@ import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { checkOutput } from "../scripts/check-output.ts";
 
+async function writeSearchEntry(output: string, count = 0) {
+  await mkdir(join(output, "pagefind"), { recursive: true });
+  await writeFile(
+    join(output, "pagefind", "pagefind-entry.json"),
+    JSON.stringify({ languages: { "zh-Hant": { page_count: count } } }),
+  );
+  await writeFile(join(output, "pagefind", "pagefind.js"), "export {}; ");
+}
+
 async function writeBasicPages(output: string) {
+  await writeSearchEntry(output);
   await mkdir(join(output, "about"), { recursive: true });
   for (const page of ["about/index.html", "404.html"])
     await writeFile(join(output, page), "<html><main>基本頁面</main></html>");
@@ -93,6 +103,7 @@ test("formal sitemap contains only home, about, and exactly the formal spots", a
     await mkdir(join(output, "about"), { recursive: true });
     for (const page of ["index.html", "about/index.html", "404.html"])
       await writeFile(join(output, page), "<html><main>公開頁面</main></html>");
+    await writeSearchEntry(output);
     await writeSitemap([home, about]);
     assert.equal(await checkOutput(output, content), 0);
     for (const extra of [
@@ -123,7 +134,30 @@ test("formal sitemap contains only home, about, and exactly the formal spots", a
     await writeSitemap([home, about]);
     await assert.rejects(checkOutput(output, content), /sitemap/);
     await writeSitemap([home, about, `${home}spots/approved-park/`]);
+    await writeSearchEntry(output, 1);
     assert.equal(await checkOutput(output, content), 1);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("formal output rejects a missing or fixture-sized search index", async () => {
+  const root = await mkdtemp(join(tmpdir(), "carltravel-search-output-"));
+  const content = join(root, "content");
+  try {
+    await mkdir(content);
+    await writeFile(join(root, "index.html"), "<html><main>首頁</main></html>");
+    await writeBasicPages(root);
+    await mkdir(join(root, "pagefind"), { recursive: true });
+    await writeFile(
+      join(root, "pagefind", "pagefind-entry.json"),
+      JSON.stringify({ languages: { "zh-Hant": { page_count: 2 } } }),
+    );
+    await assert.rejects(checkOutput(root, content), /search index/);
+    await rm(join(root, "pagefind"), { recursive: true });
+    await assert.rejects(checkOutput(root, content), /ENOENT/);
+    await writeSearchEntry(root);
+    assert.equal(await checkOutput(root, content), 0);
   } finally {
     await rm(root, { recursive: true, force: true });
   }

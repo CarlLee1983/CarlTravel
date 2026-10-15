@@ -1,10 +1,10 @@
 name: 範例探索館
-address: 新北市板橋區範例路二號（虛構）
+address: 新北市板橋區範例路二號（虛構） addressprobe
 county: 新北市
 district: 板橋區
 kind: 博物館
 setting: 室內外皆有
-summary: 從葉片與建築細節開始觀察。
+summary: 從葉片與建築細節開始觀察。 summaryprobe
 ageRange:
   status: known
   min: 3
@@ -40,7 +40,7 @@ officialRefs:
       version: "1"
 sources:
   - id: reader
-    title: 範例家庭探索紀錄
+    title: 範例家庭探索紀錄 sourceprobe
     url: https://example.org/story
     author: 範例作者
     readAt: "2026-10-15"
@@ -67,13 +67,13 @@ familyChecklist:
     ref: office
   accessibility:
     status: unknown
-  notes: 出發前可洽詢動線是否調整。
+  notes: 出發前可洽詢動線是否調整。 checklistprobe
 hoursAndFees:
   checkedAt: "2020-01-01"
   facts:
     - status: ok
       label: 開放時間
-      value: 上午九點至下午五點。
+      value: 上午九點至下午五點。 officialprobe
       ref: office
     - status: conflict
       label: 門票
@@ -98,19 +98,19 @@ facilities:
 withKids:
   checkedAt: "2020-01-01"
   facts:
-    - text: 展區展示葉片形狀的差異。
+    - text: 展區展示葉片形狀的差異。 learningprobe
       ref: office
   activities:
-    - 找出兩種不同形狀的葉片。
+    - 找出兩種不同形狀的葉片。 activityprobe
 authorNotes:
   - source: reader
-    summary: 展區的觀察步驟簡單，適合分段停留。
+    summary: 展區的觀察步驟簡單，適合分段停留。 paraphraseprobe
     quotes:
-      - 我們在葉片展區停留了一段時間。
+      - 我們在葉片展區停留了一段時間。 quoteprobe
 agentTips:
-  - 預留休息時間，依孩子的步調安排參觀。
+  - 預留休息時間，依孩子的步調安排參觀。 tipprobe
 nearby:
   - name: 範例食堂
     kind: food
-    note: 可作為參觀後的用餐安排。
+    note: 可作為參觀後的用餐安排。 nearbyprobe
     source: reader

@@ -54,9 +54,19 @@ const nearbyKind = { food: "餐飲", stay: "住宿", activity: "活動" } as con
       </div>
     </nav>
     <article class="spot-article">
-      <p class="eyebrow">{spot.county} · {spot.district} / {spot.kind}</p>
-      <h1>{spot.name}</h1>
-      <p>{spot.summary}</p>
+      <p class="eyebrow">
+        <span data-pagefind-body>{spot.county} · {spot.district}</span> / {
+          spot.kind
+        }
+      </p>
+      <h1
+        data-pagefind-body
+        data-pagefind-meta="title"
+        data-pagefind-weight="10"
+      >
+        {spot.name}
+      </h1>
+      <p data-pagefind-body>{spot.summary}</p>
       <p>{spot.address}</p>
       <p class="meta">{spot.setting} · {ageLabel(spot.ageRange)}</p>
       {
@@ -138,7 +148,7 @@ const nearbyKind = { food: "餐飲", stay: "住宿", activity: "活動" } as con
             <ul>
               {spot.withKids.facts.map((fact) => (
                 <li>
-                  {fact.text}{" "}
+                  <span data-pagefind-body>{fact.text}</span>{" "}
                   <a href={official(fact.ref).url}>
                     出處：{official(fact.ref).title}
                   </a>
@@ -150,7 +160,7 @@ const nearbyKind = { food: "餐飲", stay: "住宿", activity: "活動" } as con
                 <h3>Agent 建議的觀察活動</h3>
                 <ul>
                   {spot.withKids.activities.map((activity) => (
-                    <li>{activity}</li>
+                    <li data-pagefind-body>{activity}</li>
                   ))}
                 </ul>
               </div>
@@ -165,7 +175,7 @@ const nearbyKind = { food: "餐飲", stay: "住宿", activity: "活動" } as con
             <h2 id="author-heading">原作者心得</h2>
             {spot.authorNotes.map((note) => (
               <article>
-                <p>{note.summary}</p>
+                <p data-pagefind-body>{note.summary}</p>
                 {note.quotes.map((quote) => (
                   <blockquote>{quote}</blockquote>
                 ))}
@@ -187,7 +197,7 @@ const nearbyKind = { food: "餐飲", stay: "住宿", activity: "活動" } as con
             <h2 id="tips-heading">Agent 建議</h2>
             <ul>
               {spot.agentTips.map((tip) => (
-                <li>{tip}</li>
+                <li data-pagefind-body>{tip}</li>
               ))}
             </ul>
           </section>
