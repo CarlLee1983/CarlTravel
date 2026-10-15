@@ -1,6 +1,7 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "carltravel",
+  "account_id": "b2a2c00fb55ae6b774fde3adb3d465b2",
   "compatibility_date": "2026-10-15",
   "workers_dev": false,
   "preview_urls": false,

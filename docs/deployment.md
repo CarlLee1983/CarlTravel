@@ -2,7 +2,7 @@
 
 ## 現況與邊界
 
-第 08 票完成本機工作流程與 dry-run；依 Carl 本次選擇，雲端設定留待補齊。目前正式景點為零，沒有正式部署、網域綁定或公開頁驗收證據。不要把本機測試、GitHub environment 的 URL 或工作流程綠燈當作網站已上線。
+第 08 票完成本機工作流程與 dry-run；依 Carl 本次選擇，雲端設定留待補齊。四篇正式動物園圖文已合入；首次部署因缺少 Account ID 在呼叫 Wrangler 前停止，目前沒有部署成功、網域綁定或公開頁驗收證據。不要把本機測試、GitHub environment 的 URL 或工作流程綠燈當作網站已上線。
 
 目的地固定為既有 `CarlLee1983/CarlTravel`、Worker `carltravel` 與 `https://carltravel.gravito.dev`。Wrangler 的 custom-domain 設定是預定部署設定，尚未確認遠端 zone、既有 hostname 綁定及 Worker 狀態，不能據此宣稱設定已生效。沒有新增 repo、複製本機登入 token 或新增套件。
 
@@ -23,16 +23,16 @@ CI 的乾淨 checkout 不含本機 `drafts/`、`research/`，因此不能辨認�
 
 - **GitHub main 保護：**要求透過 PR 合入、通過 PR 的 `verify` check、合入前分支保持最新；禁止 force push 與刪除，限制可更新 main 的人為 Carl，並確認管理員繞過權限不會成為日常發布方式。先讓 PR workflow 實際跑過，才能確認 required check 名稱。不得為了部署略過內容審閱。
 - **GitHub production environment：**在 Settings → Environments 建立 `production`，Deployment branches and tags 使用 Selected branches and tags，只允許 branch `main`，不要開放同名 tag。正式環境不另加必需人工批准，以保留 Carl 合入後自動部署；若未來加入保護，更新本文件。
-- **Cloudflare：**確認 `gravito.dev` zone 在目標 account 且可管理，確認 `carltravel.gravito.dev` 沒有其他服務／衝突記錄，確認既有 `carltravel` Worker 不會被覆蓋其他用途。由 Carl 決定目標 account；不要以本機登入帳號推斷。`wrangler.jsonc` 已包含 Static Assets、custom domain，停用 workers.dev 與 preview URLs。正式部署才會套用綁定。
-- **專用 CI token：**由 Carl 在 Cloudflare 建立僅限目標 account／zone 的 API token，依官方 Workers CI 指南配置 Workers Scripts Edit 與 custom-domain 所需的 zone 權限；避免全帳戶 Global API Key。將 `CLOUDFLARE_API_TOKEN`、`CLOUDFLARE_ACCOUNT_ID` 存入 GitHub **production environment secrets**。不貼到對話、程式、shell 命令列或日誌；不要把 Wrangler 本機 OAuth token 複製進 GitHub。
-- **首次上線：**待第 09 票有 Carl 核准的真實景點，經 PR 與 Carl 合入，觀察主分支 workflow。不要為了測試部署加入假景點。設定未齊時維持阻擋，不宣稱已上線。
+- **Cloudflare：**確認 `gravito.dev` zone 在目標 account 且可管理，確認 `carltravel.gravito.dev` 沒有其他服務／衝突記錄，確認既有 `carltravel` Worker 不會被覆蓋其他用途。目標 account 固定在 `wrangler.jsonc` 的 `account_id`。本次依 Carl 明確指示，以本機 `wrangler whoami` 查得的唯一帳戶設定；該查詢不代表已驗證 zone 或 hostname 綁定。往後更換帳戶須另經 Carl 確認及 PR 審閱，不由 CI 自動選擇。`wrangler.jsonc` 已包含 Static Assets、custom domain，停用 workers.dev 與 preview URLs。正式部署才會套用綁定。
+- **專用 CI token：**由 Carl 在 Cloudflare 建立僅限目標 account／zone 的 API token，依官方 Workers CI 指南配置 Workers Scripts Edit 與 custom-domain 所需的 zone 權限；避免全帳戶 Global API Key。只將 `CLOUDFLARE_API_TOKEN` 存入 GitHub **production environment secrets**。Account ID 是公開的部署目標識別碼，已固定在 `wrangler.jsonc`，不再要求 `CLOUDFLARE_ACCOUNT_ID` secret；不要在 workflow 另設帳戶來源。Token 不貼到對話、程式、shell 命令列或日誌；不要把 Wrangler 本機 OAuth token 複製進 GitHub。
+- **首次上線：**四篇已核准的真實景點已合入；部署設定修正經 Carl 合入後，觀察主分支 workflow。不要為了測試部署加入假景點。設定未齊時維持阻擋，不宣稱已上線。
 
 Cloudflare 設定依據：[Wrangler configuration](https://developers.cloudflare.com/workers/wrangler/configuration/)、[Custom Domains](https://developers.cloudflare.com/workers/configuration/routing/custom-domains/)、[GitHub Actions CI](https://developers.cloudflare.com/workers/ci-cd/external-cicd/github-actions/)。GitHub 設定依據：[Deployment environments](https://docs.github.com/en/actions/concepts/workflows-and-actions/deployment-environments)。
 
 ## 本機驗證
 
 - `pnpm verify`：開發／PR 的完整關卡，容許零正式景點；最後仍執行 Wrangler dry-run。
-- `pnpm prepare:deployment`：重新建置正式輸出並驗證部署資格；目前零正式景點應失敗，且不執行正式部署。
+- `pnpm prepare:deployment`：重新建置正式輸出並驗證部署資格；目前四篇正式景點應通過；零正式景點仍須失敗。此命令不執行正式部署。
 - `node --experimental-strip-types --test tests/deployment.test.ts`：隔離暫存 workspace 的正反案例，包括非空產物 dry-run；不會寫正式內容或呼叫真正部署。
 
 部署 gate 的 CLI 只輸出通用錯誤，避免內容驗證錯誤攜帶私人文字進入 CI。需要本機診斷時依既有 `check:output`／`check:index` 流程查看，私人錯誤報告不可上傳。
@@ -46,3 +46,5 @@ Cloudflare 設定依據：[Wrangler configuration](https://developers.cloudflare
 - token、account、zone 或 hostname 失敗：Carl 確認權限與既有服務，僅修改必要設定；不要在日誌印出 token。未確認遠端結果前維持「部署失敗／待確認」。
 - 部署成功但公開頁不符：保留 run／commit 與不含私密內容的觀察，先確認目前遠端版本；不要直接執行 Wrangler rollback。
 - 合入後內容回復：建立新的修正／回復 PR，重新檢查，由 Carl 合入，再走相同自動部署。Agent 不推 main、不合入、不正式部署或回滾。取消本功能可另開 PR 移除 workflow／路由設定；遠端 Worker 或網域清理需另行授權，不會隨本機刪檔自動消失。
+
+若需回復為 Account ID secret 模式，須透過 PR 一併回復 Wrangler 設定、workflow、測試及本文件，並由 Carl 在合入前恢復該 secret。這不會回滾已部署的 Worker 或網域。
