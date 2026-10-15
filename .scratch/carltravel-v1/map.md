@@ -25,10 +25,11 @@ Status: open
 - [景點內容檔的格式](issues/04-spot-content-format.md)：採用單一 `spot.yaml`，敘述也寫在 YAML 裡，讓 schema 能擋下出處、引文與參照錯誤。id 用英文名或拼音，縣市以列舉值表示。官方事實分成 ok／unpublished／conflict 三種狀態，並以 ref 指向官方出處；「建議年齡」移出有／無清單，改成範圍欄位。
 - [carltravel-research 的研究與撰文流程](issues/05-research-skill-workflow.md)：一次只處理一個來源，在拆分景點後和送審時各停下一次等 Carl。讀取失敗時依序換工具，最後交給 Carl 決定。同一性依觀光署 ID、名稱、地址比對；官方資料查完三層才標「官方未公布」。補充已發布景點時，先複製成同 id 草稿。原文全文只存在本機。發布另由 `carltravel-publish` 處理。
 - [自動品質檢查與發布關卡](issues/06-quality-gates.md)：公開內容的結構、外洩與圖片檢查放進 CI，擋合入與部署；照抄比對、Carl 備註比對與草稿外洩比對只能在本機跑，由 `carltravel-publish` 在開 PR 前擋下。過期只警告，不設景點數量門檻，axe 涵蓋票 07 列出的每種頁面。
+- [網站頁面範圍與瀏覽方式](issues/07-site-pages-and-browsing.md)：v1 只做首頁、景點頁、關於頁與 404。首頁提供搜尋，並可依縣市、類型、環境、年齡帶篩選；景點頁的分節順序已固定。`tags` 拆成 `kind`／`setting`，並新增 `summary`（修正票 04）。免責聲明放在關於頁，v1 不做更新紀錄。
 
 ## Not yet specified
 
-- **視覺方向**：版面風格、字型、地圖連結的呈現方式。要等網站頁面範圍與瀏覽方式定案後，才能看出要決定什麼。
+- **縣市頁與標籤頁**：景點數量變多後，是否新增 `/regions/<縣市>/` 與依類型分類的列表頁，以及要以多少景點作為門檻。
 
 ## Out of scope
 
