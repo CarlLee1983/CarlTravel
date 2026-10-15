@@ -1,5 +1,5 @@
-import { readFile } from "node:fs/promises";
-import { join } from "node:path";
+import { readFile, mkdir, writeFile } from "node:fs/promises";
+import { join, resolve, dirname, sep } from "node:path";
 import { createIndex, close } from "pagefind";
 import { loadSpots } from "../src/content/load.ts";
 
@@ -27,11 +27,19 @@ export async function buildSearchIndex(contentRoot: string, output: string) {
       if (result.errors.length)
         throw new Error(`Pagefind ${spot.id}: ${result.errors.join("; ")}`);
     }
-    const result = await index.writeFiles({
-      outputPath: join(output, "pagefind"),
-    });
+    // The native writeFiles response can precede its buffered disk writes; close()
+    // kills that service. Own and await the writes before closing it instead.
+    const result = await index.getFiles();
     if (result.errors.length)
       throw new Error(`Pagefind output: ${result.errors.join("; ")}`);
+    const bundle = resolve(output, "pagefind");
+    for (const file of result.files) {
+      const path = resolve(bundle, file.path);
+      if (!path.startsWith(bundle + sep))
+        throw new Error("Pagefind file outside bundle");
+      await mkdir(dirname(path), { recursive: true });
+      await writeFile(path, file.content);
+    }
     console.log(`Pagefind indexed ${spots.length} spot page(s).`);
   } finally {
     await close();

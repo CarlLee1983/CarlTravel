@@ -25,7 +25,10 @@
     "verify": "node scripts/verify.mjs",
     "draft:copy": "node --experimental-strip-types scripts/draft.ts copy",
     "draft:diff": "node --experimental-strip-types scripts/draft.ts diff",
-    "research": "node --experimental-strip-types scripts/research.ts"
+    "research": "node --experimental-strip-types scripts/research.ts",
+    "publish:content": "node --experimental-strip-types scripts/publish.ts",
+    "check:index": "node --experimental-strip-types scripts/check-index.ts",
+    "check:worker": "wrangler deploy --dry-run"
   },
   "dependencies": {
     "astro": "7.2.9",
@@ -40,6 +43,7 @@
     "pagefind": "1.5.2",
     "prettier": "3.9.6",
     "prettier-plugin-astro": "0.14.1",
-    "typescript": "6.0.3"
+    "typescript": "6.0.3",
+    "wrangler": "4.151.0"
   }
 }

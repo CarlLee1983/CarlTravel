@@ -2,6 +2,7 @@ import { spawnSync } from "node:child_process";
 
 const env = { ...process.env };
 delete env.CARLTRAVEL_FIXTURE;
+env.WRANGLER_SEND_METRICS = "false";
 
 const steps = [
   "format:check",
@@ -13,6 +14,8 @@ const steps = [
   // The last build validates formal output after fixture E2E.
   "build",
   "check:output",
+  "check:index",
+  "check:worker",
 ];
 
 for (const script of steps) {

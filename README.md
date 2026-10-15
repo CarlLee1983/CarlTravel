@@ -4,7 +4,7 @@
 
 ## 目前狀態
 
-已完成第 01–06 票：完整景點閱讀、資訊狀態與來源顯名、D 組合版面、章節目錄、關於頁、404、授權宣告與 sitemap 白名單。已加入 Pagefind 搜尋與縣市、類型、環境、年齡帶四種篩選。本機開發可預覽新草稿及同 id 修訂，並提供複製與差異指令；正式建置仍只讀正式內容。已交付來源研究 skill、本機紀錄／同一性工具與可重用重疊關卡，送審仍保留 Carl 的人工決定。正式景點目前為零，尚未部署。完整範圍見 [v1 規格](.scratch/carltravel-v1/issues/11-carltravel-v1-spec.md) 與 [工作票索引](.scratch/carltravel-v1-build/README.md)。
+已完成第 01–07 票：完整景點閱讀、資訊狀態與來源顯名、D 組合版面、章節目錄、關於頁、404、授權宣告與 sitemap 白名單。已加入 Pagefind 搜尋與縣市、類型、環境、年齡帶四種篩選。本機開發可預覽新草稿及同 id 修訂，並提供複製與差異指令；正式建置仍只讀正式內容。已交付來源研究 skill、本機紀錄／同一性工具與可重用重疊關卡，送審仍保留 Carl 的人工決定。正式景點目前為零，尚未部署。完整範圍見 [v1 規格](.scratch/carltravel-v1/issues/11-carltravel-v1-spec.md) 與 [工作票索引](.scratch/carltravel-v1-build/README.md)。
 
 啟動：`pnpm install --frozen-lockfile`，完整搜尋預覽用 `pnpm build:fixture && pnpm preview:fixture`；頁面即時開發用 `pnpm dev:fixture`（不產生搜尋索引）。私人草稿預覽用 `pnpm dev`，操作見[草稿與修訂預覽](docs/development.md#第-05-票本機草稿與修訂預覽)。驗證：首次先 `pnpm exec playwright install chromium`，再 `pnpm verify`。詳見[本機開發與資料邊界](docs/development.md)。
 
@@ -24,3 +24,5 @@
 ## 授權範圍
 
 程式碼、schema、skills 與相關軟體文件採 [MIT](LICENSE)。本站撰寫的公開景點內容採 [CC BY-NC 4.0](content/LICENSE.md)，MIT 不適用於景點內容；原作者引文、官方事實與政府開放資料另依該宣告所列範圍處理，不由本站重新授權。網站的完整說明在 `/about/#license`。
+
+發布入口：已核准內容依 [carltravel-publish](.claude/skills/carltravel-publish/SKILL.md) 執行，操作與關卡見 [docs/publishing.md](docs/publishing.md)。第 07 票已具備本機發布與 PR CI，正式部署與真實來源上線仍待後續票。

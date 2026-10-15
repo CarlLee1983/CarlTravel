@@ -16,3 +16,5 @@ playwright-report
 # Private drafts and research are outside repository formatting.
 /drafts/
 /research/
+
+.wrangler/

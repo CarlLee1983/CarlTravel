@@ -9,8 +9,9 @@
 | 新草稿與同 id 修訂隔離 | 第 05 票已完成；實際 dev→build、私人路徑與 Git 邊界見 tests/draft-preview.test.ts |
 | 來源研究到預覽／送審 | 第 06 票本機實作；來源紀錄與關卡見 tests/research.test.ts，虛構流程見 tests/research-workflow.test.ts；不代表已處理真人提供的來源 |
 | 私人原文／備註重疊 | 第 06 票提供可重用本機入口；12 字、引文含私人備註、多來源、核准不可讀、原文遺失與改標均以虛構案例驗證 |
-| 發布 PR 與完整私人索引外洩檢查 | 待第 07 票；本票不開 PR，不宣稱私人 Pagefind 查詢整合驗收完成 |
-| CI、自動部署、Cloudflare 與網域 | 待第 08 票；尚未部署 |
+| 發布 PR 與完整私人索引外洩檢查 | 第 07 票本機實作；隔離 Git 與模擬 GitHub、dev→正式建置及實際 Pagefind 正反測試；沒有真實發布 PR |
+| PR CI 與 dry-run | 第 07 票提供 PR verification 與共用 verify 的真實 Wrangler dry-run；雲端 CI 執行待真實 PR |
+| 自動部署、Cloudflare 與網域 | 待第 08 票；尚未部署 |
 | 真實來源完整上線 | 待第 09 票；正式內容目前為零，尚無真人來源的研究到上線證據 |
 
 各票詳細執行證據見[工作票索引](../.scratch/carltravel-v1-build/README.md)及[開發驗收紀錄](development.md)。私人研究、完整原文及命中診斷留在本機，不附於本文件或公開報告。

@@ -115,3 +115,15 @@ Astro integration 根據實際 `dev` 指令注入編譯常數 `__CARLTRAVEL_DRAF
 第 06 票驗收：`E2E_PORT=4337 pnpm verify` 完整通過，包含 51 個 Node 測試、43 個 Playwright 案例、格式／型別／正式內容、建置與最後輸出檢查。獨立審查後補強原文還原雜湊、精確加部分同一性衝突，以及研究紀錄原子寫入；新增回歸測試先失敗再通過，修正後 10 個研究 focused 測試與型別檢查通過。沿用未變動網站的完整瀏覽器結果，未重跑無關驗證。
 
 標準與規格雙軸獨立審查完成；三項 P2 及損毀雜湊的延伸情境均已修正，原 reviewer 複查無剩餘實質發現。
+
+## 第 07 票：審閱通過到發布 PR
+
+已核准內容的操作入口見 [發布工具](publishing.md)。本機批次綁定草稿及正式基準 hash，prepare 只產生標準公開 YAML，submit／ready 透過 Git 與 gh 邊界執行並回讀遠端結果。私人核准、版本紀錄及失敗診斷留在 research/；正式內容、來源研究與使用者的真實 GitHub PR 均未作為本票測試資料。
+
+公開 PR workflow 直接執行共用 verify。新增固定版本 Wrangler 與其 workerd 安裝腳本許可，因票面要求真實 Worker dry-run；使用最小靜態 assets 設定，沒有新增 Cloudflare 密鑰、帳號、網域或正式部署工作流程。`check:index` 使用已存在的 Playwright／Chromium 查詢實際 Pagefind；零景點的 Pagefind 沒有 language runtime，驗證空 metadata 與空正式頁集合，不偽造搜尋結果。
+
+測試包含隔離 app 的 dev→正式 build、頁面／sitemap／真實索引的草稿與同 id 修訂排除、故意污染索引的失敗案例，以及核准版本、重疊／私人引文、圖片、原文遺失與不可讀例外。GitHub 邊界使用真實暫存 Git repo 配合模擬 gh／push，驗證 draft、CI 阻擋、head 改變、更新既有 PR、已合入分支阻擋、歷史私人檔案及推送後 gh 失敗。未建立真實發布 PR，雲端 CI 執行留真實 PR 驗收。
+
+第 07 票驗收：完整 `E2E_PORT=4337 pnpm verify` 通過 58 個 Node、43 個 Playwright 與全部共用關卡（包含 Wrangler dry-run）。審查後補強固定 commit 推送、私人錯誤輸出、ready 後摘要核對及孤立草稿連結。重複發布演練另在單獨執行時重現 Pagefind metadata 空檔：既有原生 writeFiles 寫入後 close 會立即終止後端，現改用 getFiles 取得檔案資料，由 Node await 寫入後再 close；沿用原來的明確景點白名單。介面依 [Pagefind Node API](https://pagefind.app/docs/node-api/)，原生行為核對 [v1.5.2 output](https://github.com/pagefind/pagefind/blob/v1.5.2/pagefind/src/output/mod.rs)。
+
+最終增量驗證通過 10 個相關 Node 測試、10 個搜尋 Playwright 案例、型別檢查（零診斷）、正式重建、輸出／實際索引與 Wrangler dry-run。標準軸四項發現與索引寫檔問題已由原 reviewer 複查結案；規格軸無實質發現。沒有推送、真實 PR 或正式部署；雲端 CI 的實際執行仍待真實 PR。
