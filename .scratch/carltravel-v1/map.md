@@ -1,7 +1,7 @@
 # CarlTravel v1：規格決策地圖
 
 Label: wayfinder:map
-Status: open
+Status: resolved
 
 ## Destination
 
@@ -28,11 +28,17 @@ Status: open
 - [網站頁面範圍與瀏覽方式](issues/07-site-pages-and-browsing.md)：v1 只做首頁、景點頁、關於頁與 404。首頁提供搜尋，並可依縣市、類型、環境、年齡帶篩選；景點頁的分節順序已固定。`tags` 拆成 `kind`／`setting`，並新增 `summary`（修正票 04）。免責聲明放在關於頁，v1 不做更新紀錄。
 - [網站內容的授權宣告](issues/09-site-content-license.md)：本站撰寫的景點內容採 CC BY-NC 4.0，程式碼、schema 與 skill 採 MIT（[ADR-0002](../../docs/adr/0002-content-license-cc-by-nc.md)）。宣告放在頁尾一行與關於頁完整版，並在 `<head>` 加 `rel=license`。引文、官方事實與開放資料不在授權範圍內；有 `tourismId` 的景點，schema 強制要求一筆 `kind: openData` 顯名（修正票 04）。
 
+- [視覺方向](issues/10-visual-direction.md)：選定 A 的明體標題、B 的側欄篩選與緊湊首頁、C 的景點章節目錄；整合原型 D 保留供實作參考。
+
+- [v1 規格與驗收條件](issues/08-v1-spec-and-acceptance.md)：整合規格入口、代理權限、實作順序與驗收矩陣，釐清同 id 修訂隔離及不可讀來源例外；實作前決策已完成，可交給 `/to-spec`。
+
 ## Not yet specified
 
-- **縣市頁與標籤頁**：景點數量變多後，是否新增 `/regions/<縣市>/` 與依類型分類的列表頁，以及要以多少景點作為門檻。
+無。
 
 ## Out of scope
+
+- 縣市列表頁、分類列表頁與新增門檻：依[網站頁面範圍與瀏覽方式](issues/07-site-pages-and-browsing.md)，v1 不做；若需要，另開後續規劃。
 
 - LINE Bot 與任何動態收件服務，D1、Queues、MCP Events、網站後台、自動排程，以及自動重新查證。LINE 會在後續另立地圖，作為新的收件入口。
 - 景點照片、生成圖片、海外景點、多語系。
