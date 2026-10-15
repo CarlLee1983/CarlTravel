@@ -88,3 +88,53 @@ test(
     }
   },
 );
+
+test(
+  "empty formal site allows shared public copy but still rejects private draft labels",
+  { timeout: 60_000 },
+  async () => {
+    const { root, cleanup } = await workspace();
+    const { rm } = await import("node:fs/promises");
+    const { parse, stringify } = await import("yaml");
+    try {
+      const data = parse(
+        await readFile(
+          join(root, "content/spots/approved-park/spot.yaml"),
+          "utf8",
+        ),
+      );
+      data.name = "未發布測試景點";
+      data.transport.facts[0].label = "開放時間";
+      data.hoursAndFees.facts[0].label = "privatelabelprobe";
+      await mkdir(join(root, "drafts/spots/unpublished"), { recursive: true });
+      await writeFile(
+        join(root, "drafts/spots/unpublished/spot.yaml"),
+        stringify(data),
+      );
+      await rm(join(root, "content/spots/approved-park"), { recursive: true });
+      execFileSync(process.execPath, ["scripts/site.mjs", "build"], {
+        cwd: root,
+        stdio: "pipe",
+        timeout: 60_000,
+      });
+      assert.deepEqual((await checkIsolation(root)).urls, []);
+      const home = join(root, "dist/index.html");
+      const originalHome = await readFile(home, "utf8");
+      await writeFile(home, originalHome + "<p>開放時間</p>");
+      await assert.rejects(checkIsolation(root), /草稿專有文字/);
+      await writeFile(home, originalHome);
+      const about = join(root, "dist/about/index.html");
+      const originalAbout = await readFile(about, "utf8");
+      await writeFile(about, originalAbout + "<p>開放時間</p>");
+      await assert.rejects(checkIsolation(root), /草稿專有文字/);
+      await writeFile(about, originalAbout);
+      await writeFile(
+        about,
+        (await readFile(about, "utf8")) + "<p>privatelabelprobe</p>",
+      );
+      await assert.rejects(checkIsolation(root), /草稿專有文字/);
+    } finally {
+      await cleanup();
+    }
+  },
+);

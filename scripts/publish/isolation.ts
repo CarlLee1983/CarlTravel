@@ -5,6 +5,10 @@ import { chromium } from "@playwright/test";
 import { allSpots } from "../research/records.ts";
 import { researchDirectory, writeLocal } from "../research/files.ts";
 import { checkOutput } from "../check-output.ts";
+import {
+  officialInformationDescription,
+  officialInformationDisclaimer,
+} from "../../src/site.ts";
 
 export function strings(value: unknown, key = ""): string[] {
   if (
@@ -121,15 +125,17 @@ export async function inspectIndex(
   }
 }
 
-export async function outputText(path: string): Promise<string[]> {
-  const texts: string[] = [];
+export async function outputText(
+  path: string,
+): Promise<{ path: string; text: string }[]> {
+  const texts: { path: string; text: string }[] = [];
   for (const entry of await readdir(path, { withFileTypes: true })) {
     if (entry.isSymbolicLink() || ["drafts", "research"].includes(entry.name))
       throw new Error("私人目錄或符號連結出現在正式輸出");
     const file = join(path, entry.name);
     if (entry.isDirectory()) texts.push(...(await outputText(file)));
     else if (/\.(html|xml|json|js|txt)$/.test(entry.name))
-      texts.push(await readFile(file, "utf8"));
+      texts.push({ path: file, text: await readFile(file, "utf8") });
   }
   return texts;
 }
@@ -146,11 +152,13 @@ export async function checkIsolation(root: string) {
   const privateTerms = [
     ...new Set(drafts.flatMap((spot) => strings(spot))),
   ].filter((text) => text.length > 1 && !formalStrings.has(text));
-  const raw = await outputText(output);
+  const files = await outputText(output);
+  const raw = files.map((file) => file.text);
+  const htmlFiles = files.filter((file) => file.text.includes("<html"));
   const inspected = await inspectIndex(
     output,
     [...privateTerms, ...formal.map((spot) => spot.name)],
-    raw.filter((text) => text.includes("<html")),
+    htmlFiles.map((file) => file.text),
   );
   const urls = inspected.records.map((record) => record.url).sort();
   if (
@@ -163,10 +171,25 @@ export async function checkIsolation(root: string) {
     ...inspected.decoded,
     ...inspected.records.map((record) => record.content),
   ];
+  // Remove each known public sentence once, only on About. Extra occurrences
+  // there, other pages, and Pagefind remain subject to the full private scan.
+  const scanCopy = (text: string, path: string) =>
+    path === join(output, "about/index.html")
+      ? text
+          .replace(officialInformationDescription, "")
+          .replace(officialInformationDisclaimer, "")
+      : text;
+  const scanTexts = [
+    ...files.map((file) => scanCopy(file.text, file.path)),
+    ...inspected.decoded.map((text, index) =>
+      scanCopy(text, htmlFiles[index]!.path),
+    ),
+    ...inspected.records.map((record) => record.content),
+  ];
   const unpublishedIds = drafts
     .filter((draft) => !formal.some((spot) => spot.id === draft.id))
     .map((draft) => draft.id);
-  for (const text of texts) {
+  for (const [index, text] of texts.entries()) {
     if (
       unpublishedIds.some((id) =>
         new RegExp(`/spots/${id}(?:/|["\\s?#<]|$)`).test(text),
@@ -176,7 +199,7 @@ export async function checkIsolation(root: string) {
     if (/修訂中|本機草稿預覽|(?:research|drafts)\//.test(text))
       throw new Error("草稿或研究路徑出現在正式輸出");
     for (const term of privateTerms)
-      if (text.includes(term)) {
+      if (scanTexts[index]!.includes(term)) {
         await writeLocal(
           join(await researchDirectory(root), "isolation-report.md"),
           `# 正式輸出隔離阻擋\n\n草稿專有文字出現在 dist 頁面或 Pagefind 文件：${term}\n`,
