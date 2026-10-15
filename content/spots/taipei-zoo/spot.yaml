@@ -1,0 +1,112 @@
+name: 臺北市立動物園
+address: 臺北市文山區新光路二段30號
+county: 臺北市
+district: 文山區
+kind: 動物園／水族館
+setting: 室內外皆有
+summary: 搭捷運看動物，走進穿山甲造型的雨林館。
+illustration:
+  kind: ai-generated
+  alt: 繪本風格的親子雨林觀察情境，巨嘴鳥停在枝上，樹獺倒掛於樹枝。
+  sha256: 92a14b060ccbab9f3401ba06e2ff0cf176f5b7796966fee2997f9186448e5b1a
+  width: 1536
+  height: 1024
+ageRange:
+  status: unknown
+officialRefs:
+  - id: transport
+    title: 交通及停車
+    url: https://www.zoo.gov.taipei/News_Content.aspx?n=9F0E68F3EC5B5751&s=01BD7568D718DAED&sms=F3B2EF982C0582B3
+    organization: 臺北市立動物園
+    kind: page
+  - id: hours
+    title: 日間開放與館舍輪休
+    url: https://www.zoo.gov.taipei/cp.aspx?n=7D54CBE2525F75B8
+    organization: 臺北市立動物園
+    kind: page
+  - id: prices
+    title: 參觀票價
+    url: https://www.zoo.gov.taipei/cp.aspx?n=763493FD7ECCAA11
+    organization: 臺北市立動物園
+    kind: page
+  - id: tickets
+    title: 票種適用對象
+    url: https://www.zoo.gov.taipei/cp.aspx?n=763493FD7ECCAA11&s=F3BC09EC36168CB6
+    organization: 臺北市立動物園
+    kind: page
+  - id: baby
+    title: 哺乳與嬰幼兒服務
+    url: https://www.zoo.gov.taipei/News_Content.aspx?n=9CEF8C135E5FAFCD&s=12441AD29A65D7E4
+    organization: 臺北市立動物園
+    kind: page
+  - id: access
+    title: 輪椅動線與坡道
+    url: https://www.zoo.gov.taipei/News_Content.aspx?n=826A6866901684A2&s=9151847D90E3FFC6
+    organization: 臺北市立動物園
+    kind: page
+  - id: pangolin
+    title: 穿山甲館介紹
+    url: https://www.zoo.gov.taipei/News_Content.aspx?n=0E2F1BDD15CF608D&s=A0E78E5E74C0C58A&sms=4B48AE9F06DCAA6F
+    organization: 臺北市立動物園
+    kind: page
+sources: []
+authorNotes: []
+withKids:
+  checkedAt: 2026-10-15
+  facts:
+    - text: 穿山甲館以亞馬遜雨林為展示主題，將水域與樹冠等不同高度的環境放在同一館內。
+      ref: pangolin
+  activities:
+    - 選一隻看得到的動物，觀察牠待在水裡、地面還是樹上，再一起找解說牌。
+agentTips:
+  - 先選幾個想看的館區，再確認輪休日；保留休息時間，不必一次走完。
+  - 出發前確認天候與臨時停展公告，雨天另備可縮短的行程。
+nearby: []
+transport:
+  checkedAt: 2026-10-15
+  facts:
+    - status: ok
+      label: 捷運
+      value: 文湖線搭至動物園站。
+      ref: transport
+    - status: ok
+      label: 開車停車
+      value: 可查詢動物園站地下停車場、河川地停車場或木柵機廠停車場的剩餘車位。
+      ref: transport
+hoursAndFees:
+  checkedAt: 2026-10-15
+  facts:
+    - status: ok
+      label: 日間開放
+      value: 09:00–17:00；16:00 後不再入園，動物展示至 16:30。
+      ref: hours
+    - status: ok
+      label: 休園與輪休
+      value: 農曆除夕及年度休園期間不開放；室內館另有週一輪休，連假可能順延，出發前查官網當日安排。
+      ref: hours
+    - status: ok
+      label: 入園票價
+      value: 普通票 100 元、臺北市民票 60 元、優待票 50 元。
+      ref: prices
+    - status: ok
+      label: 兒童票
+      value: 0–5 歲免票，6–11 歲適用優待票，皆不限國籍；持臺北市國小數位學生證者免票，優惠身分需備證明文件。
+      ref: tickets
+familyChecklist:
+  checkedAt: 2026-10-15
+  stroller:
+    status: yes
+    ref: baby
+    note: 遊客服務中心旁與鳥園車站提供娃娃車租借。
+  nursingRoom:
+    status: yes
+    ref: baby
+    note: 遊客服務中心護理站、穿山甲館旁等處設有哺乳室。
+  familyToilet:
+    status: unknown
+  rainyDay:
+    status: unknown
+  accessibility:
+    status: yes
+    ref: access
+    note: 園方說明戶外有無障礙坡道，室內館可使用電梯。
