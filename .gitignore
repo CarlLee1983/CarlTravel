@@ -1,0 +1,12 @@
+# 草稿與研究紀錄只存在本機，永不進 Git（見 docs/adr/0001-drafts-and-research-stay-local.md）
+/drafts/
+/research/
+
+node_modules/
+/dist/
+.astro/
+.wrangler/
+.env
+.env.*
+!.env.example
+.DS_Store
