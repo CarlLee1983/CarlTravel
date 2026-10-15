@@ -1,0 +1,126 @@
+name: 壽山動物園
+address: 高雄市鼓山區萬壽路350號
+county: 高雄市
+district: 鼓山區
+kind: 動物園／水族館
+setting: 室內外皆有
+summary: 從空中廊道觀察動物，也可到兒童牧場體驗餵食。
+illustration:
+  kind: ai-generated
+  alt: 親子觀察兩隻狐獴的繪本風格情境插畫，一隻站立、一隻四足行走。
+  sha256: 3cfc87ccac67d7c2ba41543fcfb7f3603c2b67e1ef3113fd22f73883cc7b4665
+  width: 1536
+  height: 1024
+ageRange:
+  status: unknown
+officialRefs:
+  - id: visit
+    title: 遊園資訊
+    url: https://zoo.kcg.gov.tw/zh-tw/tour-information/
+    organization: 壽山動物園
+    kind: page
+  - id: service
+    title: 服務與商店
+    url: https://zoo.kcg.gov.tw/zh-tw/service-and-shop/
+    organization: 壽山動物園
+    kind: page
+  - id: notice
+    title: 旅客須知
+    url: https://zoo.kcg.gov.tw/zh-tw/traveler-notice/
+    organization: 壽山動物園
+    kind: page
+  - id: access
+    title: 壽山動物園開園在即 SEAZA到園視察
+    url: https://zoo.kcg.gov.tw/zh-tw/news/28/
+    organization: 壽山動物園
+    kind: page
+  - id: tourism
+    title: 壽山動物園景點資訊
+    url: https://khh.travel/zh-tw/attractions/detail/12/
+    organization: 高雄市政府觀光局
+    kind: page
+sources: []
+authorNotes: []
+facilities:
+  checkedAt: 2026-10-15
+  facts:
+    - status: ok
+      label: 推車及輪椅
+      value: 入口服務中心提供娃娃車和輪椅租用。
+      ref: service
+    - status: ok
+      label: 哺乳室
+      value: 服務中心旁設哺乳室，備有尿布台、熱水和母乳存放冰箱。
+      ref: service
+    - status: ok
+      label: 公廁
+      value: 園方列出園內6座公廁的位置。
+      ref: service
+    - status: ok
+      label: 親水廣場
+      value: 戶外親水廣場每週四上午暫停開放以進行清洗維護。
+      ref: service
+withKids:
+  checkedAt: 2026-10-15
+  facts:
+    - text: 兒童牧場的動物餵食體驗排定週二至週日10:00–11:00、14:00–15:00，雨天暫停且牧草數量有限。
+      ref: notice
+    - text: 園區有戶外親水廣場，週四上午因清洗維護暫停開放。
+      ref: service
+  activities:
+    - 參觀前查看園方動物展示及餵食公告，和孩子觀察動物的外形與活動方式。
+agentTips: []
+nearby: []
+transport:
+  checkedAt: 2026-10-15
+  facts:
+    - status: ok
+      label: 大眾運輸
+      value: 可從高雄火車站、捷運鹽埕埔站或輕軌文武聖殿站轉乘56號公車到動物園。
+      ref: visit
+    - status: ok
+      label: 停車場
+      value: 停車場距入口約300公尺；園區入口禁止車輛臨停。
+      ref: visit
+    - status: conflict
+      label: 小客車平日停車費
+      claims:
+        - value: 每次40元
+          ref: visit
+        - value: 每次30元
+          ref: tourism
+      contact: 出發前向園方確認當日收費，電話07-5215187。
+hoursAndFees:
+  checkedAt: 2026-10-15
+  facts:
+    - status: ok
+      label: 開放時間
+      value: 週二至週日09:00–17:00，16:30停止入園；週一及除夕休園，週一逢國定假日照常開園。
+      ref: visit
+    - status: ok
+      label: 門票
+      value: 全票40元；6歲以上未滿18歲半票20元；未滿6歲及高雄市國小學童免票，優惠資格須依園方規定出示證件。
+      ref: visit
+    - status: ok
+      label: 購票
+      value: 參觀免預約，可於現場售票亭或自動售票機購票。
+      ref: visit
+familyChecklist:
+  checkedAt: 2026-10-15
+  stroller:
+    status: yes
+    ref: service
+    note: 入口服務中心可租娃娃車；未查得全園推車動線說明。
+  nursingRoom:
+    status: yes
+    ref: service
+    note: 位於服務中心旁，設尿布台。
+  familyToilet:
+    status: unknown
+  rainyDay:
+    status: unknown
+  accessibility:
+    status: yes
+    ref: access
+    note: 園方介紹空中長廊設平緩坡道及無障礙電梯；其他動線須另向園方確認。
+  notes: 親子廁所與雨天參觀條件未查得完整官方說明；兒童牧場餵食在雨天暫停。

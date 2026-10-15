@@ -1,0 +1,101 @@
+name: 新竹市立動物園
+address: 新竹市東區食品路66號
+county: 新竹市
+district: 東區
+kind: 動物園／水族館
+setting: 戶外
+summary: 在新竹公園內觀察不同棲地的動物。
+illustration:
+  kind: ai-generated
+  alt: 親子隔著欄杆觀察池中河馬的繪本風格情境插畫。
+  sha256: d05fd576279f065d07deb55f013ad4fa8c93dac33a0bcfdfe7ef60fe16934878
+  width: 1536
+  height: 1024
+ageRange:
+  status: unknown
+officialRefs:
+  - id: zoo-home
+    title: 新竹市立動物園首頁
+    url: https://zoo-info.hccg.gov.tw/
+    organization: 新竹市立動物園
+    kind: page
+  - id: zoo-hours
+    title: 開放時間
+    url: https://zoo-info.hccg.gov.tw/visit/opentime/
+    organization: 新竹市立動物園
+    kind: page
+  - id: zoo-price
+    title: 票價資訊
+    url: https://zoo-info.hccg.gov.tw/visit/price/
+    organization: 新竹市立動物園
+    kind: page
+  - id: zoo-transport
+    title: 交通及停車
+    url: https://zoo-info.hccg.gov.tw/visit/transportation/
+    organization: 新竹市立動物園
+    kind: page
+  - id: zoo-lease
+    title: 輪椅／嬰兒推車租借
+    url: https://zoo-info.hccg.gov.tw/services/lease/
+    organization: 新竹市立動物園
+    kind: page
+  - id: zoo-animals
+    title: 動物資訊
+    url: https://zoo-info.hccg.gov.tw/park/animals/
+    organization: 新竹市立動物園
+    kind: page
+sources: []
+authorNotes: []
+facilities:
+  checkedAt: 2026-10-15
+  facts:
+    - status: ok
+      label: 嬰兒推車與輪椅租借
+      value: 遊客服務中心提供免費租借，須押證件；借用時間09:00–16:30，當日17:00前歸還。天候不佳時暫停租借。
+      ref: zoo-lease
+withKids:
+  checkedAt: 2026-10-15
+  facts:
+    - text: 園方動物資訊依高草區、可愛動物區、猴島區、猛獸區及濱水區介紹展示動物。
+      ref: zoo-animals
+  activities:
+    - 依園方分區找出兩種不同動物，觀察牠們所在的展示環境。
+agentTips: []
+nearby: []
+transport:
+  checkedAt: 2026-10-15
+  facts:
+    - status: ok
+      label: 公車
+      value: 公園站可搭乘71、72、73、5603、5602經雙溪及世博3金城線；班次請再查公車業者。
+      ref: zoo-transport
+    - status: ok
+      label: 入園入口
+      value: 一號門廣場施工期間暫停開放；請從二號門購票入園。出發前可再查園方公告。
+      ref: zoo-home
+hoursAndFees:
+  checkedAt: 2026-10-15
+  facts:
+    - status: ok
+      label: 開放時間
+      value: 09:00–17:00，16:20停止售票及入園；每週一與除夕休園，連假週一另依公告開放。
+      ref: zoo-hours
+    - status: ok
+      label: 門票
+      value: 全票50元；6歲以上、未滿12歲兒童優待票25元；未滿6歲或設籍新竹市未滿12歲兒童免票，優惠請備證明文件。
+      ref: zoo-price
+familyChecklist:
+  checkedAt: 2026-10-15
+  stroller:
+    status: yes
+    ref: zoo-lease
+    note: 遊客服務中心可借嬰兒推車；天候不佳時暫停租借。
+  nursingRoom:
+    status: unknown
+  familyToilet:
+    status: unknown
+  rainyDay:
+    status: unknown
+  accessibility:
+    status: unknown
+  notes: 園方提供輪椅租借，但未據此確認全園動線；雨天及親子設施出發前可洽園方查詢。

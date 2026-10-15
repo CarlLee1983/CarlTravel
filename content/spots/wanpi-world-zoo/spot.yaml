@@ -1,0 +1,125 @@
+name: 頑皮世界野生動物園
+address: 臺南市學甲區三慶里頂洲75-25號
+county: 臺南市
+district: 學甲區
+kind: 動物園／水族館
+setting: 室內外皆有
+summary: 看水豚與企鵝，也能參加保育員解說
+illustration:
+  kind: ai-generated
+  alt: 親子隔著欄杆觀察池邊兩隻水豚的繪本風格情境插畫。
+  sha256: 4c6991d0e7938ceb03e20c973693a15d8fb2a6444c2dcc12e2f858c0c6cb26ef
+  width: 1536
+  height: 1024
+ageRange:
+  status: unknown
+officialRefs:
+  - id: wanpi-home
+    title: 頑皮世界野生動物園首頁
+    url: https://wanpiworldzoo.com.tw/
+    organization: 頑皮世界野生動物園
+    kind: page
+  - id: wanpi-visit
+    title: 遊園資訊
+    url: https://wanpiworldzoo.com.tw/article.php?lang=tw&tb=1
+    organization: 頑皮世界野生動物園
+    kind: page
+  - id: tainan-tourism
+    title: 頑皮世界野生動物園－台南旅遊網
+    url: https://www.twtainan.net/zh-tw/attractions/detail/476/
+    organization: 臺南市政府觀光旅遊局
+    kind: page
+sources: []
+authorNotes: []
+facilities:
+  checkedAt: 2026-10-15
+  facts:
+    - status: ok
+      label: 親子設施
+      value: 親子廁所位於企鵝區前方，地圖編號71；同編號設有集哺乳室與飲水機。
+      ref: wanpi-home
+    - status: ok
+      label: 輪椅借用
+      value: 可向入口工作人員免費借用輪椅。
+      ref: wanpi-home
+    - status: ok
+      label: 無障礙設施
+      value: 台南旅遊網列有無障礙停車位、廁所及建物坡道；未說明全園動線。
+      ref: tainan-tourism
+    - status: ok
+      label: 雨天活動
+      value: 大雨時室外保育員解說可能取消；下雨時遊園列車可能停駛，以現場公告為準。
+      ref: wanpi-visit
+withKids:
+  checkedAt: 2026-10-15
+  facts:
+    - text: 園方介紹南美水豚、黑腳企鵝及金剛鸚鵡等動物展示區。
+      ref: wanpi-home
+    - text: 園方提供保育員解說活動，每週時段另行更新；大雨時室外場次可能取消。
+      ref: wanpi-visit
+  activities:
+    - 在黑腳企鵝區觀察每隻企鵝胸腹斑點的差異。
+    - 聽解說時，請孩子挑一種動物記下牠的外形特徵。
+agentTips: []
+nearby: []
+transport:
+  checkedAt: 2026-10-15
+  facts:
+    - status: ok
+      label: 大眾運輸
+      value: 從新營車站轉乘大台南公車棕一線，在頑皮世界站下車。
+      ref: wanpi-visit
+    - status: ok
+      label: 停車
+      value: 機車免費；汽車每次100元，30分鐘內離場免費。
+      ref: wanpi-visit
+hoursAndFees:
+  checkedAt: 2026-10-15
+  facts:
+    - status: ok
+      label: 開放時間
+      value: 全年無休，09:00–17:00；最後入園16:00。
+      ref: wanpi-visit
+    - status: conflict
+      label: 全票價格
+      claims:
+        - value: 園方列原價700元，平日優惠499元、假日優惠550元。
+          ref: wanpi-visit
+        - value: 台南旅遊網列全票480元。
+          ref: tainan-tourism
+      contact: 票價以園方最新公告為準；購票前可致電06-7810000確認。
+    - status: ok
+      label: 學童票
+      value: 6至未滿12歲平日380元、假日430元。
+      ref: wanpi-visit
+    - status: conflict
+      label: 幼童票
+      claims:
+        - value: 園方列3至未滿6歲290元。
+          ref: wanpi-visit
+        - value: 台南旅遊網列3至6歲280元。
+          ref: tainan-tourism
+      contact: 以園方最新公告為準；購票前可致電06-7810000確認。
+    - status: ok
+      label: 未滿3歲
+      value: 憑證件免費；每位成人最多陪同3名未滿3歲幼兒，特殊需求幼兒則需一對一陪同。
+      ref: wanpi-visit
+familyChecklist:
+  checkedAt: 2026-10-15
+  stroller:
+    status: unknown
+  nursingRoom:
+    status: yes
+    ref: wanpi-home
+    note: 企鵝區前方、地圖編號71設有集哺乳室。
+  familyToilet:
+    status: yes
+    ref: wanpi-home
+    note: 位於企鵝區前方，地圖編號71。
+  rainyDay:
+    status: unknown
+  accessibility:
+    status: yes
+    ref: tainan-tourism
+    note: 觀光網列有無障礙車位、廁所與建物坡道；全園動線未確認。
+  notes: 雨天部分室外活動可能取消；推車通行與租借資訊尚無官方確認。
