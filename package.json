@@ -24,7 +24,8 @@
     "test:e2e": "pnpm build:fixture && playwright test",
     "verify": "node scripts/verify.mjs",
     "draft:copy": "node --experimental-strip-types scripts/draft.ts copy",
-    "draft:diff": "node --experimental-strip-types scripts/draft.ts diff"
+    "draft:diff": "node --experimental-strip-types scripts/draft.ts diff",
+    "research": "node --experimental-strip-types scripts/research.ts"
   },
   "dependencies": {
     "astro": "7.2.9",
