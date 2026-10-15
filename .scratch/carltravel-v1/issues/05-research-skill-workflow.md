@@ -22,6 +22,8 @@ Blocked by: 02, 03, 04
 
 ## Answer
 
+> 不可讀來源的收錄例外與缺少原文的處理見[v1 規格與驗收條件](08-v1-spec-and-acceptance.md)。下文保留原決策紀錄，實作採補充後規則。
+
 以下由 Carl 於 2026-10-15 確認。這份是 `carltravel-research` skill 的規則清單，skill 檔本身在實作階段撰寫，寫法比照 CarlKitchen 的 topic-writing：分步驟，每步都有完成條件。
 
 ### 硬性規則

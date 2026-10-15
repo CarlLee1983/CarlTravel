@@ -21,6 +21,8 @@ Blocked by: 04, 05
 
 ## Answer
 
+> 同 id 修訂隔離、原文缺失與公開檢查摘要的補充見[v1 規格與驗收條件](08-v1-spec-and-acceptance.md)。下文保留原決策紀錄，實作採補充後規則。
+
 以下由 Carl 於 2026-10-15 確認。整體原則：能在公開 repo 內容上判斷的規則，放進 CI，擋合入與部署；必須讀到草稿或研究紀錄才能判斷的規則，只能在本機跑，由 `carltravel-publish` 在開 PR 前擋下（理由見 [ADR-0001](../../../docs/adr/0001-drafts-and-research-stay-local.md)）；無法機械判斷的寫作規則，留在 skill 裡，交給 Agent 自查與 Carl 審閱。
 
 ### CI：PR 與部署

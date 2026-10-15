@@ -4,9 +4,18 @@
 
 node_modules/
 /dist/
+/dist-fixture/
 .astro/
 .wrangler/
 .env
 .env.*
 !.env.example
 .DS_Store
+
+# graft's local graph cache — regenerable, not committed (run `graft build`).
+graft/
+test-results/
+playwright-report/
+
+# Local visual design evidence and browser captures.
+.taste-skill/

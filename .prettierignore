@@ -1,0 +1,23 @@
+node_modules
+dist
+dist-fixture
+.astro
+.scratch
+graft
+docs
+CONTEXT.md
+README.md
+.ignore
+.gitignore
+pnpm-lock.yaml
+test-results
+playwright-report
+
+# Private drafts and research are outside repository formatting.
+/drafts/
+/research/
+
+.wrangler/
+
+# Local visual design evidence and browser captures.
+.taste-skill/

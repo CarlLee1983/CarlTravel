@@ -1,0 +1,76 @@
+name: Production deployment
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+# Never interrupt an in-flight deployment. Rebuild each selected main commit.
+concurrency:
+  group: production
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    if: github.repository == 'CarlLee1983/CarlTravel' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      CI: "true"
+      WRANGLER_SEND_METRICS: "false"
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@f40ffcd9367d9f12939873eb1018b921a783ffaa # v4
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: "24"
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm verify
+
+  deploy:
+    needs: verify
+    if: github.repository == 'CarlLee1983/CarlTravel' && github.ref == 'refs/heads/main' && github.actor == 'CarlLee1983' && github.triggering_actor == 'CarlLee1983'
+    environment:
+      name: production
+      url: https://carltravel.gravito.dev
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      CI: "true"
+      WRANGLER_SEND_METRICS: "false"
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: pnpm/action-setup@f40ffcd9367d9f12939873eb1018b921a783ffaa # v4
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: "24"
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps chromium
+      - name: Rebuild and validate formal deployment artifact
+        run: pnpm prepare:deployment
+      - name: Require current main before deployment
+        shell: bash
+        run: |
+          test -n "$GITHUB_SHA"
+          main_head="$(git ls-remote --exit-code https://github.com/CarlLee1983/CarlTravel.git refs/heads/main | cut -f1)"
+          test "$main_head" = "$GITHUB_SHA"
+      - name: Deploy validated artifact
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          test -n "$CLOUDFLARE_API_TOKEN" && test -n "$CLOUDFLARE_ACCOUNT_ID"
+          pnpm exec wrangler deploy
+      - name: Record successful deployment
+        run: |
+          printf 'Deployed commit: `%s`\n\nPublic validation pending: https://carltravel.gravito.dev\n' "$GITHUB_SHA" >> "$GITHUB_STEP_SUMMARY"

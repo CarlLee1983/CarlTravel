@@ -1,0 +1,553 @@
+---
+import {
+  illustrationUrl,
+  illustrationCaption,
+} from "../../content/illustration.ts";
+import Layout from "../../layouts/Layout.astro";
+import CheckedAt from "../../components/CheckedAt.astro";
+import OfficialSection from "../../components/OfficialSection.astro";
+import { loadPageSpots, type PageSpot } from "../../content/preview.ts";
+import { mapLinks } from "../../content/presentation.ts";
+import { ageLabel } from "../../content/schema.ts";
+export async function getStaticPaths() {
+  return (await loadPageSpots(__CARLTRAVEL_DRAFT_PREVIEW__)).map((spot) => ({
+    params: { id: spot.id },
+    props: { spot },
+  }));
+}
+interface Props {
+  spot: PageSpot;
+}
+const { spot } = Astro.props;
+const buildDate = new Date().toISOString().slice(0, 10);
+const official = (id: string) =>
+  spot.officialRefs.find((ref) => ref.id === id)!;
+const source = (id: string) => spot.sources.find((item) => item.id === id)!;
+const maps = mapLinks(spot.name, spot.address, spot.location);
+const checklist = [
+  ["推車友善", spot.familyChecklist.stroller],
+  ["哺乳室", spot.familyChecklist.nursingRoom],
+  ["親子廁所", spot.familyChecklist.familyToilet],
+  ["雨天備案", spot.familyChecklist.rainyDay],
+  ["無障礙設施", spot.familyChecklist.accessibility],
+] as const;
+const checklistStatus = { yes: "有", no: "無", unknown: "未知" } as const;
+const sections = [
+  { id: "checklist", label: "親子清單" },
+  { id: "hours", label: "開放時間與費用" },
+  { id: "transport", label: "交通與停車" },
+  ...(spot.facilities ? [{ id: "facilities", label: "設施" }] : []),
+  ...(spot.withKids ? [{ id: "with-kids", label: "跟孩子一起看" }] : []),
+  ...(spot.authorNotes.length ? [{ id: "author", label: "原作者心得" }] : []),
+  ...(spot.agentTips.length ? [{ id: "tips", label: "Agent 建議" }] : []),
+  ...(spot.nearby.length ? [{ id: "nearby", label: "周邊安排" }] : []),
+  { id: "references", label: "來源與官方出處" },
+  { id: "spot-disclaimer", label: "免責聲明" },
+];
+const nearbyKind = { food: "餐飲", stay: "住宿", activity: "活動" } as const;
+---
+
+<Layout title={spot.name}>
+  <nav class="breadcrumb" aria-label="麵包屑">
+    <a href="/">全部景點</a> / {spot.name}
+  </nav>
+  <div class="spot-shell">
+    <nav class="contents" aria-label="景點章節目錄">
+      <p>本頁目錄</p>
+      <div class="contents-links">
+        {sections.map(({ id, label }) => <a href={`#${id}`}>{label}</a>)}
+      </div>
+    </nav>
+    <article class="spot-article">
+      {spot.preview && <p class="preview-label">{spot.preview} · 尚未發布</p>}
+      <header class="spot-heading">
+        <h1
+          data-pagefind-body
+          data-pagefind-meta="title"
+          data-pagefind-weight="10"
+        >
+          {spot.name}
+        </h1>
+        <p class="location">
+          <span data-pagefind-body>{spot.county} · {spot.district}</span> / {
+            spot.kind
+          }
+        </p>
+
+        <p class="spot-summary" data-pagefind-body>{spot.summary}</p>
+        <p>{spot.address}</p>
+        <p class="meta">{spot.setting} · {ageLabel(spot.ageRange)}</p>
+        {
+          spot.ageRange.status === "known" && (
+            <a href={official(spot.ageRange.ref).url}>建議年齡官方出處</a>
+          )
+        }
+        <p class="map-links">
+          <a href={maps.google}
+            >Google Maps 開啟地圖 <span aria-hidden="true">↗</span></a
+          >
+          <a href={maps.osm}>OpenStreetMap 開啟地圖</a>
+        </p>
+      </header>
+      {
+        spot.illustration && (
+          <figure class="spot-illustration" data-pagefind-ignore>
+            <img
+              src={`${illustrationUrl(spot.id)}?v=${spot.illustration.sha256}`}
+              alt={spot.illustration.alt}
+              width={spot.illustration.width}
+              height={spot.illustration.height}
+              decoding="async"
+            />
+            <figcaption>{illustrationCaption}</figcaption>
+          </figure>
+        )
+      }
+      <section id="checklist" tabindex="-1" aria-labelledby="checklist-heading">
+        <span class="info-label official">官方資訊</span>
+        <h2 id="checklist-heading">親子清單</h2>
+        <CheckedAt
+          checkedAt={spot.familyChecklist.checkedAt}
+          buildDate={buildDate}
+        />
+        <dl class="fact-list">
+          {
+            checklist.map(([label, item]) => (
+              <div>
+                <dt>{label}</dt>
+                <dd>
+                  <span class="check-status" data-status={item.status}>
+                    {checklistStatus[item.status]}
+                  </span>
+                  {item.status !== "unknown" && (
+                    <>
+                      {item.note && ` · ${item.note}`}　
+                      <a href={official(item.ref).url}>
+                        出處：{official(item.ref).title}
+                      </a>
+                    </>
+                  )}
+                </dd>
+              </div>
+            ))
+          }
+        </dl>
+        {spot.familyChecklist.notes && <p>{spot.familyChecklist.notes}</p>}
+      </section>
+      <OfficialSection
+        id="hours"
+        title="開放時間與費用"
+        section={spot.hoursAndFees}
+        refs={spot.officialRefs}
+        buildDate={buildDate}
+      />
+      <OfficialSection
+        id="transport"
+        title="交通與停車"
+        section={spot.transport}
+        refs={spot.officialRefs}
+        buildDate={buildDate}
+      />
+      {
+        spot.facilities && (
+          <OfficialSection
+            id="facilities"
+            title="設施"
+            section={spot.facilities}
+            refs={spot.officialRefs}
+            buildDate={buildDate}
+          />
+        )
+      }
+      {
+        spot.withKids && (
+          <section
+            id="with-kids"
+            tabindex="-1"
+            aria-labelledby="with-kids-heading"
+          >
+            <span class="info-label official">官方資訊</span>
+            <h2 id="with-kids-heading">跟孩子一起看</h2>
+            <CheckedAt
+              checkedAt={spot.withKids.checkedAt}
+              buildDate={buildDate}
+            />
+            <ul>
+              {spot.withKids.facts.map((fact) => (
+                <li>
+                  <span data-pagefind-body>{fact.text}</span>{" "}
+                  <a href={official(fact.ref).url}>
+                    出處：{official(fact.ref).title}
+                  </a>
+                </li>
+              ))}
+            </ul>
+            {spot.withKids.activities.length > 0 && (
+              <div>
+                <h3>Agent 建議的觀察活動</h3>
+                <ul>
+                  {spot.withKids.activities.map((activity) => (
+                    <li data-pagefind-body>{activity}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </section>
+        )
+      }
+      {
+        spot.authorNotes.length > 0 && (
+          <section id="author" tabindex="-1" aria-labelledby="author-heading">
+            <span class="info-label author">原作者心得</span>
+            <h2 id="author-heading">原作者心得</h2>
+            {spot.authorNotes.map((note) => (
+              <article>
+                <p data-pagefind-body>{note.summary}</p>
+                {note.quotes.map((quote) => (
+                  <blockquote>{quote}</blockquote>
+                ))}
+                <p class="meta">
+                  原作者：
+                  <a href={source(note.source).url}>
+                    {source(note.source).author} · {source(note.source).title}
+                  </a>
+                </p>
+              </article>
+            ))}
+          </section>
+        )
+      }
+      {
+        spot.agentTips.length > 0 && (
+          <section id="tips" tabindex="-1" aria-labelledby="tips-heading">
+            <span class="info-label agent">Agent 建議</span>
+            <h2 id="tips-heading">Agent 建議</h2>
+            <ul>
+              {spot.agentTips.map((tip) => (
+                <li data-pagefind-body>{tip}</li>
+              ))}
+            </ul>
+          </section>
+        )
+      }
+      {
+        spot.nearby.length > 0 && (
+          <section id="nearby" tabindex="-1" aria-labelledby="nearby-heading">
+            <h2 id="nearby-heading">周邊安排</h2>
+            <ul>
+              {spot.nearby.map((item) => (
+                <li>
+                  <strong>{item.name}</strong> · {nearbyKind[item.kind]}：
+                  {item.note}
+                  {item.source && (
+                    <>
+                      {" "}
+                      <a href={source(item.source).url}>
+                        來源：{source(item.source).title}
+                      </a>
+                    </>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </section>
+        )
+      }
+      <section
+        id="references"
+        tabindex="-1"
+        aria-labelledby="references-heading"
+      >
+        <h2 id="references-heading">來源與官方出處</h2>
+        <h3>官方出處</h3>
+        <ul>
+          {
+            spot.officialRefs.map((ref) => (
+              <li>
+                <a href={ref.url}>{ref.title}</a> · {ref.organization}
+                {ref.kind === "openData" && (
+                  <span>
+                    {" "}
+                    · 開放資料顯名：{ref.attribution.provider}（
+                    {ref.attribution.year}）「{ref.attribution.dataset}」版本{" "}
+                    {ref.attribution.version} ·{" "}
+                    <a href="https://data.gov.tw/license">
+                      政府資料開放授權條款第 1 版
+                    </a>
+                  </span>
+                )}
+              </li>
+            ))
+          }
+        </ul>
+        {
+          spot.tourismId && (
+            <p>
+              觀光署定位 ID：{spot.tourismId.value} ·{" "}
+              <a href={official(spot.tourismId.ref).url}>
+                出處：{official(spot.tourismId.ref).title}
+              </a>
+            </p>
+          )
+        }
+        {
+          spot.sources.length > 0 && (
+            <>
+              <h3>原始來源</h3>
+              <ul>
+                {spot.sources.map((item) => (
+                  <li>
+                    <a href={item.url}>{item.title}</a> · {item.author} ·
+                    讀取日期 {item.readAt}
+                    {!item.readable && " · 原文無法讀取"}
+                  </li>
+                ))}
+              </ul>
+            </>
+          )
+        }
+      </section>
+      <aside
+        id="spot-disclaimer"
+        tabindex="-1"
+        aria-label="免責聲明"
+        class="disclaimer"
+      >
+        出發前請再確認官方公告；親子與無障礙資訊僅供參考，未知不代表沒有。
+        <a href="/about/#disclaimer">閱讀完整免責聲明</a>
+      </aside>
+    </article>
+  </div>
+</Layout>
+<style>
+  .spot-illustration {
+    margin: 24px 0 0;
+  }
+  .spot-illustration img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 20px 20px 20px 6px;
+  }
+  .spot-illustration figcaption {
+    margin-top: 10px;
+    color: var(--muted);
+    font-size: 14px;
+  }
+  .breadcrumb {
+    max-width: 1200px;
+    margin-inline: auto;
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .breadcrumb a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+  .spot-heading {
+    padding: clamp(24px, 4vw, 48px);
+    background: var(--cover);
+    border-radius: 24px 24px 24px 6px;
+  }
+  .spot-heading h1 {
+    margin-bottom: 20px;
+    font-size: clamp(32px, 4vw, 56px);
+  }
+  .spot-summary {
+    font-size: 20px;
+    line-height: 1.8;
+    font-weight: 500;
+  }
+  .location {
+    color: var(--ground);
+    font-weight: 600;
+  }
+  .spot-shell {
+    display: grid;
+    grid-template-columns: 200px minmax(0, 1fr);
+    gap: 40px;
+    margin-top: 24px;
+    max-width: 1200px;
+    margin-inline: auto;
+  }
+  .contents {
+    position: sticky;
+    top: 24px;
+    align-self: start;
+    min-width: 0;
+  }
+  .contents p {
+    margin: 12px 0 6px;
+    font-weight: 600;
+  }
+  .contents a {
+    display: block;
+    padding: 10px 12px;
+    min-height: 44px;
+    border-radius: 8px;
+    font-size: 1rem;
+    text-decoration: none;
+  }
+  .contents a:hover {
+    text-decoration: underline;
+    background: var(--paper-deep);
+  }
+  .spot-article {
+    min-width: 0;
+    background: var(--paper);
+    padding: 0;
+  }
+  .spot-article :global(section) {
+    padding-top: 32px;
+    margin-top: 48px;
+    border-top: 1px solid var(--line);
+  }
+  .spot-article :global(h2) {
+    margin-top: 12px;
+  }
+  .spot-article :global(li) {
+    margin-block: 12px;
+    padding-left: 4px;
+  }
+  .spot-article :global(ul) {
+    padding-left: 24px;
+  }
+  .spot-article :global(p),
+  .spot-article :global(dd) {
+    max-width: 42em;
+  }
+  .spot-article :global(#references) {
+    font-size: 15px;
+  }
+  .spot-article :global(#references li) {
+    padding-block: 12px;
+    border-bottom: 1px solid var(--line);
+  }
+  .fact-list > div {
+    display: grid;
+    grid-template-columns: minmax(110px, 0.4fr) minmax(0, 1fr);
+    gap: 20px;
+    padding-block: 20px;
+    border-bottom: 1px solid var(--line);
+  }
+  .fact-list dd {
+    margin: 0;
+  }
+  .fact-list a {
+    display: block;
+    font-size: 14px;
+    margin-top: 8px;
+  }
+  .check-status {
+    display: inline-block;
+    min-width: 44px;
+    padding: 2px 8px;
+    border-radius: 6px;
+    background: var(--paper-deep);
+    font-weight: 600;
+  }
+  .check-status[data-status="unknown"] {
+    background: var(--surface);
+  }
+  .disclaimer {
+    margin-top: 32px;
+    padding: 24px;
+    border-radius: 12px;
+    background: var(--paper-deep);
+    font-size: 1rem;
+    scroll-margin-top: 24px;
+  }
+  @media (max-width: 900px) {
+    .breadcrumb {
+      max-width: 1200px;
+      margin-inline: auto;
+      font-size: 14px;
+      color: var(--muted);
+    }
+    .breadcrumb a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
+    }
+    .spot-heading {
+      padding: clamp(24px, 4vw, 48px);
+      background: var(--cover);
+      border-radius: 24px 24px 24px 6px;
+    }
+    .spot-heading h1 {
+      margin-bottom: 20px;
+      font-size: clamp(32px, 4vw, 56px);
+    }
+    .spot-summary {
+      font-size: 20px;
+      line-height: 1.8;
+      font-weight: 500;
+    }
+    .location {
+      color: var(--ground);
+      font-weight: 600;
+    }
+    .spot-shell {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 20px;
+    }
+    .contents {
+      position: static;
+    }
+    .contents-links {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      padding: 6px 0;
+    }
+    .contents a {
+      flex-shrink: 0;
+      white-space: nowrap;
+      border: 1px solid var(--line);
+    }
+  }
+  dt {
+    font-weight: 600;
+  }
+  dd {
+    margin: 4px 0 20px;
+  }
+  .map-links {
+    margin-block: 24px 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .map-links a {
+    display: inline-flex;
+    gap: 12px;
+    align-items: center;
+    min-height: 44px;
+    padding: 8px 14px;
+    border: 1px solid var(--ground);
+    border-radius: 10px;
+    font-size: 14px;
+    text-decoration: none;
+  }
+  .map-links a:hover {
+    background: var(--paper);
+    text-decoration: underline;
+  }
+  @media (max-width: 600px) {
+    .fact-list > div {
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+    .spot-summary {
+      font-size: 18px;
+    }
+  }
+  blockquote {
+    background: var(--paper-deep);
+    margin-inline: 0;
+    padding: 20px 24px;
+    border-left: 3px solid var(--ground);
+    border-radius: 0 12px 12px 0;
+  }
+</style>
