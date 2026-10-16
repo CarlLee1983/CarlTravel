@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 
-test("home links to stable spot route with readable facts and citations", async ({
+test("@smoke home links to stable spot route with readable facts and citations", async ({
   page,
 }) => {
   await page.goto("/");
@@ -9,7 +9,11 @@ test("home links to stable spot route with readable facts and citations", async 
   ).toBeVisible();
   await expect(page.getByText("臺北市 · 中正區 / 公園")).toBeVisible();
   await expect(
-    page.getByRole("region", { name: /景點列表/ }).getByText("年齡未標示"),
+    page
+      .getByRole("region", { name: /景點列表/ })
+      .locator("li[data-spot-url]")
+      .filter({ hasText: "範例親子公園" })
+      .getByText("年齡未標示"),
   ).toBeVisible();
   await expect(page.getByText("沿著步道觀察樹木與季節變化。")).toBeVisible();
   await page.getByRole("link", { name: "範例親子公園", exact: true }).click();

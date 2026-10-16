@@ -11,6 +11,11 @@ import {
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { checkOutput } from "../scripts/check-output.ts";
+import {
+  FIXTURE_COUNT,
+  FIXTURE_SEED,
+  describeSpots,
+} from "../scripts/scale/generate-spots.ts";
 
 async function writeSearchEntry(output: string, count = 0) {
   await mkdir(join(output, "pagefind"), { recursive: true });
@@ -59,6 +64,21 @@ test("output gate requires built pages and rejects fixture leakage", async () =>
     );
     await mkdir(join(output, "spots", "unexpected"), { recursive: true });
     await assert.rejects(checkOutput(output, content), /differ/);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+test("output gate rejects names from the generated e2e fixture", async () => {
+  const root = await mkdtemp(join(tmpdir(), "carltravel-generated-"));
+  const content = join(root, "content");
+  try {
+    await mkdir(content);
+    await writeFile(
+      join(root, "index.html"),
+      `<html><main>${describeSpots({ seed: FIXTURE_SEED, count: FIXTURE_COUNT })[7]!.spot.name}</main></html>`,
+    );
+    await writeBasicPages(root);
+    await assert.rejects(checkOutput(root, content), /fixture marker/);
   } finally {
     await rm(root, { recursive: true, force: true });
   }

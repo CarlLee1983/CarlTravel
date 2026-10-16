@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { COUNT_RESULT, TOTAL_SPOTS } from "./fixture.ts";
 
 const cards = (page: import("@playwright/test").Page) =>
   page.getByRole("region", { name: /景點列表/ }).locator("li[data-spot-url]");
@@ -30,7 +31,9 @@ test("filter controls start collapsed and remain keyboard operable on mobile", a
   await expect(filters(page)).not.toHaveAttribute("open", "");
 });
 
-test("URL restores validated filters on load and reload", async ({ page }) => {
+test("@smoke URL restores validated filters on load and reload", async ({
+  page,
+}) => {
   await page.goto(
     "/?query=summaryprobe&county=%E6%96%B0%E5%8C%97%E5%B8%82&kind=%E5%8D%9A%E7%89%A9%E9%A4%A8&setting=%E5%AE%A4%E5%85%A7%E5%A4%96%E7%9A%86%E6%9C%89&age=7%E2%80%9312+%E6%AD%B2",
   );
@@ -56,7 +59,7 @@ test("URL restores validated filters on load and reload", async ({ page }) => {
   );
 });
 
-test("removing one active filter keeps the others and updates the URL", async ({
+test("@smoke removing one active filter keeps the others and updates the URL", async ({
   page,
 }) => {
   await page.goto("/");
@@ -64,6 +67,7 @@ test("removing one active filter keeps the others and updates the URL", async ({
   await filters(page).locator("summary").click();
   await page.getByRole("searchbox").fill("範例");
   await page.getByRole("searchbox").press("Enter");
+  await expect(page.getByRole("status")).toHaveText("找到 2 個景點。");
   await page.getByLabel("縣市", { exact: true }).selectOption("新北市");
   await page.getByLabel("類型", { exact: true }).selectOption("博物館");
   await expect(page.getByRole("status")).toHaveText("找到 1 個景點。");
@@ -80,10 +84,10 @@ test("removing one active filter keeps the others and updates the URL", async ({
   await page.getByRole("button", { name: "移除搜尋：範例" }).click();
   await expect(page.getByRole("searchbox")).toHaveValue("");
   await expect(page.getByLabel("類型", { exact: true })).toHaveValue("博物館");
-  await expect(page.getByRole("status")).toHaveText("找到 1 個景點。");
+  await expect(page.getByRole("status")).toHaveText(COUNT_RESULT);
 });
 
-test("invalid URL values are ignored and empty results recover", async ({
+test("@smoke invalid URL values are ignored and empty results recover", async ({
   page,
 }) => {
   await page.goto(
@@ -97,15 +101,18 @@ test("invalid URL values are ignored and empty results recover", async ({
     page.getByRole("button", { name: /移除縣市|移除類型|移除環境|移除年齡/ }),
   ).toHaveCount(0);
   await page.getByRole("button", { name: "重新瀏覽全部景點" }).click();
-  await expect(page.getByRole("status")).toHaveText("找到 2 個景點。");
-  await expect(cards(page).filter({ visible: true })).toHaveCount(2);
+  await expect(page.getByRole("status")).toHaveText(
+    `找到 ${TOTAL_SPOTS} 個景點。`,
+  );
+  await expect(cards(page).filter({ visible: true })).toHaveCount(TOTAL_SPOTS);
   await expect(page).toHaveURL(/\/$/);
 });
 
 test("browser Back restores filter state after opening a spot", async ({
   page,
 }) => {
-  await page.goto("/");
+  // 以「範例」限縮到手寫的兩筆，避免產生景點干擾單筆結果的斷言
+  await page.goto("/?query=%E7%AF%84%E4%BE%8B");
   await filters(page).locator("summary").click();
   await page.getByLabel("類型", { exact: true }).selectOption("博物館");
   await expect(page.getByRole("status")).toHaveText("找到 1 個景點。");

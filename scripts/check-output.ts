@@ -11,6 +11,11 @@ import {
   readIllustration,
 } from "../src/content/illustration.ts";
 
+import {
+  FIXTURE_COUNT,
+  FIXTURE_SEED,
+  describeSpots,
+} from "./scale/generate-spots.ts";
 import { renderThumbnail, thumbnailUrl } from "../src/content/thumbnail.ts";
 
 export async function checkOutput(
@@ -97,9 +102,17 @@ export async function checkOutput(
     );
   await readFile(join(output, "pagefind", "pagefind.js"));
   const fixture = await loadSpots(fixtures);
-  const fixtureNames = fixture
-    .filter((spot) => !formalIds.includes(spot.id))
-    .map((spot) => spot.name);
+  // e2e fixture 另含固定種子的產生景點，其名稱同樣不得出現在正式輸出
+  const generatedNames = describeSpots({
+    seed: FIXTURE_SEED,
+    count: FIXTURE_COUNT,
+  }).map(({ spot }) => spot.name);
+  const fixtureNames = [
+    ...fixture
+      .filter((spot) => !formalIds.includes(spot.id))
+      .map((spot) => spot.name),
+    ...generatedNames,
+  ];
   async function checkHtml(dir: string): Promise<void> {
     for (const entry of await readdir(dir, { withFileTypes: true })) {
       const path = join(dir, entry.name);

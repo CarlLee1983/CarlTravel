@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 
-test("complete spot keeps the reading order, states, citations, and map exits", async ({
+test("@smoke complete spot keeps the reading order, states, citations, and map exits", async ({
   page,
 }) => {
   await page.goto("/spots/example-museum/");

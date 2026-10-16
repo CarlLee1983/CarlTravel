@@ -4,7 +4,7 @@
 
 ```sh
 pnpm install --frozen-lockfile
-pnpm exec playwright install chromium
+pnpm exec playwright install chromium webkit
 pnpm dev:fixture
 ```
 
@@ -22,7 +22,7 @@ pnpm dev:fixture
 | `pnpm check`                                  | Astro 與 TypeScript 檢查                                                 |
 | `pnpm check:content`                          | 載入並驗證正式 YAML                                                      |
 | `pnpm test`                                   | Node 內容載入接受／拒絕測試                                              |
-| `pnpm test:e2e`                               | 建置 fixture，以 Playwright 測導航、出處、日期、鍵盤、axe 與五種螢幕寬度 |
+| `pnpm test:e2e`                               | 建置 fixture，以 Playwright 測導航、出處、日期、鍵盤、axe 與五種螢幕寬度；Chromium 全跑，WebKit 只跑 `@smoke` |
 | `pnpm verify`                                 | 共用整合關卡；最後重建並檢查正式輸出                                     |
 
 ## 內容載入責任
@@ -36,6 +36,20 @@ pnpm dev:fixture
 `src/content/mode.ts` 統一選擇根目錄及輸出位置：正式讀 `content/spots/`、輸出 `dist/`；fixture 讀 `tests/fixtures/spots/`、輸出 `dist-fixture/`。兩者共用 schema、載入與頁面，沒有複製內容到正式目錄的步驟。
 
 `pnpm` 公開指令經 `scripts/site.mjs` 清除繼承的 fixture 環境變數；只有明確的 fixture 指令才啟用它。因此 `CARLTRAVEL_FIXTURE=1 pnpm build` 仍建置正式內容。直接呼叫 Astro 是內部開發入口，不能替代正式建置指令。fixture 頁面有醒目標示與 noindex。測試 server 不重用其他行程；不要把 `dist-fixture/` 當部署輸入。
+
+## 規模產生器與 e2e fixture
+
+`scripts/scale/generate-spots.ts` 以固定種子產生虛構景點。同一組種子與筆數，每次都產生逐位元組相同的 `spot.yaml` 與插畫，且通過現有 schema 與行政區驗證。輸出只寫到暫存目錄；指定的 `--out` 若在專案目錄內會直接拒絕，所以不會進 Git，也不會碰 `content/`。
+
+```sh
+node --experimental-strip-types scripts/scale/generate-spots.ts [--seed 20261017] [--count 60] [--out <專案外的目錄>]
+```
+
+沒給 `--out` 時建立 `carltravel-spots-*` 暫存目錄，stdout 只印出該路徑。產生的 id 為 `fx-00001` 起，名稱都帶「（虛構）」。每第 20 筆是完整形態並附共用的 1536×1024 插畫，每第 7 筆是已知年齡但無插畫的公開資料頁形態，其餘年齡未標示且親子條件全為未知。前四筆固定為臺中市與高雄市各兩個行政區，所以任何筆數都涵蓋兩層縣市與行政區。
+
+`pnpm build:fixture` 與 `pnpm dev:fixture` 由 `scripts/site.mjs` 先呼叫 `scripts/scale/fixture-root.ts`，把手寫的 `tests/fixtures/spots`（2 筆）與固定種子（`FIXTURE_SEED`）產生的 `FIXTURE_COUNT`（60）筆組成暫存內容根目錄，經 `CARLTRAVEL_FIXTURE_ROOT` 交給 `src/content/mode.ts`，結束時刪除。該變數只在 fixture 模式有效，`scripts/site.mjs` 也會清掉繼承而來的值。e2e 因此看到 62 筆景點；`e2e/fixture.ts` 的 `TOTAL_SPOTS` 要與兩者同步。
+
+產生景點的名稱同樣納入 `pnpm check:output` 的洩漏檢查，與手寫 fixture 一視同仁。WebKit project 只執行標題含 `@smoke` 的案例（瀏覽與景點頁、文字搜尋、篩選還原與移除），其餘案例只在 Chromium 執行。
 
 第 05 票讓一般開發預覽讀取 `drafts/spots/`；`research/` 不由網站載入，兩者持續由 Git 排除。正式及 fixture 建置、fixture 開發仍不載入草稿。CI 與部署關卡依後續票加入同一條 verify；目前不宣稱可上線，不執行部署。
 

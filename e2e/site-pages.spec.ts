@@ -114,7 +114,7 @@ test("compact home shows search before the list at desktop and mobile widths", a
     );
     await browsing.locator("#filter-options > summary").click();
     await expect(browsing.getByRole("combobox")).toHaveCount(4);
-    await expect(results.getByRole("heading", { level: 3 })).toHaveText([
+    await expect(results.getByRole("heading", { level: 3 })).toContainText([
       "範例親子公園",
       "範例探索館",
     ]);
