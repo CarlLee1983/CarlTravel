@@ -1,4 +1,5 @@
 import { lstat } from "node:fs/promises";
+import { loadBuildSpots } from "./build-spots.ts";
 import { loadSpots, compareSpots } from "./load.ts";
 import { contentMode } from "./mode.ts";
 import type { Spot } from "./schema.ts";
@@ -8,8 +9,10 @@ export type PageSpot = Spot & { preview?: "新草稿" | "修訂中" };
 // Only page rendering opts in. Discovery and production loaders stay single-root.
 export async function loadPageSpots(preview: boolean): Promise<PageSpot[]> {
   const mode = contentMode();
+  // 預覽（dev）每次重讀以即時反映檔案；正式建置共用同一份載入結果。
+  if (!preview) return loadBuildSpots(mode.root);
   const formal = await loadSpots(mode.root);
-  if (!preview || mode.fixture) return formal;
+  if (mode.fixture) return formal;
   for (const directory of ["drafts", "drafts/spots"]) {
     try {
       if (!(await lstat(directory)).isDirectory())

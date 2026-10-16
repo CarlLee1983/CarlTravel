@@ -1,10 +1,10 @@
 import { readFile, mkdir, writeFile } from "node:fs/promises";
 import { join, resolve, dirname, sep } from "node:path";
 import { createIndex, close } from "pagefind";
-import { loadSpots } from "../src/content/load.ts";
+import { loadBuildSpots } from "../src/content/build-spots.ts";
 
 export async function buildSearchIndex(contentRoot: string, output: string) {
-  const spots = await loadSpots(contentRoot);
+  const spots = await loadBuildSpots(contentRoot);
   try {
     const { index, errors } = await createIndex({
       rootSelector: "[data-pagefind-body]",
