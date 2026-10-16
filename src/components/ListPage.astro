@@ -27,6 +27,19 @@ const result = queryList(entries, { page: String(page) });
 const previews = new Map(spots.map((spot) => [spot.id, spot.preview]));
 const listUrl = spots.length > 0 ? (await buildList()).url : "";
 const intro = page === 1;
+// 帶文字查詢進站時，主程式還在下載就先起跑 Pagefind 與列表 JSON：索引要經過好幾個相依請求，
+// 等主程式才開始會超過 4 秒（見 docs/acceptance.md）。主程式的 import() 與 fetch() 會接上已發出的請求。
+const earlyStart = `if (new URLSearchParams(location.search).get("query")?.trim()) {
+  import("/pagefind/pagefind.js").then((pagefind) => pagefind.init()).catch(() => {});
+  for (const href of ["/pagefind/spot-ids.json", ${JSON.stringify(listUrl)}]) {
+    const link = document.createElement("link");
+    link.rel = "preload";
+    link.as = "fetch";
+    link.crossOrigin = "anonymous";
+    link.href = href;
+    document.head.append(link);
+  }
+}`;
 // 選項與可見性由查詢模組決定，瀏覽器端依條件與文字命中重算同一份；
 // 這裡輸出無條件時的初始狀態，避免載入列表資料前版面跳動
 const filterLabels = {
@@ -143,6 +156,7 @@ const filters = filterKeys.map((name) => ({
     class="results"
     data-list-url={listUrl}
     data-static-page={page}
+    data-total-pages={result.totalPages}
   >
     <div class="results-heading">
       <h2 id="spots-heading">景點列表</h2>
@@ -250,6 +264,7 @@ const filters = filterKeys.map((name) => ({
     </section>
   )
 }
+{intro && listUrl && <script is:inline set:html={earlyStart} />}
 <script>
   import "../browser/search.ts";
 </script>

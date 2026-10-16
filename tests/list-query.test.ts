@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import type { ListEntry } from "../src/content/list.ts";
 import { compareListOrder } from "../src/content/list-order.ts";
 import {
+  clampPage,
   entryAgeLabels,
   pageSize,
   queryList,
@@ -290,4 +291,13 @@ test("不改動輸入資料與輸入的 hits", () => {
   queryList(rows, { hits, county: "臺北市", page: "2" });
   assert.deepEqual(ids(rows), snapshot);
   assert.deepEqual(hits, ["s003", "s001"]);
+});
+
+test("clampPage：非正整數當第 1 頁，超過最後一頁當最後一頁", () => {
+  assert.equal(clampPage("2", 3), 2);
+  assert.equal(clampPage("99", 3), 3);
+  for (const bad of ["0", "-1", "abc", "1.5", "02", "", null, undefined])
+    assert.equal(clampPage(bad, 3), 1);
+  assert.equal(clampPage(2, 3), 2);
+  assert.equal(clampPage("2", 1), 1);
 });

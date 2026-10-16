@@ -12,6 +12,7 @@ import {
 import { decodeList, type ListData, type ListEntry } from "../content/list.ts";
 import {
   ageUnknownCount,
+  clampPage,
   filterKeys,
   filterOptions as optionsFor,
   queryList,
@@ -30,6 +31,7 @@ import {
 } from "../content/list-url.ts";
 
 interface SearchIndex {
+  init(): Promise<void>;
   // 命中的 id 依相關度排序；不呼叫 data()（每筆都要載入一個片段檔）
   search(query: string): Promise<{ results: { id: string }[] }>;
 }
@@ -67,6 +69,8 @@ function start(form: HTMLFormElement) {
   // `/page/N/` 是靜態頁，讀不到查詢參數：在那裡套用條件一律導向 `/?…`
   const onStaticPage = Number(results.dataset.staticPage) > 1;
   const listUrl = results.dataset.listUrl!;
+  // 無條件列表的總頁數：`/?page=N` 不必載入列表資料就能導向靜態頁
+  const staticTotalPages = Number(results.dataset.totalPages);
   const staticRange = rangeEl.textContent!;
   const staticOrder = orderNote.textContent!;
   let rows: ListEntry[] | undefined;
@@ -93,14 +97,43 @@ function start(form: HTMLFormElement) {
       });
     return rowsRequest;
   }
-  const warm = () =>
+  // Pagefind 與景點對照表：第一次搜尋、聚焦搜尋框或帶查詢進站時才抓。
+  // 失敗就清掉快取，下次重試；呼叫端自己決定要不要處理錯誤。
+  function loadIndex() {
+    const path = "/pagefind/pagefind.js";
+    index ??= import(/* @vite-ignore */ path).catch((error) => {
+      index = undefined;
+      throw error;
+    });
+    return index;
+  }
+  function loadSpotIds() {
+    spotIds ??= fetch("/pagefind/spot-ids.json")
+      .then((response) => {
+        if (!response.ok) throw new Error(`景點對照表 ${response.status}`);
+        return response.json() as Promise<Record<string, string>>;
+      })
+      .catch((error) => {
+        spotIds = undefined;
+        throw error;
+      });
+    return spotIds;
+  }
+  const warm = () => {
     void loadRows()
       .then(() => {
         // 有文字查詢時，筆數要等含命中的那次查詢才算，這裡先不動
         if (!optionsFromQuery && !input.value.trim())
           showOptions(optionsFor(rows!, stateFromFields()));
       })
+      // 預載失敗不必處理：真正用到時（run、searchHits）會重新載入並呈現錯誤
       .catch(() => {});
+    // 先把索引與 worker 暖好，第一次搜尋才不必從頭等（US36）
+    void loadIndex()
+      .then((pagefind) => pagefind.init())
+      .catch(() => {});
+    void loadSpotIds().catch(() => {});
+  };
 
   function readReturnState() {
     const value: unknown = history.state?.carlTravelList;
@@ -325,22 +358,18 @@ function start(form: HTMLFormElement) {
   }
 
   async function searchHits(query: string) {
-    const path = "/pagefind/pagefind.js";
-    index ??= import(/* @vite-ignore */ path);
-    spotIds ??= fetch("/pagefind/spot-ids.json").then((response) => {
-      if (!response.ok) throw new Error(`景點對照表 ${response.status}`);
-      return response.json() as Promise<Record<string, string>>;
-    });
     try {
       // 索引裡「臺」已統一成「台」，查詢也要先轉。命中 id 用建置時產生的對照表換成景點 id，
       // 不逐筆載入片段檔（6,000 筆時會是上千個請求）。
       const [found, ids] = await Promise.all([
-        index.then((pagefind) => pagefind.search(normalizeSearchText(query))),
-        spotIds,
+        loadIndex().then((pagefind) =>
+          pagefind.search(normalizeSearchText(query)),
+        ),
+        loadSpotIds(),
       ]);
       return found.results.flatMap((hit) => ids[hit.id] ?? []);
     } catch (error) {
-      index = spotIds = undefined;
+      index = undefined;
       throw error;
     }
   }
@@ -424,8 +453,8 @@ function start(form: HTMLFormElement) {
     if (source === "edit") pendingReturn = undefined;
     else showFields(raw);
     showActiveFilters();
-    const conditioned =
-      hasConditions({ ...raw, page: 1 }) || (source === "url" && raw.page);
+    const hasCondition = hasConditions({ ...raw, page: 1 });
+    const conditioned = hasCondition || (source === "url" && raw.page);
     if (onStaticPage) {
       // 靜態頁讀不到查詢參數：條件改走 `/?…`，由那裡的前端渲染
       if (source === "edit") {
@@ -436,7 +465,16 @@ function start(form: HTMLFormElement) {
       } else restorePosition();
       return;
     }
-    if (!conditioned && !rows) {
+    // 只有頁碼沒有條件：第 2 頁以後在載入列表資料前就導向靜態頁；
+    // 頁碼不合法或是第 1 頁則不必載入，網址修正回 `/`
+    if (source === "url" && !hasCondition && raw.page !== null) {
+      const page = clampPage(raw.page, staticTotalPages);
+      if (page > 1) {
+        location.replace(staticPath(page));
+        return;
+      }
+    }
+    if (!hasCondition && !rows) {
       // 沒有條件也還沒載入列表資料：畫面就是靜態第 1 頁
       writeUrl({ ...raw, page: 1 }, "replace", source === "edit");
       setStatus("ready", staticRange);

@@ -347,8 +347,9 @@ test("client-rendered cards are identical to the static markup", async ({
       .querySelector(".spots")!.innerHTML;
     return staticHtml;
   });
-  // ?page=1 是不正規的網址，前端會渲染列表 JSON 並把網址修正回 /
-  await page.goto("/?page=1");
+  // 縣市不存在：條件被捨棄，前端要渲染列表 JSON 並把網址修正回 /
+  // （只有 ?page=1 時不載入列表 JSON，畫面仍是靜態頁，見 page-redirect.spec.ts）
+  await page.goto("/?county=nowhere");
   await expect(page).toHaveURL(/\/$/);
   await expect(rangeText(page)).toHaveText(range(1, 24, TOTAL_SPOTS));
   expect(await page.locator(".spots").innerHTML()).toBe(same);

@@ -71,6 +71,12 @@ function parsePage(raw: ListQueryInput["page"]) {
   return positiveInteger.test(raw) ? Number(raw) : 1;
 }
 
+// 網址上的頁碼落在 1..totalPages：不是正整數的當第 1 頁，超過最後一頁的當最後一頁。
+// 不載入列表資料就能判斷（總頁數可由靜態頁帶入），瀏覽器端用它在載入前導向靜態頁。
+export function clampPage(raw: ListQueryInput["page"], totalPages: number) {
+  return Math.min(parsePage(raw) ?? 1, totalPages);
+}
+
 // 各維度在資料中出現的值（已排序）；行政區依縣市分開。同一份資料只掃一次。
 interface Universe {
   lists: Record<Exclude<FilterKey, "district">, string[]>;
@@ -378,7 +384,7 @@ export function queryList(
   const total = matched.length;
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
   const requested = parsePage(input.page);
-  const page = Math.min(requested ?? 1, totalPages);
+  const page = clampPage(input.page, totalPages);
   // 明寫的 page=1 不是正規網址（第 1 頁不帶頁碼）
   if (requested !== null && (page === 1 || String(page) !== String(input.page)))
     needsUrlReplace = true;
