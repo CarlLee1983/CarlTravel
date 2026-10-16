@@ -15,3 +15,18 @@ export const range = (from: number, to: number, total: number) =>
 
 export const rangeText = (page: Page) => page.getByRole("status");
 export const spotCards = (page: Page) => page.locator(".results .spots > li");
+
+// 攔住符合的請求，等測試放行；requested 在第一個請求到達時解除。
+// 用來把「請求還沒回來」的中間狀態固定住，而不是靠時間碰運氣。
+export function hold(page: Page, pattern: string) {
+  let release!: () => void;
+  let started!: () => void;
+  const held = new Promise<void>((resolve) => (release = resolve));
+  const requested = new Promise<void>((resolve) => (started = resolve));
+  void page.route(pattern, async (route) => {
+    started();
+    await held;
+    await route.continue();
+  });
+  return { requested, release };
+}

@@ -6,6 +6,7 @@ import { maskPublicCopy, type PublicCopySlots } from "./public-copy.ts";
 import { allSpots } from "../research/records.ts";
 import { researchDirectory, writeLocal } from "../research/files.ts";
 import { checkOutput } from "../check-output.ts";
+import { normalizeSearchText } from "../../src/content/search.ts";
 import {
   officialInformationDescription,
   officialInformationDisclaimer,
@@ -80,7 +81,9 @@ export async function inspectIndex(
     browser = await chromium.launch();
     const page = await browser.newPage();
     await page.goto(`http://127.0.0.1:${address.port}/`);
-    return await page.evaluate(
+    // 索引裡「臺」已統一成「台」，查詢也要先正規化；結果仍以原本的詞為鍵
+    const normalized = terms.map(normalizeSearchText);
+    const found = await page.evaluate(
       async ({ queries, html, scanHtml }) => {
         const entry = await (
           await fetch("/pagefind/pagefind-entry.json")
@@ -130,13 +133,19 @@ export async function inspectIndex(
         };
       },
       {
-        queries: terms,
+        queries: normalized,
         html,
         scanHtml: html.map((text, index) =>
           maskPublicCopy(text, publicSlots[index]),
         ),
       },
     );
+    return {
+      ...found,
+      matches: Object.fromEntries(
+        terms.map((term, i) => [term, found.matches[normalized[i]!]!]),
+      ),
+    };
   } finally {
     await browser?.close();
     await new Promise<void>((done, reject) =>
@@ -237,6 +246,8 @@ export async function checkIsolation(root: string) {
   const unpublishedIds = drafts
     .filter((draft) => !formal.some((spot) => spot.id === draft.id))
     .map((draft) => draft.id);
+  // 索引文字已把「臺」統一成「台」：比對隱私詞時兩邊都正規化，避免漏掉含「臺」的詞
+  const normalizedScan = scanTexts.map(normalizeSearchText);
   for (const [index, text] of texts.entries()) {
     if (
       unpublishedIds.some((id) =>
@@ -247,7 +258,7 @@ export async function checkIsolation(root: string) {
     if (/修訂中|本機草稿預覽|(?:research|drafts)\//.test(text))
       throw new Error("草稿或研究路徑出現在正式輸出");
     for (const term of privateTerms)
-      if (scanTexts[index]!.includes(term)) {
+      if (normalizedScan[index]!.includes(normalizeSearchText(term))) {
         await writeLocal(
           join(await researchDirectory(root), "isolation-report.md"),
           `# 正式輸出隔離阻擋\n\n草稿專有文字出現在 dist 頁面或 Pagefind 文件：${term}\n`,

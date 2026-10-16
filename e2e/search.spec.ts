@@ -1,6 +1,12 @@
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
-import { PAGE_SIZE, RANGE_RESULT, TOTAL_SPOTS, range } from "./fixture.ts";
+import {
+  PAGE_SIZE,
+  RANGE_RESULT,
+  TOTAL_SPOTS,
+  hold,
+  range,
+} from "./fixture.ts";
 
 async function openFilters(page: import("@playwright/test").Page) {
   await page.locator("#filter-options > summary").click();
@@ -120,7 +126,13 @@ test("search and four combined filters preserve list details, order, and keyboar
   ).toContainText(["全部環境", "戶外", "室內外皆有"]);
   await expect(
     page.getByLabel("年齡帶", { exact: true }).locator("option"),
-  ).toContainText(["全部年齡", "3–6 歲", "7–12 歲", "年齡未標示"]);
+  ).toContainText(["全部年齡", "3–6 歲", "7–12 歲"]);
+  // 年齡未標示不是可選的年齡帶，改由範圍文字下方的說明處理
+  await expect(
+    page
+      .getByLabel("年齡帶", { exact: true })
+      .locator("option", { hasText: "年齡未標示" }),
+  ).toHaveCount(0);
   await search.fill("範例");
   await search.press("Enter");
   await expect(page.getByRole("status")).toHaveText(range(1, 2, 2));
@@ -142,12 +154,6 @@ test("search and four combined filters preserve list details, order, and keyboar
   await search.fill("summaryprobe");
   await search.press("Enter");
   await expect(cards).toHaveText(["範例探索館"]);
-  // 這組條件下沒有「年齡未標示」的景點：選項標 0 筆並停用，改用沒有命中的文字進入空結果
-  await expect(
-    page
-      .getByLabel("年齡帶", { exact: true })
-      .locator("option", { hasText: "年齡未標示" }),
-  ).toBeDisabled();
   await search.fill("zzzznomatchingplace");
   await search.press("Enter");
   await expect(
@@ -174,6 +180,10 @@ test("search and four combined filters preserve list details, order, and keyboar
     await expect(page.getByLabel(label, { exact: true })).toBeFocused();
   }
   await page.keyboard.press("Tab");
+  await expect(
+    page.getByRole("button", { name: /^查看 .* 筆結果$/ }),
+  ).toBeFocused();
+  await page.keyboard.press("Tab");
   await expect(page.getByRole("button", { name: "清除條件" })).toBeFocused();
   await page.getByLabel("縣市", { exact: true }).selectOption("臺北市");
   await expect(cards.filter({ hasText: "範例親子公園" })).toHaveCount(1);
@@ -183,23 +193,14 @@ test("search and four combined filters preserve list details, order, and keyboar
 test("clearing an in-flight search prevents its late result from replacing the current filters", async ({
   page,
 }) => {
-  let release!: () => void;
-  let started!: () => void;
-  const held = new Promise<void>((resolve) => {
-    release = resolve;
-  });
-  const requested = new Promise<void>((resolve) => {
-    started = resolve;
-  });
-  await page.route("**/pagefind/pagefind.js", async (route) => {
-    started();
-    await held;
-    await route.continue();
-  });
+  const index = hold(page, "**/pagefind/pagefind.js");
+  // 景點對照表是舊請求最後才完成的一步：留到最後放行，才知道舊請求確實結束了
+  const ids = hold(page, "**/pagefind/spot-ids.json");
   await page.goto("/");
   await page.getByRole("searchbox").fill("summaryprobe");
   await page.getByRole("searchbox").press("Enter");
-  await requested;
+  await index.requested;
+  // 列表資料與索引的載入時間不定，狀態仍要確定地進入「搜尋中…」
   await expect(page.getByRole("status")).toHaveAttribute(
     "data-state",
     "loading",
@@ -209,13 +210,15 @@ test("clearing an in-flight search prevents its late result from replacing the c
   await page.getByRole("button", { name: "清除條件" }).click();
   await openFilters(page);
   await page.getByLabel("縣市", { exact: true }).selectOption("臺北市");
+  await expect(page.getByRole("status")).toHaveText(RANGE_RESULT);
+  index.release();
   const completed = page.waitForResponse(
     (response) =>
-      response.url().includes("/pagefind/fragment/") && response.ok(),
+      response.url().endsWith("/pagefind/spot-ids.json") && response.ok(),
   );
-  release();
+  ids.release();
   await (await completed).finished();
-  // The old request must finish before checking it did not overwrite the cleared state.
+  // 舊請求在對照表回來後才會收尾；等網路靜止再確認它沒有蓋掉目前的狀態
   await page.waitForLoadState("networkidle");
   await expect(page.getByRole("status")).toHaveText(RANGE_RESULT);
   await expect(page.locator(".spots")).toHaveAttribute("aria-busy", "false");
@@ -241,9 +244,19 @@ test("search failure preserves browsing and clearing restores normal filtering",
       .getByRole("region", { name: /景點列表/ })
       .getByRole("heading", { level: 3 }),
   ).toHaveCount(PAGE_SIZE);
-  await page.getByRole("button", { name: "清除條件" }).click();
+  // 搜尋失敗時，選項筆數只依篩選計算：不含文字命中，也不會變成 0
   await openFilters(page);
-  await page.getByLabel("年齡帶", { exact: true }).selectOption("年齡未標示");
+  const taipei = page
+    .getByLabel("縣市", { exact: true })
+    .locator("option", { hasText: /^臺北市（/ });
+  const count = Number(/（([\d,]+)）/.exec((await taipei.textContent())!)![1]);
+  expect(count).toBeGreaterThan(1);
+  await page.getByLabel("縣市", { exact: true }).selectOption("臺北市");
+  await expect(page.getByRole("status")).toContainText(`共 ${count} 筆`);
+  await expect(page.getByRole("status")).toContainText("搜尋暫時無法使用");
+  await page.getByRole("button", { name: "清除條件" }).click();
+  await expect(page.getByRole("status")).toHaveText(RANGE_RESULT);
+  await page.getByLabel("縣市", { exact: true }).selectOption("臺北市");
   await expect(page.getByRole("status")).toHaveText(RANGE_RESULT);
   await expect(
     page.getByRole("link", { name: "範例親子公園", exact: true }),
@@ -300,26 +313,3 @@ for (const width of [360, 390, 430, 1366, 1920]) {
     ).toBe(true);
   });
 }
-
-test("empty-results recovery resets query and filters together", async ({
-  page,
-}) => {
-  await page.goto("/");
-  await openFilters(page);
-  await page.getByRole("searchbox").fill("zzzznomatchingplace");
-  await page.getByRole("searchbox").press("Enter");
-  await page.getByLabel("縣市", { exact: true }).selectOption("新北市");
-  await page.getByLabel("類型", { exact: true }).selectOption("公園");
-  const recovery = page.getByRole("button", { name: "重新瀏覽全部景點" });
-  await expect(recovery).toBeVisible();
-  await recovery.focus();
-  await page.keyboard.press("Enter");
-  await expect(page.getByRole("searchbox")).toBeFocused();
-  await expect(page.getByRole("status")).toHaveText(
-    range(1, PAGE_SIZE, TOTAL_SPOTS),
-  );
-  await expect(page.getByRole("status")).toHaveAttribute("data-state", "ready");
-  await expect(page.getByLabel("縣市", { exact: true })).toHaveValue("");
-  await expect(page.getByLabel("類型", { exact: true })).toHaveValue("");
-  await expect(recovery).toBeHidden();
-});

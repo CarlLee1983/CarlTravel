@@ -6,7 +6,13 @@ import { loadPageSpots } from "../content/preview.ts";
 import SpotCard from "./SpotCard.astro";
 import { buildList } from "../content/list-build.ts";
 import { cardView } from "../content/list-card.ts";
-import { optionLabel, paginatorHtml, rangeText } from "../content/list-html.ts";
+import {
+  ageNoteText,
+  optionLabel,
+  paginatorHtml,
+  rangeText,
+  resultsButtonText,
+} from "../content/list-html.ts";
 import { listEntries } from "../content/list-pages.ts";
 import { filterKeys, filterOptions, queryList } from "../content/list-query.ts";
 import { staticPath } from "../content/list-url.ts";
@@ -117,6 +123,9 @@ const filters = filterKeys.map((name) => ({
                     </div>
                   ))}
                 </div>
+                <button class="show-results" id="show-results" type="button">
+                  {resultsButtonText(result.range.total)}
+                </button>
               </details>
               <button class="clear-filters" type="reset">
                 清除條件
@@ -154,6 +163,13 @@ const filters = filterKeys.map((name) => ({
       )
     }
     {
+      spots.length > 0 && (
+        <p id="age-note" hidden>
+          <a href="/">{ageNoteText(0)}</a>
+        </p>
+      )
+    }
+    {
       intro && (
         <p class="checklist-help">
           親子條件依官方資料整理；未知不代表沒有，使用限制請看出處。
@@ -163,7 +179,8 @@ const filters = filterKeys.map((name) => ({
     <div id="no-results" class="empty" hidden>
       <h3>換個條件，再找找。</h3>
       <p>沒有符合條件的景點，請調整搜尋文字或清除條件。</p>
-      <button type="reset" form="spot-search">重新瀏覽全部景點</button>
+      <ul id="recovery" class="recovery"></ul>
+      <a id="clear-all" href="/">清除條件</a>
     </div>
     {
       spots.length === 0 ? (
@@ -469,6 +486,22 @@ const filters = filterKeys.map((name) => ({
   .empty p {
     margin: 0;
   }
+  #age-note {
+    margin: 0 0 12px;
+    font-size: 15px;
+  }
+  #age-note a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+  .show-results {
+    margin-top: 12px;
+    min-height: 48px;
+    background: var(--ground);
+    color: var(--paper);
+    text-decoration: none;
+  }
   .empty a,
   .empty button {
     display: inline-flex;
@@ -507,7 +540,8 @@ const filters = filterKeys.map((name) => ({
     align-self: center;
   }
   @media (hover: hover) and (pointer: fine) {
-    button[type="submit"]:hover {
+    button[type="submit"]:hover,
+    .show-results:hover {
       background: var(--ink);
     }
     button[type="reset"]:hover {
@@ -537,6 +571,9 @@ const filters = filterKeys.map((name) => ({
     .filter-fields {
       grid-template-columns: 1fr 1fr;
       gap: 12px;
+    }
+    .show-results {
+      width: 100%;
     }
     .results {
       margin-top: 24px;
@@ -579,6 +616,24 @@ const filters = filterKeys.map((name) => ({
   }
   #active-filters button span {
     margin-left: 12px;
+  }
+  .recovery {
+    display: grid;
+    gap: 4px;
+    margin: 16px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .recovery li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 16px;
+  }
+  .recovery a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
   }
   .paginator {
     display: flex;

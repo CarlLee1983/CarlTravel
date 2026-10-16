@@ -63,7 +63,10 @@ node --experimental-strip-types scripts/scale/generate-spots.ts [--seed 20261017
 ```sh
 node --experimental-strip-types scripts/scale/check-scale.ts --keep
 node scripts/scale/perf.mjs <暫存目錄>/dist 3 / "/?county=臺南市" /spots/fx-00001/
+node scripts/scale/perf.mjs <暫存目錄>/dist 3 "/?query=公園"   # 第一次文字搜尋
 ```
+
+帶 `query` 的網址會多印 `pagefindBytes`／`pagefindRequests`：`/pagefind/` 底下（含 `spot-ids.json`）的傳輸量與請求數，預算 ≤ 300 KB。Pagefind 在 Web Worker 裡載入索引，頁面的 CDP 量不到，所以由量測用的靜態伺服器累計壓縮後的回應本文。
 
 `scripts/scale/perf.mjs` 只在手動執行，不進 CI。條件固定為 390px 視窗、4 倍 CPU 降速、Slow 4G、無快取，靜態伺服器以 brotli 回應文字檔；輸出每個路徑的 FCP、LCP、TBT、傳輸量等中位數與逐次樣本。建置秒數用 `time pnpm check:scale`（暖快取指第二次執行）。結果附在 PR，不寫進 CI 門檻。
 

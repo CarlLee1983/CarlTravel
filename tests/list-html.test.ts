@@ -1,11 +1,14 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {
+  ageNoteText,
   cardItemHtml,
   optionLabel,
   pageNumbers,
   paginatorHtml,
   rangeText,
+  recoveryItemsHtml,
+  resultsButtonText,
 } from "../src/content/list-html.ts";
 import { listHref, staticPath } from "../src/content/list-url.ts";
 import type { CardView } from "../src/content/list-card.ts";
@@ -114,4 +117,24 @@ test("optionLabel 在名稱後附筆數，千位加逗號", () => {
   assert.equal(optionLabel("新北市", 12), "新北市（12）");
   assert.equal(optionLabel("新北市", 0), "新北市（0）");
   assert.equal(optionLabel("新北市", 1234), "新北市（1,234）");
+});
+
+test("年齡未標示說明與「查看 N 筆結果」按鈕文字", () => {
+  assert.equal(ageNoteText(3), "另有 3 筆年齡未標示，未列入");
+  assert.equal(ageNoteText(1234), "另有 1,234 筆年齡未標示，未列入");
+  assert.equal(resultsButtonText(0), "查看 0 筆結果");
+  assert.equal(resultsButtonText(6000), "查看 6,000 筆結果");
+});
+
+test("無結果的移除連結：每項一個真連結，文字與朗讀名稱都含筆數，內容會跳脫", () => {
+  const html = recoveryItemsHtml([
+    { label: "搜尋", value: "<b>&", count: 12, href: "/?county=a&kind=b" },
+    { label: "縣市", value: "新北市", count: 1234, href: "/" },
+  ]);
+  assert.equal(
+    html,
+    '<li><span>搜尋：&lt;b&gt;&amp;</span><a href="/?county=a&amp;kind=b" aria-label="移除搜尋：&lt;b&gt;&amp;，移除後可得 12 筆">移除後可得 12 筆</a></li>' +
+      '<li><span>縣市：新北市</span><a href="/" aria-label="移除縣市：新北市，移除後可得 1,234 筆">移除後可得 1,234 筆</a></li>',
+  );
+  assert.equal(recoveryItemsHtml([]), "");
 });

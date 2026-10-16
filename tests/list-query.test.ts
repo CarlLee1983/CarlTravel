@@ -165,9 +165,11 @@ test("縣市、類型、環境、年齡帶與文字命中取交集", () => {
     age: "3–6 歲",
   };
   assert.deepEqual(ids(queryList(rows, base).rows), ["a"]);
-  assert.deepEqual(ids(queryList(rows, { ...base, age: "年齡未標示" }).rows), [
-    "f",
-  ]);
+  // 年齡未標示不是可選的年齡帶：忽略該值，不當成 0 筆
+  const unknownBand = queryList(rows, { ...base, age: "年齡未標示" });
+  assert.equal(unknownBand.conditions.age, "");
+  assert.equal(unknownBand.needsUrlReplace, true);
+  assert.deepEqual(ids(unknownBand.rows), ["a", "b", "f"]);
   assert.deepEqual(
     ids(queryList(rows, { county: "新北市", age: "3–6 歲" }).rows).sort(),
     ["a", "c", "e"],
@@ -199,9 +201,11 @@ test("年齡帶用相交判斷，13 歲以上含沒有上限的景點", () => {
   assert.deepEqual(ids(queryList(rows, { age: "3–6 歲" }).rows), ["b"]);
   assert.deepEqual(ids(queryList(rows, { age: "7–12 歲" }).rows), ["c"]);
   assert.deepEqual(ids(queryList(rows, { age: "13 歲以上" }).rows), ["c"]);
-  assert.deepEqual(ids(queryList(rows, { age: "年齡未標示" }).rows), ["d"]);
+  // 選了年齡帶就只列年齡已標示且相符的景點，未標示的 d 不在任何年齡帶裡
+  for (const band of ["0–2 歲", "3–6 歲", "7–12 歲", "13 歲以上"])
+    assert.ok(!ids(queryList(rows, { age: band }).rows).includes("d"), band);
   assert.deepEqual(entryAgeLabels(rows[1]!), ["0–2 歲", "3–6 歲"]);
-  assert.deepEqual(entryAgeLabels(rows[3]!), ["年齡未標示"]);
+  assert.deepEqual(entryAgeLabels(rows[3]!), []);
 });
 
 test("資料裡沒有的條件值被忽略並標示網址要修正，不會變成 0 筆", () => {

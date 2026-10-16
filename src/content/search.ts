@@ -13,3 +13,8 @@ export function ageBands(age: SpotData["ageRange"]): string[] {
     .filter((band) => age.min <= band.max && (age.max ?? Infinity) >= band.min)
     .map((band) => band.label);
 }
+
+// 台／臺視為同一字：索引文字與查詢字串都先轉成「台」，兩邊才比得上。
+// 其他異體字暫不處理。瀏覽器端也會用，所以不得引用 node 模組。
+export const normalizeSearchText = (text: string) =>
+  text.replaceAll("臺", "台");

@@ -43,7 +43,12 @@ async function copyApproved(content: string) {
   );
 }
 
-async function writeSearchEntry(output: string, count = 0) {
+// ids：命中 id → 景點 id 對照表的景點；預設只有 count 為 1 時對應核准的測試景點
+async function writeSearchEntry(
+  output: string,
+  count = 0,
+  ids = count === 1 ? ["approved-park"] : [],
+) {
   await writeList(output);
   await mkdir(join(output, "pagefind"), { recursive: true });
   await writeFile(
@@ -51,6 +56,10 @@ async function writeSearchEntry(output: string, count = 0) {
     JSON.stringify({ languages: { "zh-Hant": { page_count: count } } }),
   );
   await writeFile(join(output, "pagefind", "pagefind.js"), "export {}; ");
+  await writeFile(
+    join(output, "pagefind", "spot-ids.json"),
+    JSON.stringify(Object.fromEntries(ids.map((id) => [`zh-Hant_${id}`, id]))),
+  );
 }
 
 async function writeBasicPages(output: string) {
@@ -265,13 +274,13 @@ test("output gate fails when the file count exceeds the budget", async () => {
   const { root, content } = await budgetFixture("carltravel-files-");
   try {
     assert.equal(budget.maxFiles, 18_000);
-    // 基本輸出共 7 個檔案；上限剛好等於檔案數時通過，少 1 就失敗
+    // 基本輸出共 8 個檔案；上限剛好等於檔案數時通過，少 1 就失敗
     assert.equal(
-      await checkOutput(root, content, undefined, { maxFiles: 7 }),
+      await checkOutput(root, content, undefined, { maxFiles: 8 }),
       0,
     );
     await assert.rejects(
-      checkOutput(root, content, undefined, { maxFiles: 6 }),
+      checkOutput(root, content, undefined, { maxFiles: 7 }),
       /檔案總數/,
     );
   } finally {

@@ -170,14 +170,13 @@ test("選後筆數納入文字命中", () => {
   assert.equal(none.county.total, 6);
 });
 
-test("年齡帶可同時計入多個年齡帶，年齡未標示單獨計", () => {
+test("年齡帶可同時計入多個年齡帶，年齡未標示不是選項", () => {
   const view = filterOptions(rows, {});
   assert.deepEqual(counts(view, "age"), {
     "0–2 歲": 1,
     "3–6 歲": 2,
     "7–12 歲": 1,
     "13 歲以上": 1,
-    年齡未標示: 2,
   });
 });
 
@@ -250,7 +249,7 @@ test("隱藏只看整份資料能否區分，不隨篩選條件或文字命中�
   );
 });
 
-test("選項順序：縣市北到南、年齡帶由小到大且未標示最後、其餘依名稱穩定排序", () => {
+test("選項順序：縣市北到南、年齡帶由小到大、其餘依名稱穩定排序", () => {
   const view = filterOptions(rows, {});
   assert.deepEqual(
     view.county.options.map((o) => o.value),
@@ -258,7 +257,7 @@ test("選項順序：縣市北到南、年齡帶由小到大且未標示最後�
   );
   assert.deepEqual(
     view.age.options.map((o) => o.value),
-    ["0–2 歲", "3–6 歲", "7–12 歲", "13 歲以上", "年齡未標示"],
+    ["0–2 歲", "3–6 歲", "7–12 歲", "13 歲以上"],
   );
   assert.deepEqual(
     filterOptions(rows, {}).kind.options.map((o) => o.value),

@@ -5,6 +5,9 @@
 // 用法：node scripts/scale/perf.mjs <dist 目錄> <次數> <路徑...>
 // 例：  node scripts/scale/perf.mjs "$DIST" 3 / "/?county=臺南市" /spots/fx-00001/
 // 帶條件的網址會多一個 results 指標（毫秒）：範圍文字從「載入中」到畫出結果；無條件頁面為 0。
+// pagefindBytes／pagefindRequests 單獨統計 /pagefind/ 底下的傳輸（含景點對照表），
+// 例如 "/?query=公園" 就是第一次文字搜尋的索引成本（預算 ≤ 300 KB）。Pagefind 在 Web Worker 裡
+// 載入索引，頁面的 CDP 看不到，所以由伺服器端累計回應本文（壓縮後）的位元組。
 // 6,000 筆輸出可用 `node --experimental-strip-types scripts/scale/check-scale.ts --keep` 取得。
 import { createServer } from "node:http";
 import { readFile, stat } from "node:fs/promises";
@@ -34,6 +37,7 @@ const types = {
 };
 const compressible = new Set([".html", ".js", ".css", ".svg", ".xml", ".json"]);
 const brCache = new Map();
+const served = [];
 const server = createServer(async (req, res) => {
   try {
     const path = normalize(
@@ -63,6 +67,7 @@ const server = createServer(async (req, res) => {
       body = brCache.get(file);
       headers["content-encoding"] = "br";
     }
+    served.push({ path, bytes: body.length });
     res.writeHead(200, headers).end(body);
   } catch {
     res.writeHead(404).end("not found");
@@ -101,6 +106,7 @@ try {
       await cdp.send("Emulation.setCPUThrottlingRate", { rate: 4 });
       let bytes = 0;
       let requests = 0;
+      const servedFrom = served.length;
       const byType = {};
       const typeOf = new Map();
       cdp.on("Network.responseReceived", (e) =>
@@ -167,7 +173,19 @@ try {
           dom: document.getElementsByTagName("*").length,
         };
       });
-      samples.push({ ...metrics, bytes, requests, byType });
+      const pagefind = served
+        .slice(servedFrom)
+        .filter((entry) => entry.path.startsWith("/pagefind/"));
+      const pagefindBytes = pagefind.reduce((sum, e) => sum + e.bytes, 0);
+      const pagefindRequests = pagefind.length;
+      samples.push({
+        ...metrics,
+        bytes,
+        requests,
+        pagefindBytes,
+        pagefindRequests,
+        byType,
+      });
       await context.close();
     }
     const keys = [
@@ -180,6 +198,8 @@ try {
       "dom",
       "bytes",
       "requests",
+      "pagefindBytes",
+      "pagefindRequests",
     ];
     out[path] = {
       median: Object.fromEntries(

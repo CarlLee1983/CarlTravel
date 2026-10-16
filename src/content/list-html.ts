@@ -103,3 +103,34 @@ export function paginatorHtml(
     step(page + 1, "next", "下一頁")
   );
 }
+
+// 選了年齡帶時，範圍文字下方的說明：年齡未標示的景點沒有列入
+export const ageNoteText = (count: number) =>
+  `另有 ${grouped(count)} 筆年齡未標示，未列入`;
+
+// 篩選區底部按鈕的文字，筆數與範圍文字的總筆數相同
+export const resultsButtonText = (total: number) =>
+  `查看 ${grouped(total)} 筆結果`;
+
+export interface RecoveryItem {
+  // 條件名稱（「搜尋」「縣市」…）與值
+  label: string;
+  value: string;
+  // 移除這項條件後可得的筆數，連結指向移除後的網址
+  count: number;
+  href: string;
+}
+
+// 無結果時的移除清單項目。連結的朗讀名稱帶上被移除的條件，視覺文字則是「移除後可得 N 筆」
+export function recoveryItemsHtml(items: readonly RecoveryItem[]) {
+  return items
+    .map((item) => {
+      const term = `${item.label}：${item.value}`;
+      const text = `移除後可得 ${grouped(item.count)} 筆`;
+      return (
+        `<li><span>${escapeHtml(term)}</span>` +
+        `<a href="${escapeHtml(item.href)}" aria-label="${escapeHtml(`移除${term}，${text}`)}">${text}</a></li>`
+      );
+    })
+    .join("");
+}

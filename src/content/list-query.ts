@@ -8,7 +8,6 @@ import type { ListEntry } from "./list.ts";
 import { ageBandRanges } from "./search.ts";
 
 export const pageSize = 24;
-export const ageUnknownLabel = "年齡未標示";
 
 // 行政區是縣市的第二層：只有選了縣市、且屬於該縣市時才有效
 export const filterKeys = [
@@ -29,8 +28,10 @@ const filters: Record<FilterKey, (entry: ListEntry) => readonly string[]> = {
   age: (entry) => entryAgeLabels(entry),
 };
 
+// 年齡未標示的景點不屬於任何年齡帶：未知不算相符，也不是可選的選項
+// （選了年齡帶之後的未標示筆數由 ageUnknownCount 另外說明）
 export function entryAgeLabels(entry: ListEntry): string[] {
-  if (!entry.age) return [ageUnknownLabel];
+  if (!entry.age) return [];
   const { min, max } = entry.age;
   return ageBandRanges
     .filter((band) => min <= band.max && (max ?? Infinity) >= band.min)
@@ -99,9 +100,7 @@ interface Universe {
 const universes = new WeakMap<readonly ListEntry[], Universe>();
 
 const ageRank = new Map<string, number>(
-  [...ageBandRanges.map((band) => band.label), ageUnknownLabel].map(
-    (label, index) => [label, index],
-  ),
+  ageBandRanges.map((band, index) => [band.label, index]),
 );
 const sortBy = {
   county: (a: string, b: string) =>
@@ -277,6 +276,104 @@ export function filterOptions(
     };
   }
   return result;
+}
+
+interface MatchContext {
+  chosen: Record<FilterKey, string>;
+  hitSet: Set<string> | null;
+}
+
+// 這筆景點是否符合文字命中與所有已選條件；skip 內的維度不看
+function matchesAll(
+  entry: ListEntry,
+  { chosen, hitSet }: MatchContext,
+  skip: readonly FilterKey[] = [],
+  useHits = true,
+) {
+  if (useHits && hitSet && !hitSet.has(entry.id)) return false;
+  return filterKeys.every(
+    (key) =>
+      skip.includes(key) ||
+      !chosen[key] ||
+      filters[key](entry).includes(chosen[key]),
+  );
+}
+
+function contextOf(
+  entries: readonly ListEntry[],
+  input: Partial<Record<FilterKey, string>> & {
+    hits?: readonly string[] | null;
+  },
+): MatchContext {
+  return {
+    chosen: normalizeFilters(entries, input).chosen,
+    hitSet: input.hits ? new Set(input.hits) : null,
+  };
+}
+
+// 選了年齡帶時，其他條件都符合、但年齡未標示而未列入的筆數；沒選年齡帶為 0
+export function ageUnknownCount(
+  entries: readonly ListEntry[],
+  input: Partial<Record<FilterKey, string>> & {
+    hits?: readonly string[] | null;
+  },
+) {
+  const context = contextOf(entries, input);
+  if (!context.chosen.age) return 0;
+  let count = 0;
+  for (const entry of entries)
+    if (!entry.age && matchesAll(entry, context, ["age"])) count++;
+  return count;
+}
+
+export type RemovableKey = FilterKey | "query";
+export interface RemovalOption {
+  key: RemovableKey;
+  // 條件的值（文字查詢則是查詢字串）
+  value: string;
+  // 拿掉這項條件（cleared 內的全部）後剩幾筆，其他條件與文字命中不變
+  count: number;
+  // 一起被拿掉的條件：改縣市會清掉行政區
+  cleared: RemovableKey[];
+}
+
+// 無結果時逐項列出已選條件與「移除後可得 N 筆」。順序：文字查詢、再依 filterKeys。
+// 文字查詢只有在確實有命中資料（hits 非 null）時才算條件；搜尋失敗時它沒有作用，不列。
+// 拿掉文字查詢等於不套用 hits，只剩篩選條件。
+export function removalOptions(
+  entries: readonly ListEntry[],
+  input: Partial<Record<FilterKey, string>> & {
+    query?: string;
+    hits?: readonly string[] | null;
+  },
+): RemovalOption[] {
+  const context = contextOf(entries, input);
+  const count = (skip: readonly FilterKey[], useHits = true) => {
+    let total = 0;
+    for (const entry of entries)
+      if (matchesAll(entry, context, skip, useHits)) total++;
+    return total;
+  };
+  const options: RemovalOption[] = [];
+  if (input.query && context.hitSet)
+    options.push({
+      key: "query",
+      value: input.query,
+      count: count([], false),
+      cleared: ["query"],
+    });
+  for (const key of filterKeys) {
+    if (!context.chosen[key]) continue;
+    const cleared: FilterKey[] =
+      key === "county" ? ["county", "district"] : [key];
+    options.push({
+      key,
+      value: context.chosen[key],
+      count: count(cleared),
+      cleared,
+    });
+  }
+  return options;
 }
 
 export function queryList(

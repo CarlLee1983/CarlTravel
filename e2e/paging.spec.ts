@@ -410,6 +410,9 @@ test("the home illustration is not downloaded at mobile width but still shows on
   await page.waitForTimeout(300);
   expect(illustration).toEqual([]);
   await expect(page.locator(".outing-art")).toBeHidden();
+  // 先離開手機版頁面再放大視窗：否則舊頁面會因視窗變寬自行載入插畫，
+  // 與接著重新載入的請求湊成兩次，計數就不穩定
+  await page.goto("about:blank");
   await page.setViewportSize({ width: 1366, height: 900 });
   await page.goto("/");
   const image = page.locator(".outing-art img");

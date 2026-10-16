@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { ageBands } from "../src/content/search.ts";
+import { ageBands, normalizeSearchText } from "../src/content/search.ts";
 
 test("age filters distinguish unknown and include every overlapping band", () => {
   assert.deepEqual(ageBands({ status: "unknown" }), ["年齡未標示"]);
@@ -28,4 +28,16 @@ test("age filters distinguish unknown and include every overlapping band", () =>
   assert.deepEqual(ageBands({ status: "known", min: 13, ref: "office" }), [
     "13 歲以上",
   ]);
+});
+
+test("台與臺視為同一字：兩種寫法正規化成同一個字串", () => {
+  assert.equal(normalizeSearchText("臺北"), "台北");
+  assert.equal(normalizeSearchText("台北"), "台北");
+  assert.equal(normalizeSearchText("臺北台中臺南"), "台北台中台南");
+  // 其他異體字與一般文字不動
+  assert.equal(normalizeSearchText("公園 park 體"), "公園 park 體");
+  assert.equal(
+    normalizeSearchText(normalizeSearchText("臺")),
+    normalizeSearchText("臺"),
+  );
 });

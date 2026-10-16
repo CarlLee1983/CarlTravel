@@ -100,7 +100,7 @@ test("@smoke invalid URL values are ignored and empty results recover", async ({
   await expect(
     page.getByRole("button", { name: /移除縣市|移除類型|移除環境|移除年齡/ }),
   ).toHaveCount(0);
-  await page.getByRole("button", { name: "重新瀏覽全部景點" }).click();
+  await page.getByRole("link", { name: "清除條件" }).click();
   await expect(page.getByRole("status")).toHaveText(
     range(1, PAGE_SIZE, TOTAL_SPOTS),
   );

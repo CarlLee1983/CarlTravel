@@ -1,19 +1,26 @@
 import { cardView } from "../content/list-card.ts";
 import {
+  ageNoteText,
   cardItemHtml,
   optionLabel,
   paginatorHtml,
   rangeText,
+  recoveryItemsHtml,
+  resultsButtonText,
+  type RecoveryItem,
 } from "../content/list-html.ts";
 import { decodeList, type ListData, type ListEntry } from "../content/list.ts";
 import {
+  ageUnknownCount,
   filterKeys,
   filterOptions as optionsFor,
   queryList,
+  removalOptions,
   type FilterKey,
   type FilterOptions,
   type ListQueryResult,
 } from "../content/list-query.ts";
+import { normalizeSearchText } from "../content/search.ts";
 import {
   hasConditions,
   listHref,
@@ -23,9 +30,8 @@ import {
 } from "../content/list-url.ts";
 
 interface SearchIndex {
-  search(query: string): Promise<{
-    results: { data(): Promise<{ url: string }> }[];
-  }>;
+  // 命中的 id 依相關度排序；不呼叫 data()（每筆都要載入一個片段檔）
+  search(query: string): Promise<{ results: { id: string }[] }>;
 }
 interface ListReturn {
   scrollY: number;
@@ -52,6 +58,11 @@ function start(form: HTMLFormElement) {
   const filterOptions =
     document.querySelector<HTMLDetailsElement>("#filter-options")!;
   const filterCount = document.querySelector<HTMLElement>("#filter-count")!;
+  const showResults =
+    document.querySelector<HTMLButtonElement>("#show-results")!;
+  const ageNote = document.querySelector<HTMLElement>("#age-note")!;
+  const ageNoteLink = ageNote.querySelector<HTMLAnchorElement>("a")!;
+  const recovery = document.querySelector<HTMLElement>("#recovery")!;
   const fields = [input, ...selects];
   // `/page/N/` 是靜態頁，讀不到查詢參數：在那裡套用條件一律導向 `/?…`
   const onStaticPage = Number(results.dataset.staticPage) > 1;
@@ -61,6 +72,7 @@ function start(form: HTMLFormElement) {
   let rows: ListEntry[] | undefined;
   let rowsRequest: Promise<ListEntry[]> | undefined;
   let index: Promise<SearchIndex> | undefined;
+  let spotIds: Promise<Record<string, string>> | undefined;
   let request = 0;
   let timer: number | undefined;
   let pendingReturn: ListReturn | undefined;
@@ -84,7 +96,8 @@ function start(form: HTMLFormElement) {
   const warm = () =>
     void loadRows()
       .then(() => {
-        if (!optionsFromQuery)
+        // 有文字查詢時，筆數要等含命中的那次查詢才算，這裡先不動
+        if (!optionsFromQuery && !input.value.trim())
           showOptions(optionsFor(rows!, stateFromFields()));
       })
       .catch(() => {});
@@ -218,6 +231,12 @@ function start(form: HTMLFormElement) {
     else history.replaceState(next, "", url);
   }
 
+  const labelOf = (key: FilterKey | "query") =>
+    key === "query"
+      ? "搜尋"
+      : form.querySelector<HTMLLabelElement>(`label[for="filter-${key}"]`)!
+          .textContent!;
+
   let chipKey = "";
   function showActiveFilters() {
     // 內容沒變就不重建，避免換掉使用者正要操作的按鈕
@@ -260,11 +279,22 @@ function start(form: HTMLFormElement) {
     listEl.setAttribute("aria-busy", String(busy));
   }
 
+  // 拿掉 cleared 內的條件後的列表網址（回到第 1 頁）
+  function hrefWithout(state: ListState, cleared: readonly string[]) {
+    const next = { ...state, page: 1 };
+    for (const key of cleared) next[key as FilterKey | "query"] = "";
+    return listHref(next);
+  }
+
   function showResult(
     result: ListQueryResult,
     state: ListState,
     byRelevance: boolean,
     notice = "",
+    extras: { ageUnknown: number; recovery: RecoveryItem[] } = {
+      ageUnknown: 0,
+      recovery: [],
+    },
   ) {
     listEl.innerHTML = result.rows
       .map((entry) => cardItemHtml(cardView(entry)))
@@ -278,6 +308,13 @@ function start(form: HTMLFormElement) {
     );
     orderNote.textContent = byRelevance ? "依相關度排序" : staticOrder;
     empty.hidden = result.range.total > 0;
+    recovery.innerHTML = recoveryItemsHtml(extras.recovery);
+    ageNote.hidden = extras.ageUnknown === 0;
+    if (extras.ageUnknown > 0) {
+      ageNoteLink.textContent = ageNoteText(extras.ageUnknown);
+      ageNoteLink.href = hrefWithout(state, ["age"]);
+    }
+    showResults.textContent = resultsButtonText(result.range.total);
     const paged = result.totalPages > 1;
     pager.hidden = skipPager.hidden = !paged;
     pager.innerHTML = paged
@@ -290,14 +327,20 @@ function start(form: HTMLFormElement) {
   async function searchHits(query: string) {
     const path = "/pagefind/pagefind.js";
     index ??= import(/* @vite-ignore */ path);
+    spotIds ??= fetch("/pagefind/spot-ids.json").then((response) => {
+      if (!response.ok) throw new Error(`景點對照表 ${response.status}`);
+      return response.json() as Promise<Record<string, string>>;
+    });
     try {
-      const found = await (await index).search(query);
-      const urls = await Promise.all(
-        found.results.map(async (hit) => (await hit.data()).url),
-      );
-      return urls.flatMap((url) => /^\/spots\/([^/]+)\/$/.exec(url)?.[1] ?? []);
+      // 索引裡「臺」已統一成「台」，查詢也要先轉。命中 id 用建置時產生的對照表換成景點 id，
+      // 不逐筆載入片段檔（6,000 筆時會是上千個請求）。
+      const [found, ids] = await Promise.all([
+        index.then((pagefind) => pagefind.search(normalizeSearchText(query))),
+        spotIds,
+      ]);
+      return found.results.flatMap((hit) => ids[hit.id] ?? []);
     } catch (error) {
-      index = undefined;
+      index = spotIds = undefined;
       throw error;
     }
   }
@@ -308,14 +351,20 @@ function start(form: HTMLFormElement) {
     raw: RawState,
     afterPageChange: boolean,
   ) {
+    // 狀態依序是：載入列表資料（載入中）→ 等索引回應（搜尋中…）→ 結果。
+    // 兩個請求同時發出，但「搜尋中…」只在列表資料到手之後、索引還沒回來時顯示，
+    // 所以列表資料較慢時不會卡在「載入中」，也不會跳過搜尋中的狀態。
     const wantsText = raw.query !== "";
-    if (!rows || wantsText) {
-      setStatus("loading", rows ? "搜尋中…" : "載入中");
-    }
-    const [loaded, found] = await Promise.allSettled([
-      loadRows(),
-      wantsText ? searchHits(raw.query) : Promise.resolve(null),
-    ]);
+    let searchDone = !wantsText;
+    const search = wantsText
+      ? Promise.allSettled([searchHits(raw.query)]).then(([outcome]) => {
+          searchDone = true;
+          return outcome;
+        })
+      : null;
+    if (!rows) setStatus("loading", "載入中");
+    else if (wantsText) setStatus("loading", "搜尋中…");
+    const [loaded] = await Promise.allSettled([loadRows()]);
     if (current !== request) return;
     if (loaded.status === "rejected" || !rows) {
       setStatus(
@@ -324,7 +373,10 @@ function start(form: HTMLFormElement) {
       );
       return;
     }
-    const hits = found.status === "fulfilled" ? found.value : null;
+    if (!searchDone) setStatus("loading", "搜尋中…");
+    const found = search ? await search : null;
+    if (current !== request) return;
+    const hits = found?.status === "fulfilled" ? found.value : null;
     const result = queryList(rows, { ...raw, hits });
     const state: ListState = { ...raw, ...result.conditions };
     // 沒有任何條件的第 2 頁以後有靜態網址，不在 `/` 上渲染
@@ -332,7 +384,8 @@ function start(form: HTMLFormElement) {
       location.replace(staticPath(state.page));
       return;
     }
-    showOptions(optionsFor(rows, { ...result.conditions, hits }));
+    const conditions = { ...result.conditions, hits };
+    showOptions(optionsFor(rows, conditions));
     optionsFromQuery = true;
     showFields(state);
     showActiveFilters();
@@ -342,9 +395,23 @@ function start(form: HTMLFormElement) {
       result,
       state,
       hits !== null,
-      found.status === "rejected"
+      found?.status === "rejected"
         ? "搜尋暫時無法使用，已顯示符合篩選的景點。可清除條件或稍後重試。"
         : "",
+      {
+        ageUnknown: ageUnknownCount(rows, conditions),
+        recovery:
+          result.range.total === 0
+            ? removalOptions(rows, { ...conditions, query: state.query }).map(
+                (option) => ({
+                  label: labelOf(option.key),
+                  value: option.value,
+                  count: option.count,
+                  href: hrefWithout(state, option.cleared),
+                }),
+              )
+            : [],
+      },
     );
     if (afterPageChange) focusRange();
     else restorePosition();
@@ -381,6 +448,38 @@ function start(form: HTMLFormElement) {
       delay,
     );
   }
+
+  // 「查看 N 筆結果」：收合篩選區，捲到範圍文字並移入焦點。改選項本身不捲動。
+  showResults.addEventListener("click", () => {
+    filterOptions.open = false;
+    focusRange();
+  });
+
+  // 年齡未標示說明與無結果的移除連結都是真連結（可複製、可新分頁開啟）；
+  // 一般點擊在同一份文件內套用，留下一筆瀏覽紀錄，焦點移到範圍文字（清除條件則回搜尋框）
+  results.addEventListener("click", (event) => {
+    if (!(event.target instanceof Element)) return;
+    const link = event.target.closest<HTMLAnchorElement>(
+      "#age-note a[href], #no-results a[href]",
+    );
+    if (
+      !link ||
+      event.defaultPrevented ||
+      event.button !== 0 ||
+      event.metaKey ||
+      event.ctrlKey ||
+      event.shiftKey ||
+      event.altKey
+    )
+      return;
+    event.preventDefault();
+    const state = { ...history.state };
+    delete state.carlTravelList;
+    history.pushState(state, "", link.href);
+    update("url");
+    if (link.id === "clear-all") input.focus();
+    else rangeEl.focus({ preventScroll: true });
+  });
 
   form.addEventListener("submit", (event) => {
     event.preventDefault();

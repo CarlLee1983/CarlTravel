@@ -114,6 +114,15 @@ export async function checkOutput(
       "Formal search index page count differs from content/spots",
     );
   await readFile(join(output, "pagefind", "pagefind.js"));
+  // 命中 id → 景點 id 對照表：列表搜尋靠它免去逐筆載入片段，必須恰好涵蓋正式景點
+  const spotIds: Record<string, string> = JSON.parse(
+    await readFile(join(output, "pagefind", "spot-ids.json"), "utf8"),
+  );
+  if (
+    JSON.stringify(Object.values(spotIds).sort()) !==
+    JSON.stringify([...formalIds].sort())
+  )
+    throw new Error("Pagefind spot-ids.json differs from content/spots");
   const fixture = await loadSpots(fixtures);
   // e2e fixture 另含固定種子的產生景點，其名稱同樣不得出現在正式輸出
   const generatedNames = describeSpots({
