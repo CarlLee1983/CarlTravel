@@ -7,13 +7,13 @@ test("@smoke home links to stable spot route with readable facts and citations",
   await expect(
     page.getByText("開發展示 · 虛構景點與出處，僅供測試，不能作為出遊資訊。"),
   ).toBeVisible();
-  await expect(page.getByText("臺北市 · 中正區 / 公園")).toBeVisible();
+  await expect(page.getByText("臺北市 中正區 · 公園 · 戶外")).toBeVisible();
   await expect(
     page
       .getByRole("region", { name: /景點列表/ })
       .locator("li[data-spot-url]")
       .filter({ hasText: "範例親子公園" })
-      .getByText("年齡未標示"),
+      .getByText("親子條件與年齡尚未整理，未知不代表沒有"),
   ).toBeVisible();
   await expect(page.getByText("沿著步道觀察樹木與季節變化。")).toBeVisible();
   await page.getByRole("link", { name: "範例親子公園", exact: true }).click();

@@ -183,7 +183,7 @@ test(
         join(root, "dist/index.html"),
         "utf8",
       );
-      assert.ok(!unillustratedHome.includes('class="spot-thumbnail"'));
+      assert.ok(!unillustratedHome.includes("/spot-thumbnails/"));
       await checkOutput(
         join(root, "dist"),
         join(root, "content/spots"),

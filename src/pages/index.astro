@@ -3,19 +3,16 @@ import Layout from "../layouts/Layout.astro";
 import { outingIllustrationAlt } from "../site.ts";
 import { loadPageSpots } from "../content/preview.ts";
 import { ageBands, ageBandRanges } from "../content/search.ts";
-import { ageLabel } from "../content/schema.ts";
-import { isStale } from "../content/presentation.ts";
-import {
-  thumbnailUrl,
-  thumbnailWidth,
-  thumbnailHeight,
-  thumbnailVersion,
-} from "../content/thumbnail.ts";
+import SpotCard from "../components/SpotCard.astro";
+import { decodeList, encodeList } from "../content/list.ts";
+import { cardView } from "../content/list-card.ts";
 const spots = await loadPageSpots(__CARLTRAVEL_DRAFT_PREVIEW__);
 const usedAges = new Set(spots.flatMap((spot) => ageBands(spot.ageRange)));
 const hasKnownAges = spots.some((spot) => spot.ageRange.status === "known");
-const buildDate = new Date().toISOString().slice(0, 10);
-const checklistLabels = { yes: "有", no: "沒有", unknown: "未知" };
+// 卡片與日後的瀏覽器端渲染吃同一份列表資料，經 encode／decode 取得同樣的 ListEntry。
+const entries = new Map(
+  decodeList(encodeList(spots)).map((entry) => [entry.id, entry]),
+);
 const filters = [
   {
     name: "county",
@@ -147,77 +144,10 @@ const filters = [
                 data-setting={spot.setting}
                 data-age={ageBands(spot.ageRange).join("|")}
               >
-                <article>
-                  <div class="spot-overview">
-                    {spot.illustration && (
-                      <figure class="spot-thumbnail">
-                        <img
-                          src={`${thumbnailUrl(spot.id)}?v=${thumbnailVersion}-${spot.illustration.sha256}`}
-                          alt={spot.illustration.alt}
-                          width={thumbnailWidth}
-                          height={thumbnailHeight}
-                          loading="lazy"
-                          decoding="async"
-                        />
-                      </figure>
-                    )}
-                    <p class="meta">
-                      {spot.county} · {spot.district} / {spot.kind}
-                    </p>
-                    <h3>
-                      <a href={`/spots/${spot.id}/`}>
-                        {spot.name}
-                        <span class="spot-arrow" aria-hidden="true" />
-                      </a>
-                    </h3>
-                    {spot.preview && (
-                      <p class="preview-label">{spot.preview} · 尚未發布</p>
-                    )}
-                    <p class="spot-summary">{spot.summary}</p>
-                    <div class="spot-details">
-                      <p>{spot.setting}</p>
-                      <p class="meta">{ageLabel(spot.ageRange)}</p>
-                    </div>
-                  </div>
-                  <div class="spot-comparison">
-                    <dl class="spot-checklist" aria-label="親子條件">
-                      <div>
-                        <dt>推車友善</dt>
-                        <dd data-status={spot.familyChecklist.stroller.status}>
-                          {
-                            checklistLabels[
-                              spot.familyChecklist.stroller.status
-                            ]
-                          }
-                        </dd>
-                      </div>
-                      <div>
-                        <dt>雨天備案</dt>
-                        <dd data-status={spot.familyChecklist.rainyDay.status}>
-                          {
-                            checklistLabels[
-                              spot.familyChecklist.rainyDay.status
-                            ]
-                          }
-                        </dd>
-                      </div>
-                    </dl>
-                    <p class="checklist-date">
-                      親子條件查證{" "}
-                      <time datetime={spot.familyChecklist.checkedAt}>
-                        {spot.familyChecklist.checkedAt}
-                      </time>
-                      {isStale(spot.familyChecklist.checkedAt, buildDate) &&
-                        " · 已逾一年，請再確認"}
-                    </p>
-                    <a
-                      class="checklist-source"
-                      href={`/spots/${spot.id}/#checklist`}
-                    >
-                      查看親子條件與出處<span aria-hidden="true"> ↗</span>
-                    </a>
-                  </div>
-                </article>
+                <SpotCard
+                  card={cardView(entries.get(spot.id)!)}
+                  preview={spot.preview}
+                />
               </li>
             ))}
           </ul>
@@ -381,16 +311,6 @@ const filters = [
     gap: 8px;
     margin-top: 12px;
   }
-  #active-filters :global(button) {
-    background: var(--paper);
-    border-radius: 8px;
-    text-decoration: none;
-    text-align: left;
-    overflow-wrap: anywhere;
-  }
-  #active-filters :global(button span) {
-    margin-left: 12px;
-  }
   #search-help {
     margin: 12px 0 0;
     font-size: 14px;
@@ -465,91 +385,6 @@ const filters = [
   .spots li + li {
     margin-top: 12px;
   }
-  .spots article {
-    display: grid;
-    grid-template-columns: minmax(0, 1.5fr) minmax(260px, 1fr);
-    gap: 32px;
-    align-items: start;
-  }
-  .spot-overview {
-    display: flow-root;
-    min-width: 0;
-  }
-  .spot-thumbnail {
-    float: left;
-    width: 144px;
-    margin: 0 20px 8px 0;
-  }
-  .spot-thumbnail img {
-    display: block;
-    width: 100%;
-    height: auto;
-    aspect-ratio: 3 / 2;
-    object-fit: cover;
-    border-radius: 8px;
-  }
-  .spots p {
-    margin: 0;
-    font-size: 16px;
-  }
-  .spots .meta {
-    font-size: 14px;
-  }
-  .spots h3 {
-    margin: 8px 0 12px;
-    font-size: 24px;
-    line-height: 1.4;
-  }
-  .spots h3 a {
-    display: flex;
-    align-items: start;
-    justify-content: space-between;
-    gap: 16px;
-    text-decoration: none;
-  }
-  .spot-arrow::after {
-    content: "↗";
-  }
-  .spot-arrow {
-    font-size: 20px;
-    font-weight: 500;
-    transition: transform 180ms var(--ease-out);
-  }
-  .spot-details {
-    display: flex;
-    gap: 16px;
-    flex-wrap: wrap;
-    margin-top: 12px;
-  }
-  .spot-checklist {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin: 0 0 10px;
-  }
-  .spot-checklist dt {
-    font-size: 14px;
-    color: var(--muted);
-  }
-  .spot-checklist dd {
-    margin: 4px 0 0;
-    font-weight: 600;
-    font-size: 18px;
-  }
-  .spot-checklist [data-status="unknown"] {
-    font-weight: 400;
-    color: var(--muted);
-  }
-  .spots .checklist-date {
-    font-size: 14px;
-    color: var(--muted);
-  }
-  .checklist-source {
-    display: inline-flex;
-    align-items: center;
-    min-height: 44px;
-    font-size: 14px;
-  }
   .empty {
     background: var(--paper-deep);
     border-radius: 12px;
@@ -602,19 +437,12 @@ const filters = [
     button[type="submit"]:hover {
       background: var(--ink);
     }
-    button[type="reset"]:hover,
-    #active-filters :global(button:hover) {
+    button[type="reset"]:hover {
       background: var(--cover);
     }
     input:hover,
     select:hover {
       border-color: var(--ground);
-    }
-    .spots h3 a:hover {
-      text-decoration: underline;
-    }
-    .spots h3 a:hover .spot-arrow {
-      transform: translate(2px, -2px);
     }
   }
   @media (max-width: 700px) {
@@ -646,26 +474,6 @@ const filters = [
     .spots li {
       padding: 20px;
     }
-    .spots article {
-      grid-template-columns: 1fr;
-      gap: 20px;
-    }
-    .spot-thumbnail {
-      float: right;
-      width: 88px;
-      margin: 0 0 12px 16px;
-    }
-    .spot-summary {
-      clear: both;
-    }
-    .spots h3 {
-      font-size: 22px;
-    }
-    .spot-comparison {
-      background: var(--paper);
-      padding: 12px 16px;
-      border-radius: 8px;
-    }
     .checklist-help {
       margin-bottom: 16px;
     }
@@ -685,12 +493,26 @@ const filters = [
       gap: 8px;
     }
   }
-  @media (prefers-reduced-motion: reduce) {
-    .spot-arrow {
-      transition: none;
-    }
-    .spots h3 a:hover .spot-arrow {
-      transform: none;
+</style>
+<style is:global>
+  /* 已選條件標籤由 search.ts 動態建立，所以用全域樣式 */
+  #active-filters button {
+    min-height: 44px;
+    padding: 8px 14px;
+    border: 1px solid #7b98a8;
+    border-radius: 999px;
+    background: var(--paper);
+    font-size: 15px;
+    text-decoration: none;
+    text-align: left;
+    overflow-wrap: anywhere;
+  }
+  #active-filters button span {
+    margin-left: 12px;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    #active-filters button:hover {
+      background: var(--cover);
     }
   }
 </style>

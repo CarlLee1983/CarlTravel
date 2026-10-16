@@ -132,7 +132,9 @@ test("search and four combined filters preserve list details, order, and keyboar
   await expect(page.getByRole("status")).toHaveText("找到 1 個景點。");
   await expect(cards).toHaveText(["範例探索館"]);
   await expect(
-    page.getByText("新北市 · 板橋區 / 博物館").filter({ visible: true }),
+    page
+      .getByText("新北市 板橋區 · 博物館 · 室內外皆有")
+      .filter({ visible: true }),
   ).toBeVisible();
   await expect(
     page.getByText("3–12 歲", { exact: true }).filter({ visible: true }),

@@ -142,25 +142,94 @@ test("browser Back restores filter state after opening a spot", async ({
   ).toBeFocused();
 });
 
-test("cards show direct family conditions and link to their sources", async ({
+test("@smoke cards list only known conditions and collapse unknowns into one line", async ({
   page,
 }) => {
   await page.goto("/");
   const park = cards(page).filter({ hasText: "範例親子公園" });
   const museum = cards(page).filter({ hasText: "範例探索館" });
-  for (const [card, stroller, rain] of [
-    [park, "未知", "未知"],
-    [museum, "有", "有"],
-  ] as const) {
-    const facts = card.locator('dl[aria-label="親子條件"]');
-    await expect(facts).toBeVisible();
-    await expect(facts.locator("dt")).toHaveText(["推車友善", "雨天備案"]);
-    await expect(facts.locator("dd")).toHaveText([stroller, rain]);
-    await expect(
-      card.getByRole("link", { name: "查看親子條件與出處" }),
-    ).toHaveAttribute("href", /\/spots\/example-(park|museum)\/#checklist$/);
-  }
-  await museum.getByRole("link", { name: "查看親子條件與出處" }).click();
-  await expect(page).toHaveURL(/\/spots\/example-museum\/#checklist$/);
-  await expect(page.locator("#checklist")).toBeInViewport();
+  await expect(park.locator(".card-tags")).toHaveCount(0);
+  await expect(park.locator(".card-note")).toHaveText(
+    "親子條件與年齡尚未整理，未知不代表沒有",
+  );
+  await expect(park).not.toContainText("查證");
+  await expect(
+    page.getByRole("link", { name: "查看親子條件與出處" }),
+  ).toHaveCount(0);
+  await expect(museum.locator(".card-tags li")).toHaveText([
+    "3–12 歲",
+    "推車友善：有",
+    "哺乳室：沒有",
+    "雨天備案：有",
+  ]);
+  await expect(museum.locator(".card-tags li[data-negative]")).toHaveText([
+    "哺乳室：沒有",
+  ]);
+  await expect(museum.locator(".card-note")).toHaveText(
+    "另有 2 項親子條件未知 · 查證 2020-01-01",
+  );
+  await expect(museum).not.toContainText("↗");
+  await expect(cards(page).locator("a:has-text('↗')")).toHaveCount(0);
+});
+
+test("unillustrated cards are plain text and illustrated ones show a 72x48 thumbnail", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const park = cards(page).filter({ hasText: "範例親子公園" });
+  await expect(park.locator("img")).toHaveCount(0);
+  const summary = (await park.locator(".spot-summary").boundingBox())!;
+  const article = (await park.locator("article").boundingBox())!;
+  expect(summary.x - article.x).toBeLessThan(2);
+  const illustrated = cards(page).filter({ has: page.locator("img") });
+  expect(await illustrated.count()).toBeGreaterThan(0);
+  const box = (await illustrated.first().locator("img").boundingBox())!;
+  expect(Math.round(box.width)).toBe(72);
+  expect(Math.round(box.height)).toBe(48);
+});
+
+test("each card is one tab stop and the whole card is clickable", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const stops = await cards(page).evaluateAll((items) =>
+    items.map(
+      (item) =>
+        item.querySelectorAll(
+          'a[href], button, input, select, summary, [tabindex]:not([tabindex="-1"])',
+        ).length,
+    ),
+  );
+  expect(stops).toHaveLength(TOTAL_SPOTS);
+  expect(stops.every((count) => count === 1)).toBe(true);
+
+  const museum = cards(page).filter({ hasText: "範例探索館" });
+  const link = museum.getByRole("link", { name: "範例探索館", exact: true });
+  await link.focus();
+  await page.keyboard.press("Tab");
+  await expect(link).not.toBeFocused();
+  await link.focus();
+  const outline = await museum.evaluate(
+    (item) => getComputedStyle(item).outlineStyle,
+  );
+  expect(outline).toBe("solid");
+
+  await museum.scrollIntoViewIfNeeded();
+  const box = (await museum.boundingBox())!;
+  await page.mouse.click(box.x + box.width - 12, box.y + box.height - 12);
+  await expect(page).toHaveURL(/\/spots\/example-museum\/$/);
+});
+
+test("selected-condition chips are at least 44px tall and 15px", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await filters(page).locator("summary").click();
+  await page.getByLabel("縣市", { exact: true }).selectOption("新北市");
+  const chip = page.getByRole("button", { name: "移除縣市：新北市" });
+  const box = (await chip.boundingBox())!;
+  expect(box.height).toBeGreaterThanOrEqual(44);
+  expect(await chip.evaluate((el) => getComputedStyle(el).fontSize)).toBe(
+    "15px",
+  );
 });
