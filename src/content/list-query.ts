@@ -61,24 +61,6 @@ const collator = new Intl.Collator("zh-Hant");
 const countyRank = new Map<string, number>(
   counties.map((county, index) => [county, index]),
 );
-const naturalOrder = new WeakMap<readonly ListEntry[], ListEntry[]>();
-
-// 沒有文字時的順序：縣市北到南、同縣市依名稱，名稱相同再依 id。
-// 同一份資料只排一次，靜態分頁在建置時會對同一批資料連續查詢數百次。
-function inNaturalOrder(entries: readonly ListEntry[]) {
-  let sorted = naturalOrder.get(entries);
-  if (!sorted) {
-    sorted = [...entries].sort(
-      (a, b) =>
-        (countyRank.get(a.county) ?? Infinity) -
-          (countyRank.get(b.county) ?? Infinity) ||
-        collator.compare(a.name, b.name) ||
-        (a.id < b.id ? -1 : a.id > b.id ? 1 : 0),
-    );
-    naturalOrder.set(entries, sorted);
-  }
-  return sorted;
-}
 
 const positiveInteger = /^[1-9][0-9]*$/;
 
@@ -197,8 +179,6 @@ export interface FilterOption {
 }
 export interface FilterDimension {
   selected: string;
-  // 不含自己這個維度的條件時符合的筆數，即「全部」選項的筆數
-  total: number;
   // 整份資料都無法區分（選任何一項結果都一樣，或只有一項）、或行政區尚未選縣市時為 false，
   // 介面應整個隱藏；已選的維度一律可見。只看整份資料，不隨條件或文字命中改變，版面才不會跳動
   visible: boolean;
@@ -224,16 +204,13 @@ export function filterOptions(
   const hitSet = input.hits ? new Set(input.hits) : null;
   const active = filterKeys.filter((key) => chosen[key] !== "");
   const tally = {} as Record<FilterKey, Map<string, number>>;
-  const total = {} as Record<FilterKey, number>;
   for (const key of filterKeys) {
-    total[key] = 0;
     tally[key] = new Map(
       validValues(universe, key, chosen.county).map((value) => [value, 0]),
     );
   }
   const countyTierBits = filterBit.county | filterBit.district;
   const add = (key: FilterKey, entry: ListEntry) => {
-    total[key]++;
     const map = tally[key];
     for (const value of filters[key](entry))
       map.set(value, (map.get(value) ?? 0) + 1);
@@ -266,7 +243,6 @@ export function filterOptions(
     }));
     result[key] = {
       selected: chosen[key],
-      total: total[key],
       visible:
         chosen[key] !== "" ||
         (key === "district"
@@ -376,6 +352,7 @@ export function removalOptions(
   return options;
 }
 
+// entries 必須已是列表順序（encodeList 在建置時排好）；沒有文字時沿用這個順序，有文字時依相關度
 export function queryList(
   entries: readonly ListEntry[],
   input: ListQueryInput,
@@ -383,11 +360,10 @@ export function queryList(
   const { chosen, changed } = normalizeFilters(entries, input);
   let needsUrlReplace = changed;
 
-  let matched = (input.hits ? entries : inNaturalOrder(entries)).filter(
-    (entry) =>
-      filterKeys.every(
-        (key) => !chosen[key] || filters[key](entry).includes(chosen[key]),
-      ),
+  let matched = entries.filter((entry) =>
+    filterKeys.every(
+      (key) => !chosen[key] || filters[key](entry).includes(chosen[key]),
+    ),
   );
   if (input.hits) {
     const rank = new Map<string, number>();

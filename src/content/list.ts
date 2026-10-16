@@ -1,5 +1,6 @@
 // 列表 JSON 的編碼與解碼。瀏覽器端用 decodeList，所以此檔不得引用 node 模組。
 // 形狀：{ fields: 欄位名稱, rows: 與 fields 同順序的位置陣列 }。
+import { compareListOrder } from "./list-order.ts";
 import type { Spot } from "./schema.ts";
 
 export const listFields = [
@@ -50,9 +51,10 @@ export interface ListEntry {
   status: null;
 }
 
+// rows 依最終列表順序排好（見 list-order.ts），解碼後直接是列表順序
 export function encodeList(spots: readonly Spot[]): ListData {
   const rows = [...spots]
-    .sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0))
+    .sort(compareListOrder)
     .map((spot) => [
       spot.id,
       spot.name,

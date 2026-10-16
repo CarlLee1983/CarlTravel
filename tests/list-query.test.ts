@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import type { ListEntry } from "../src/content/list.ts";
+import { compareListOrder } from "../src/content/list-order.ts";
 import {
   entryAgeLabels,
   pageSize,
@@ -231,7 +232,7 @@ test("資料裡沒有的條件值被忽略並標示網址要修正，不會變�
   assert.equal(valid.needsUrlReplace, false);
 });
 
-test("沒有文字時依縣市北到南、同縣市依名稱排列", () => {
+test("列表順序是縣市北到南、同縣市依名稱、同名依 id；queryList 沿用輸入順序", () => {
   const rows = [
     entry("1", { name: "C", county: "高雄市" }),
     entry("2", { name: "B", county: "新北市" }),
@@ -241,7 +242,7 @@ test("沒有文字時依縣市北到南、同縣市依名稱排列", () => {
     entry("6", { name: "E", county: "金門縣" }),
     entry("7", { name: "F", county: "宜蘭縣" }),
   ];
-  assert.deepEqual(ids(queryList(rows, {}).rows), [
+  assert.deepEqual(ids([...rows].sort(compareListOrder)), [
     "5",
     "3",
     "4",
@@ -252,7 +253,9 @@ test("沒有文字時依縣市北到南、同縣市依名稱排列", () => {
   ]);
   // 名稱相同時以 id 決定，結果穩定
   const tie = [entry("b", { name: "同名" }), entry("a", { name: "同名" })];
-  assert.deepEqual(ids(queryList(tie, {}).rows), ["a", "b"]);
+  assert.deepEqual(ids([...tie].sort(compareListOrder)), ["a", "b"]);
+  // 排序在建置時（encodeList）完成，查詢不重排
+  assert.deepEqual(ids(queryList(rows, {}).rows), ids(rows));
 });
 
 test("有文字時依命中的相關度排序，並跨頁保持順序", () => {

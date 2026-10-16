@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { loadSpots } from "../src/content/load.ts";
+import { compareListOrder } from "../src/content/list-order.ts";
 import { decodeList, encodeList, listFields } from "../src/content/list.ts";
 
 test("列表 JSON 編碼後可無損解碼，欄位與筆數符合規格", async () => {
@@ -11,7 +12,7 @@ test("列表 JSON 編碼後可無損解碼，欄位與筆數符合規格", async
   const entries = decodeList(data);
   assert.deepEqual(
     entries.map((entry) => entry.id),
-    spots.map((spot) => spot.id).sort(),
+    [...spots].sort(compareListOrder).map((spot) => spot.id),
   );
   for (const entry of entries) {
     const spot = spots.find((item) => item.id === entry.id)!;
@@ -91,4 +92,32 @@ test("表頭或列長度不符時拒絕解碼", () => {
     () => decodeList({ fields: listFields, rows: [["only-id"]] }),
     /長度/,
   );
+});
+
+test("列表 JSON 的 rows 已是列表順序，與靜態分頁逐頁串起來的順序一致", async () => {
+  const { queryList, pageSize } = await import("../src/content/list-query.ts");
+  const base = (await loadSpots("tests/fixtures/spots"))[0]!;
+  // 縣市橫跨北到南、名稱不依 id 順序，id 順序與列表順序刻意相反
+  const spots = Array.from({ length: pageSize * 2 + 5 }, (_, index) => ({
+    ...base,
+    id: `s${String(100 - index).padStart(3, "0")}`,
+    name: `景點${String.fromCharCode(0x4e00 + ((index * 7) % 23))}`,
+    county: (["高雄市", "臺北市", "臺南市"] as const)[index % 3]!,
+  }));
+  const entries = decodeList(JSON.parse(JSON.stringify(encodeList(spots))));
+  assert.deepEqual(
+    entries.map((entry) => entry.id),
+    [...entries].sort(compareListOrder).map((entry) => entry.id),
+  );
+  const pages = Math.ceil(entries.length / pageSize);
+  const paged = Array.from(
+    { length: pages },
+    (_, index) => queryList(entries, { page: String(index + 1) }).rows,
+  ).flat();
+  assert.deepEqual(
+    paged.map((entry) => entry.id),
+    entries.map((entry) => entry.id),
+  );
+  // 北到南：第一筆是臺北市
+  assert.equal(entries[0]!.county, "臺北市");
 });

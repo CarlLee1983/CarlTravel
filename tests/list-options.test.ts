@@ -140,8 +140,6 @@ test("選後筆數納入其他條件，但不納入自己這個維度的已選�
   assert.deepEqual(counts(view, "county"), { 臺北市: 2, 基隆市: 1, 新北市: 1 });
   // 類型維度：以「縣市 = 臺北市」計算
   assert.deepEqual(counts(view, "kind"), { 公園: 2, 博物館: 1 });
-  assert.equal(view.kind.total, 3);
-  assert.equal(view.county.total, 4);
 });
 
 test("已選行政區時，其他縣市的筆數不受行政區限制（改縣市會清掉行政區）", () => {
@@ -166,8 +164,6 @@ test("選後筆數納入文字命中", () => {
     基隆市: 0,
     新北市: 0,
   });
-  const none = filterOptions(rows, { hits: null });
-  assert.equal(none.county.total, 6);
 });
 
 test("年齡帶可同時計入多個年齡帶，年齡未標示不是選項", () => {
