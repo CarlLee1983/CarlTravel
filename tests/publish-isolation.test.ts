@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import { execFileSync, spawnSync } from "node:child_process";
 import { join } from "node:path";
 import { workspace, devServer } from "./helpers/workspace.ts";
@@ -119,6 +119,25 @@ test(
       await buildSearchIndex(join(root, "content/spots"), join(root, "dist"));
       await writeFile(page, originals.get(page)!);
       await assert.rejects(checkIsolation(root), /草稿專有文字/);
+      await buildSearchIndex(join(root, "content/spots"), join(root, "dist"));
+      // 列表 JSON 同樣受隔離保護：草稿文字或草稿 id 都不得出現
+      const [listName] = await readdir(join(root, "dist/spot-list"));
+      const list = join(root, "dist/spot-list", listName!);
+      const listOriginal = await readFile(list, "utf8");
+      assert.ok(listOriginal.includes("觀察樹木與季節變化。"));
+      await checkIsolation(root);
+      await writeFile(
+        list,
+        listOriginal.replace("觀察樹木與季節變化。", "未發布插畫測試景點"),
+      );
+      await assert.rejects(checkIsolation(root), /草稿專有文字/);
+      await writeFile(
+        list,
+        listOriginal.replace('"approved-park"', '"unpublished"'),
+      );
+      await assert.rejects(checkIsolation(root), /列表 JSON/);
+      await writeFile(list, listOriginal);
+      await checkIsolation(root);
     } finally {
       await cleanup();
     }

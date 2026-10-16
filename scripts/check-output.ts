@@ -17,12 +17,25 @@ import {
   describeSpots,
 } from "./scale/generate-spots.ts";
 import { renderThumbnail, thumbnailUrl } from "../src/content/thumbnail.ts";
+import {
+  budget as defaultBudget,
+  checkFileCount,
+  checkListSize,
+  findListJson,
+  readListEntries,
+  type Budget,
+} from "./output-budget.ts";
 
 export async function checkOutput(
   output = "dist",
   content = "content/spots",
   fixtures = "tests/fixtures/spots",
+  limits: Partial<Budget> = {},
 ) {
+  const { maxFiles, listBrotliBytes, listRawBytes } = {
+    ...defaultBudget,
+    ...limits,
+  };
   const formal = await loadSpots(content);
   const formalIds = formal.map((spot) => spot.id).sort();
   const images = new Map(
@@ -107,12 +120,27 @@ export async function checkOutput(
     seed: FIXTURE_SEED,
     count: FIXTURE_COUNT,
   }).map(({ spot }) => spot.name);
+  const fixtureIds = [
+    ...fixture
+      .filter((spot) => !formalIds.includes(spot.id))
+      .map((spot) => spot.id),
+    ...describeSpots({ seed: FIXTURE_SEED, count: FIXTURE_COUNT }).map(
+      ({ id }) => id,
+    ),
+  ];
   const fixtureNames = [
     ...fixture
       .filter((spot) => !formalIds.includes(spot.id))
       .map((spot) => spot.name),
     ...generatedNames,
   ];
+  await checkFileCount(output, maxFiles);
+  const listFile = await findListJson(output);
+  await checkListSize(listFile, { listBrotliBytes, listRawBytes });
+  await readListEntries(listFile, formalIds, [
+    ...fixtureNames,
+    ...fixtureIds.filter((id) => !formalIds.includes(id)),
+  ]);
   async function checkHtml(dir: string): Promise<void> {
     for (const entry of await readdir(dir, { withFileTypes: true })) {
       const path = join(dir, entry.name);

@@ -23,6 +23,7 @@ pnpm dev:fixture
 | `pnpm check:content`                          | 載入並驗證正式 YAML                                                      |
 | `pnpm test`                                   | Node 內容載入接受／拒絕測試                                              |
 | `pnpm test:e2e`                               | 建置 fixture，以 Playwright 測導航、出處、日期、鍵盤、axe 與五種螢幕寬度；Chromium 全跑，WebKit 只跑 `@smoke` |
+| `pnpm check:scale`                            | 產生 6,000 筆虛構景點並建置到暫存目錄，檢查輸出檔案數與列表 JSON 大小；結束即刪除，不碰 `dist/`  |
 | `pnpm verify`                                 | 共用整合關卡；最後重建並檢查正式輸出                                     |
 
 ## 內容載入責任
@@ -50,6 +51,21 @@ node --experimental-strip-types scripts/scale/generate-spots.ts [--seed 20261017
 `pnpm build:fixture` 與 `pnpm dev:fixture` 由 `scripts/site.mjs` 先呼叫 `scripts/scale/fixture-root.ts`，把手寫的 `tests/fixtures/spots`（2 筆）與固定種子（`FIXTURE_SEED`）產生的 `FIXTURE_COUNT`（60）筆組成暫存內容根目錄，經 `CARLTRAVEL_FIXTURE_ROOT` 交給 `src/content/mode.ts`，結束時刪除。該變數只在 fixture 模式有效，`scripts/site.mjs` 也會清掉繼承而來的值。e2e 因此看到 62 筆景點；`e2e/fixture.ts` 的 `TOTAL_SPOTS` 要與兩者同步。
 
 產生景點的名稱同樣納入 `pnpm check:output` 的洩漏檢查，與手寫 fixture 一視同仁。WebKit project 只執行標題含 `@smoke` 的案例（瀏覽與景點頁、文字搜尋、篩選還原與移除），其餘案例只在 Chromium 執行。
+
+## 列表 JSON 與規模檢查
+
+建置會輸出單一檔案 `/spot-list/<內容雜湊前 16 碼>.json`（`src/pages/spot-list/[hash].json.ts`），內容是 `{ fields, rows }`：`fields` 為欄位名稱，`rows` 的每列是同順序的位置陣列。欄位依序為 id、name、county、district、kind、setting、summary、illustration（`[雜湊前 16 碼, alt]` 或 null）、age（`[min, max 或 null]`，未知為 null）、family（五項親子條件壓成 5 位數字字串，順序為推車、哺乳室、親子廁所、雨天備案、無障礙，0 未知、1 有、2 無）、checkedAt（親子條件查證日期）、status（營運狀態，目前一律 null）。編碼與解碼都在 `src/content/list.ts`，瀏覽器端用同一個 `decodeList`；頁面以 `src/content/list-build.ts` 的 `buildList()` 取得網址，雜湊由內容決定，不需要另存清單檔。
+
+`pnpm check:output` 另外檢查：輸出檔案總數 ≤ 18,000；列表 JSON 原始 ≤ 1.5 MB、brotli 後 ≤ 400 KB；JSON 筆數等於正式景點數，且不含 fixture 名稱或 fixture／草稿 id。上限與檢查函式集中在 `scripts/output-budget.ts`，發布流程的隔離檢查與 `check:scale` 都重用它。
+
+`pnpm check:scale`（PR CI 的 `scale` 工作）用固定種子產生 6,000 筆，經 `CARLTRAVEL_FIXTURE_ROOT` 與 `astro build --outDir` 建置到暫存目錄，對輸出跑檔案數與列表 JSON 檢查，印出實際數字後刪除暫存目錄。加 `--keep` 會保留（目錄內有 `spots/` 與 `dist/`），供下面的量測腳本使用：
+
+```sh
+node --experimental-strip-types scripts/scale/check-scale.ts --keep
+node scripts/scale/perf.mjs <暫存目錄>/dist 3 / "/?county=臺南市" /spots/fx-00001/
+```
+
+`scripts/scale/perf.mjs` 只在手動執行，不進 CI。條件固定為 390px 視窗、4 倍 CPU 降速、Slow 4G、無快取，靜態伺服器以 brotli 回應文字檔；輸出每個路徑的 FCP、LCP、TBT、傳輸量等中位數與逐次樣本。建置秒數用 `time pnpm check:scale`（暖快取指第二次執行）。結果附在 PR，不寫進 CI 門檻。
 
 第 05 票讓一般開發預覽讀取 `drafts/spots/`；`research/` 不由網站載入，兩者持續由 Git 排除。正式及 fixture 建置、fixture 開發仍不載入草稿。CI 與部署關卡依後續票加入同一條 verify；目前不宣稱可上線，不執行部署。
 
