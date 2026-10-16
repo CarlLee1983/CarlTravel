@@ -43,7 +43,7 @@ const sections = [
   ...(spot.agentTips.length ? [{ id: "tips", label: "Agent 建議" }] : []),
   ...(spot.nearby.length ? [{ id: "nearby", label: "周邊安排" }] : []),
   { id: "references", label: "來源與官方出處" },
-  { id: "spot-disclaimer", label: "免責聲明" },
+  { id: "spot-disclaimer", label: "使用前確認" },
 ];
 const nearbyKind = { food: "餐飲", stay: "住宿", activity: "活動" } as const;
 ---
@@ -311,11 +311,11 @@ const nearbyKind = { food: "餐飲", stay: "住宿", activity: "活動" } as con
       <aside
         id="spot-disclaimer"
         tabindex="-1"
-        aria-label="免責聲明"
+        aria-label="使用前確認"
         class="disclaimer"
       >
         出發前請再確認官方公告；親子與無障礙資訊僅供參考，未知不代表沒有。
-        <a href="/about/#disclaimer">閱讀完整免責聲明</a>
+        <a href="/about/#disclaimer">查看使用前確認</a>
       </aside>
     </article>
   </div>
