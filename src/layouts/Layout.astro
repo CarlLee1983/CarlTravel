@@ -55,7 +55,8 @@ const preview = __CARLTRAVEL_DRAFT_PREVIEW__;
       <nav aria-label="站內導覽">
         <a
           href="/"
-          aria-current={Astro.url.pathname === "/"
+          aria-current={Astro.url.pathname === "/" ||
+          Astro.url.pathname.startsWith("/page/")
             ? "page"
             : Astro.url.pathname.startsWith("/spots/")
               ? "true"
@@ -258,8 +259,7 @@ const preview = __CARLTRAVEL_DRAFT_PREVIEW__;
     padding: 8px 12px;
     font-weight: 800;
   }
-  time,
-  #result-count {
+  time {
     font-variant-numeric: tabular-nums;
   }
   .meta {

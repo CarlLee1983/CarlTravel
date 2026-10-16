@@ -12,7 +12,7 @@ test("@smoke home links to stable spot route with readable facts and citations",
   await expect(
     page
       .getByRole("region", { name: /景點列表/ })
-      .locator("li[data-spot-url]")
+      .locator(".spots > li")
       .filter({ hasText: "範例親子公園" })
       .getByText("親子條件與年齡尚未整理，未知不代表沒有"),
   ).toBeVisible();

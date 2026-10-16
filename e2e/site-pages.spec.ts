@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
+import { range } from "./fixture.ts";
 
 const license = "https://creativecommons.org/licenses/by-nc/4.0/";
 
@@ -75,7 +76,7 @@ test("compact home shows search before the list at desktop and mobile widths", a
     ).toBeVisible();
     if (width === 390) {
       const firstCard = (await results
-        .locator("li[data-spot-url]")
+        .locator(".spots > li")
         .first()
         .boundingBox())!;
       expect(firstCard.y).toBeLessThan(900);
@@ -120,13 +121,15 @@ for (const width of [390, 1024, 1200, 1366]) {
     await expect(search).toBeInViewport();
     await search.fill("範例");
     await search.press("Enter");
-    await expect(page.getByRole("status")).toHaveText("找到 2 個景點。");
+    await expect(page.getByRole("status")).toHaveText(range(1, 2, 2));
     expect(await page.evaluate(() => document.getAnimations().length)).toBe(0);
   });
 }
 
 for (const route of [
   "/",
+  "/page/2/",
+  "/?setting=%E6%88%B6%E5%A4%96&page=2",
   "/spots/example-park/",
   "/spots/example-museum/",
   "/spots/fx-00001/",
@@ -139,6 +142,12 @@ for (const route of [
     }) => {
       await page.setViewportSize({ width, height: 900 });
       await page.goto(route);
+      // 帶條件的網址要等前端渲染完成再檢查
+      if (route.includes("?"))
+        await expect(page.getByRole("status")).toHaveAttribute(
+          "data-state",
+          "ready",
+        );
       expect(
         await page.evaluate(
           () => document.documentElement.scrollWidth <= window.innerWidth,
@@ -179,6 +188,9 @@ test("@smoke header marks the list as the current location on spot pages and alw
   await expect(list).toHaveAttribute("href", "/");
   await expect(list).toHaveAttribute("aria-current", "true");
   await page.goto("/");
+  await expect(list).toHaveAttribute("aria-current", "page");
+  await page.goto("/page/2/");
+  await expect(list).toHaveAttribute("href", "/");
   await expect(list).toHaveAttribute("aria-current", "page");
   await page.goto("/about/");
   await expect(list).not.toHaveAttribute("aria-current", /.*/);
@@ -259,7 +271,7 @@ test("@smoke 404 search form sends the keyword to the list", async ({
   await search.fill("範例");
   await search.press("Enter");
   await expect(page).toHaveURL(/\/\?query=%E7%AF%84%E4%BE%8B$/);
-  await expect(page.getByRole("status")).toHaveText("找到 2 個景點。");
+  await expect(page.getByRole("status")).toHaveText(range(1, 2, 2));
 });
 
 test("without JavaScript a 404 search lands on the list with the explanation", async ({
@@ -273,9 +285,7 @@ test("without JavaScript a 404 search lands on the list with the explanation", a
     await page.getByRole("button", { name: "搜尋" }).click();
     await expect(page).toHaveURL(/\/\?query=/);
     await expect(page.getByRole("heading", { name: /景點列表/ })).toBeVisible();
-    await expect(
-      page.getByText("搜尋與篩選需要 JavaScript；仍可從下方瀏覽全部景點。"),
-    ).toBeVisible();
+    await expect(page.getByText("搜尋與篩選需要 JavaScript")).toBeVisible();
     await expect(
       page.getByRole("link", { name: "範例探索館", exact: true }),
     ).toBeVisible();

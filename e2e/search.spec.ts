@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
-import { COUNT_RESULT, TOTAL_SPOTS } from "./fixture.ts";
+import { PAGE_SIZE, RANGE_RESULT, TOTAL_SPOTS, range } from "./fixture.ts";
 
 async function openFilters(page: import("@playwright/test").Page) {
   await page.locator("#filter-options > summary").click();
@@ -91,7 +91,7 @@ test("@smoke text search narrows the list to matching spots", async ({
   await page.goto("/");
   await page.getByRole("searchbox", { name: "搜尋景點" }).fill("summaryprobe");
   await page.getByRole("searchbox", { name: "搜尋景點" }).press("Enter");
-  await expect(page.getByRole("status")).toHaveText("找到 1 個景點。");
+  await expect(page.getByRole("status")).toHaveText(range(1, 1, 1));
   await expect(
     page
       .getByRole("region", { name: /景點列表/ })
@@ -123,13 +123,13 @@ test("search and four combined filters preserve list details, order, and keyboar
   ).toContainText(["全部年齡", "3–6 歲", "7–12 歲", "年齡未標示"]);
   await search.fill("範例");
   await search.press("Enter");
-  await expect(page.getByRole("status")).toHaveText("找到 2 個景點。");
+  await expect(page.getByRole("status")).toHaveText(range(1, 2, 2));
   await expect(cards).toHaveText(["範例親子公園", "範例探索館"]);
   await page.getByLabel("縣市", { exact: true }).selectOption("新北市");
   await page.getByLabel("類型", { exact: true }).selectOption("博物館");
   await page.getByLabel("環境", { exact: true }).selectOption("室內外皆有");
   await page.getByLabel("年齡帶", { exact: true }).selectOption("7–12 歲");
-  await expect(page.getByRole("status")).toHaveText("找到 1 個景點。");
+  await expect(page.getByRole("status")).toHaveText(range(1, 1, 1));
   await expect(cards).toHaveText(["範例探索館"]);
   await expect(
     page
@@ -154,7 +154,7 @@ test("search and four combined filters preserve list details, order, and keyboar
   await expect(page.getByLabel("類型", { exact: true })).toHaveValue("");
   await expect(page.getByLabel("環境", { exact: true })).toHaveValue("");
   await expect(page.getByLabel("年齡帶", { exact: true })).toHaveValue("");
-  await expect(cards).toHaveCount(TOTAL_SPOTS);
+  await expect(cards).toHaveCount(PAGE_SIZE);
   await search.focus();
   await page.keyboard.press("Tab");
   await expect(
@@ -210,7 +210,7 @@ test("clearing an in-flight search prevents its late result from replacing the c
   await (await completed).finished();
   // The old request must finish before checking it did not overwrite the cleared state.
   await page.waitForLoadState("networkidle");
-  await expect(page.getByRole("status")).toHaveText(COUNT_RESULT);
+  await expect(page.getByRole("status")).toHaveText(RANGE_RESULT);
   await expect(page.locator(".spots")).toHaveAttribute("aria-busy", "false");
   // 遲到的 summaryprobe 結果只會是探索館；目前條件是臺北市
   const headings = page
@@ -233,28 +233,28 @@ test("search failure preserves browsing and clearing restores normal filtering",
     page
       .getByRole("region", { name: /景點列表/ })
       .getByRole("heading", { level: 3 }),
-  ).toHaveCount(TOTAL_SPOTS);
+  ).toHaveCount(PAGE_SIZE);
   await page.getByRole("button", { name: "清除條件" }).click();
   await openFilters(page);
   await page.getByLabel("年齡帶", { exact: true }).selectOption("年齡未標示");
-  await expect(page.getByRole("status")).toHaveText(COUNT_RESULT);
+  await expect(page.getByRole("status")).toHaveText(RANGE_RESULT);
   await expect(
     page.getByRole("link", { name: "範例親子公園", exact: true }),
   ).toBeVisible();
 });
 
-test("without JavaScript the full list stays browsable and controls explain their dependency", async ({
+test("without JavaScript the search and filter controls are absent and explained by one line", async ({
   browser,
 }) => {
   const context = await browser.newContext({ javaScriptEnabled: false });
   try {
     const page = await context.newPage();
     await page.goto("/");
-    await expect(page.getByRole("searchbox")).toBeVisible();
-    await expect(page.getByRole("searchbox")).toBeDisabled();
-    await expect(
-      page.getByText("搜尋與篩選需要 JavaScript；仍可從下方瀏覽全部景點。"),
-    ).toBeVisible();
+    await expect(page.getByRole("searchbox")).toHaveCount(0);
+    await expect(page.getByRole("combobox")).toHaveCount(0);
+    await expect(page.locator("#spot-search")).toBeHidden();
+    await expect(page.getByText("搜尋與篩選需要 JavaScript")).toBeVisible();
+    await expect(page.getByText("仍可從下方瀏覽全部景點")).toHaveCount(0);
     await page.getByRole("link", { name: "範例探索館", exact: true }).click();
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(
       "範例探索館",
@@ -272,7 +272,7 @@ for (const width of [360, 390, 430, 1366, 1920]) {
     await page.goto("/");
     await openFilters(page);
     await page.getByLabel("類型", { exact: true }).selectOption("博物館");
-    await expect(page.getByRole("status")).toHaveText(COUNT_RESULT);
+    await expect(page.getByRole("status")).toHaveText(RANGE_RESULT);
     expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
     expect(
       await page.evaluate(
@@ -281,7 +281,7 @@ for (const width of [360, 390, 430, 1366, 1920]) {
     ).toBe(true);
     await page.getByRole("searchbox").fill("zzzznomatchingplace");
     await page.getByRole("searchbox").press("Enter");
-    await expect(page.getByRole("status")).toHaveText("找到 0 個景點。");
+    await expect(page.getByRole("status")).toHaveText("沒有符合條件的景點");
     await expect(
       page.getByText("沒有符合條件的景點，請調整搜尋文字或清除條件。"),
     ).toBeVisible();
@@ -309,7 +309,7 @@ test("empty-results recovery resets query and filters together", async ({
   await page.keyboard.press("Enter");
   await expect(page.getByRole("searchbox")).toBeFocused();
   await expect(page.getByRole("status")).toHaveText(
-    `找到 ${TOTAL_SPOTS} 個景點。`,
+    range(1, PAGE_SIZE, TOTAL_SPOTS),
   );
   await expect(page.getByRole("status")).toHaveAttribute("data-state", "ready");
   await expect(page.getByLabel("縣市", { exact: true })).toHaveValue("");

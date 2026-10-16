@@ -1,0 +1,19 @@
+---
+// 第 2 頁以後的靜態分頁（第 1 頁是 `/`，不產生 /page/1/）。兩套網址的理由見 docs/adr/0003。
+import Layout from "../../layouts/Layout.astro";
+import ListPage from "../../components/ListPage.astro";
+import { loadPageSpots } from "../../content/preview.ts";
+import { totalPagesOf } from "../../content/list-pages.ts";
+
+export async function getStaticPaths() {
+  const spots = await loadPageSpots(__CARLTRAVEL_DRAFT_PREVIEW__);
+  return Array.from({ length: totalPagesOf(spots.length) - 1 }, (_, index) => ({
+    params: { page: String(index + 2) },
+  }));
+}
+const page = Number(Astro.params.page);
+---
+
+<Layout title={`景點列表 第 ${page} 頁`}>
+  <ListPage page={page} />
+</Layout>

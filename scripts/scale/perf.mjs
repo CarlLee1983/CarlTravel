@@ -4,6 +4,7 @@
 // 條件對應規格「效能預算」：390px、4 倍 CPU 降速、Slow 4G、無快取。
 // 用法：node scripts/scale/perf.mjs <dist 目錄> <次數> <路徑...>
 // 例：  node scripts/scale/perf.mjs "$DIST" 3 / "/?county=臺南市" /spots/fx-00001/
+// 帶條件的網址會多一個 results 指標（毫秒）：範圍文字從「載入中」到畫出結果；無條件頁面為 0。
 // 6,000 筆輸出可用 `node --experimental-strip-types scripts/scale/check-scale.ts --keep` 取得。
 import { createServer } from "node:http";
 import { readFile, stat } from "node:fs/promises";
@@ -114,6 +115,25 @@ try {
       await page.addInitScript(() => {
         window.__lcp = 0;
         window.__tbt = 0;
+        // 帶條件進站：範圍文字從「載入中」變成就緒的時間，即列表畫出結果的時間
+        window.__results = null;
+        let loading = false;
+        new MutationObserver(() => {
+          const status = document.querySelector("#range-text");
+          if (!status) return;
+          if (status.dataset.state === "loading") loading = true;
+          else if (
+            loading &&
+            status.dataset.state === "ready" &&
+            window.__results === null
+          )
+            window.__results = performance.now();
+        }).observe(document, {
+          subtree: true,
+          childList: true,
+          attributes: true,
+          characterData: true,
+        });
         new PerformanceObserver((list) => {
           for (const e of list.getEntries()) window.__lcp = e.startTime;
         }).observe({ type: "largest-contentful-paint", buffered: true });
@@ -123,6 +143,15 @@ try {
         }).observe({ type: "longtask", buffered: true });
       });
       await page.goto(origin + path, { waitUntil: "load", timeout: 600000 });
+      // 帶條件的網址要等列表 JSON 載入、範圍文字就緒再取指標
+      await page
+        .waitForFunction(
+          () =>
+            document.querySelector("#range-text")?.dataset.state !== "loading",
+          null,
+          { timeout: 60000 },
+        )
+        .catch(() => {});
       await page.waitForTimeout(1500);
       const metrics = await page.evaluate(() => {
         const nav = performance.getEntriesByType("navigation")[0];
@@ -134,6 +163,7 @@ try {
           dcl: nav.domContentLoadedEventEnd,
           load: nav.loadEventEnd,
           tbt: window.__tbt,
+          results: window.__results,
           dom: document.getElementsByTagName("*").length,
         };
       });
@@ -146,13 +176,14 @@ try {
       "dcl",
       "load",
       "tbt",
+      "results",
       "dom",
       "bytes",
       "requests",
     ];
     out[path] = {
       median: Object.fromEntries(
-        keys.map((k) => [k, Math.round(median(samples.map((s) => s[k])))]),
+        keys.map((k) => [k, Math.round(median(samples.map((s) => s[k] ?? 0)))]),
       ),
       samples,
     };

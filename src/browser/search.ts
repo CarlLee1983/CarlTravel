@@ -1,4 +1,22 @@
-export {};
+import { cardView } from "../content/list-card.ts";
+import {
+  cardItemHtml,
+  paginatorHtml,
+  rangeText,
+} from "../content/list-html.ts";
+import { decodeList, type ListData, type ListEntry } from "../content/list.ts";
+import {
+  filterKeys,
+  queryList,
+  type ListQueryResult,
+} from "../content/list-query.ts";
+import {
+  hasConditions,
+  listHref,
+  ownedParams,
+  staticPath,
+  type ListState,
+} from "../content/list-url.ts";
 
 interface SearchIndex {
   search(query: string): Promise<{
@@ -10,231 +28,415 @@ interface ListReturn {
   focusHref: string;
   filtersOpen: boolean;
 }
+// 網址上的原始條件，尚未經查詢模組驗證
+type RawState = Omit<ListState, "page"> & { page: string | null };
 
-const form = document.querySelector<HTMLFormElement>("#spot-search")!;
-const input = form.querySelector<HTMLInputElement>('input[type="search"]')!;
-const selects = [...form.querySelectorAll<HTMLSelectElement>("select")];
-const cards = [...document.querySelectorAll<HTMLLIElement>("[data-spot-url]")];
-const results = document.querySelector<HTMLElement>(".results")!;
-const resultList = document.querySelector<HTMLElement>(".spots") ?? results;
-const status = document.querySelector<HTMLElement>("#search-status")!;
-const count = document.querySelector<HTMLElement>("#result-count")!;
-const empty = document.querySelector<HTMLElement>("#no-results")!;
-const active = document.querySelector<HTMLElement>("#active-filters")!;
-const filterOptions =
-  document.querySelector<HTMLDetailsElement>("#filter-options")!;
-const filterCount = document.querySelector<HTMLElement>("#filter-count")!;
-const fields = [input, ...selects];
-const parameterNames = ["query", "county", "kind", "setting", "age"];
-let index: Promise<SearchIndex> | undefined;
-let request = 0;
-let timer: number | undefined;
-let pendingReturn: ListReturn | undefined;
+const form = document.querySelector<HTMLFormElement>("#spot-search");
+if (form) start(form);
 
-function readReturnState() {
-  const value: unknown = history.state?.carlTravelList;
-  pendingReturn = undefined;
-  if (typeof value !== "object" || value === null) return;
-  const saved = value as Partial<ListReturn>;
-  if (
-    typeof saved.scrollY === "number" &&
-    Number.isFinite(saved.scrollY) &&
-    saved.scrollY >= 0 &&
-    typeof saved.focusHref === "string"
-  ) {
-    pendingReturn = {
-      scrollY: saved.scrollY,
-      focusHref: saved.focusHref,
-      filtersOpen: saved.filtersOpen === true,
+function start(form: HTMLFormElement) {
+  const input = form.querySelector<HTMLInputElement>('input[type="search"]')!;
+  const selects = [...form.querySelectorAll<HTMLSelectElement>("select")];
+  const results = document.querySelector<HTMLElement>(".results")!;
+  const listEl = results.querySelector<HTMLElement>(".spots")!;
+  const rangeEl = document.querySelector<HTMLElement>("#range-text")!;
+  const orderNote = document.querySelector<HTMLElement>("#order-note")!;
+  const empty = document.querySelector<HTMLElement>("#no-results")!;
+  const pager = document.querySelector<HTMLElement>("#paginator")!;
+  const skipPager = document.querySelector<HTMLElement>(".skip-pager")!;
+  const active = document.querySelector<HTMLElement>("#active-filters")!;
+  const filterOptions =
+    document.querySelector<HTMLDetailsElement>("#filter-options")!;
+  const filterCount = document.querySelector<HTMLElement>("#filter-count")!;
+  const fields = [input, ...selects];
+  // `/page/N/` 是靜態頁，讀不到查詢參數：在那裡套用條件一律導向 `/?…`
+  const onStaticPage = Number(results.dataset.staticPage) > 1;
+  const listUrl = results.dataset.listUrl!;
+  const staticRange = rangeEl.textContent!;
+  const staticOrder = orderNote.textContent!;
+  let rows: ListEntry[] | undefined;
+  let rowsRequest: Promise<ListEntry[]> | undefined;
+  let index: Promise<SearchIndex> | undefined;
+  let request = 0;
+  let timer: number | undefined;
+  let pendingReturn: ListReturn | undefined;
+
+  // 列表 JSON：無條件頁面不下載，第一次聚焦搜尋框、打開篩選區或帶條件進站時才抓
+  function loadRows() {
+    rowsRequest ??= fetch(listUrl)
+      .then((response) => {
+        if (!response.ok) throw new Error(`列表 JSON ${response.status}`);
+        return response.json() as Promise<ListData>;
+      })
+      .then((data) => (rows = decodeList(data)))
+      .catch((error) => {
+        rowsRequest = undefined;
+        throw error;
+      });
+    return rowsRequest;
+  }
+  const warm = () => void loadRows().catch(() => {});
+
+  function readReturnState() {
+    const value: unknown = history.state?.carlTravelList;
+    pendingReturn = undefined;
+    if (typeof value !== "object" || value === null) return;
+    const saved = value as Partial<ListReturn>;
+    if (
+      typeof saved.scrollY === "number" &&
+      Number.isFinite(saved.scrollY) &&
+      saved.scrollY >= 0 &&
+      typeof saved.focusHref === "string"
+    ) {
+      pendingReturn = {
+        scrollY: saved.scrollY,
+        focusHref: saved.focusHref,
+        filtersOpen: saved.filtersOpen === true,
+      };
+      filterOptions.open = pendingReturn.filtersOpen;
+    }
+  }
+
+  function restorePosition() {
+    if (!pendingReturn) return;
+    const saved = pendingReturn;
+    pendingReturn = undefined;
+    const generation = request;
+    requestAnimationFrame(() => {
+      if (generation !== request) return;
+      const link = [...listEl.querySelectorAll<HTMLAnchorElement>("a")].find(
+        (element) => element.getAttribute("href") === saved.focusHref,
+      );
+      if (link) link.focus({ preventScroll: true });
+      window.scrollTo({ top: saved.scrollY, behavior: "instant" });
+    });
+  }
+
+  // 換頁後從列表頂端讀起：捲到列表開頭，焦點移到範圍文字
+  function focusRange() {
+    results.scrollIntoView({ block: "start", behavior: "instant" });
+    rangeEl.focus({ preventScroll: true });
+  }
+
+  function stateFromFields(): RawState {
+    const value = (name: string) =>
+      fields.find((field) => field.name === name)?.value.trim() ?? "";
+    return {
+      query: value("query"),
+      county: value("county"),
+      kind: value("kind"),
+      setting: value("setting"),
+      age: value("age"),
+      page: null,
     };
-    filterOptions.open = pendingReturn.filtersOpen;
   }
-}
 
-function restorePosition() {
-  if (!pendingReturn) return;
-  const saved = pendingReturn;
-  pendingReturn = undefined;
-  const generation = request;
-  requestAnimationFrame(() => {
-    if (generation !== request) return;
-    const link = [...results.querySelectorAll<HTMLAnchorElement>("a")].find(
-      (element) => element.getAttribute("href") === saved.focusHref,
+  function stateFromUrl(): RawState {
+    const params = new URL(location.href).searchParams;
+    const value = (name: string) => (params.get(name) ?? "").trim();
+    return {
+      query: value("query"),
+      county: value("county"),
+      kind: value("kind"),
+      setting: value("setting"),
+      age: value("age"),
+      page: params.get("page"),
+    };
+  }
+
+  function showFields(state: ListState | RawState) {
+    input.value = state.query;
+    for (const select of selects) {
+      const value = state[select.name as (typeof filterKeys)[number]];
+      select.value = [...select.options].some(
+        (option) => option.value === value,
+      )
+        ? value
+        : "";
+    }
+  }
+
+  // 只動列表自己的參數；其餘參數與錨點保留。換頁用 push，其他一律 replace。
+  function writeUrl(
+    state: ListState,
+    mode: "replace" | "push" = "replace",
+    clearReturn = true,
+  ) {
+    const url = new URL(location.href);
+    for (const name of ownedParams) url.searchParams.delete(name);
+    const target = new URL(listHref(state), location.origin);
+    for (const [name, value] of target.searchParams)
+      url.searchParams.set(name, value);
+    if (url.href === location.href) return;
+    const next = { ...history.state };
+    if (clearReturn) delete next.carlTravelList;
+    if (mode === "push") history.pushState(next, "", url);
+    else history.replaceState(next, "", url);
+  }
+
+  let chipKey = "";
+  function showActiveFilters() {
+    // 內容沒變就不重建，避免換掉使用者正要操作的按鈕
+    const key = JSON.stringify(fields.map((field) => field.value.trim()));
+    if (key === chipKey) return;
+    chipKey = key;
+    active.replaceChildren();
+    for (const field of fields) {
+      const value = field.value.trim();
+      if (!value) continue;
+      const label =
+        field === input
+          ? "搜尋"
+          : form.querySelector<HTMLLabelElement>(`label[for="${field.id}"]`)!
+              .textContent!;
+      const button = document.createElement("button");
+      button.type = "button";
+      button.dataset.filter = field.name;
+      button.setAttribute("aria-label", `移除${label}：${value}`);
+      button.append(document.createTextNode(`${label}：${value}`));
+      const cross = document.createElement("span");
+      cross.setAttribute("aria-hidden", "true");
+      cross.textContent = "×";
+      button.append(cross);
+      active.append(button);
+    }
+    active.hidden = active.childElementCount === 0;
+    const selected = selects.filter((select) => select.value).length;
+    filterCount.textContent = selected ? `（${selected} 項）` : "";
+  }
+
+  function setStatus(
+    state: "ready" | "loading" | "error",
+    text: string,
+    busy = state === "loading",
+  ) {
+    rangeEl.dataset.state = state;
+    // 文字沒變就不重寫，避免讓朗讀器重複播報同一句
+    if (rangeEl.textContent !== text) rangeEl.textContent = text;
+    listEl.setAttribute("aria-busy", String(busy));
+  }
+
+  function showResult(
+    result: ListQueryResult,
+    state: ListState,
+    byRelevance: boolean,
+    notice = "",
+  ) {
+    listEl.innerHTML = result.rows
+      .map((entry) => cardItemHtml(cardView(entry)))
+      .join("");
+    setStatus(
+      notice ? "error" : "ready",
+      notice
+        ? `${rangeText(result.range)} · ${notice}`
+        : rangeText(result.range),
+      false,
     );
-    if (link && !link.closest("[hidden]")) link.focus({ preventScroll: true });
-    window.scrollTo({ top: saved.scrollY, behavior: "instant" });
-  });
-}
-
-function writeUrl(clearReturn = true) {
-  const url = new URL(location.href);
-  // Own only these parameters; leave unrelated URL state and anchors intact.
-  for (const name of parameterNames) url.searchParams.delete(name);
-  for (const field of fields) {
-    const value = field.value.trim();
-    if (value) url.searchParams.set(field.name, value);
-  }
-  const state = { ...history.state };
-  if (clearReturn) delete state.carlTravelList;
-  history.replaceState(state, "", url);
-}
-
-function readUrl() {
-  const params = new URL(location.href).searchParams;
-  input.value = params.get("query") ?? "";
-  for (const select of selects) {
-    const value = params.get(select.name) ?? "";
-    select.value = [...select.options].some((option) => option.value === value)
-      ? value
+    orderNote.textContent = byRelevance ? "依相關度排序" : staticOrder;
+    empty.hidden = result.range.total > 0;
+    const paged = result.totalPages > 1;
+    pager.hidden = skipPager.hidden = !paged;
+    pager.innerHTML = paged
+      ? paginatorHtml(result.conditions.page, result.totalPages, (page) =>
+          listHref({ ...state, page }),
+        )
       : "";
   }
-  readReturnState();
-  writeUrl(false);
-}
 
-function showActiveFilters() {
-  active.replaceChildren();
-  for (const field of fields) {
-    const value = field.value.trim();
-    if (!value) continue;
-    const label =
-      field === input
-        ? "搜尋"
-        : form.querySelector<HTMLLabelElement>(`label[for="${field.id}"]`)!
-            .textContent!;
-    const button = document.createElement("button");
-    button.type = "button";
-    button.dataset.filter = field.name;
-    button.setAttribute("aria-label", `移除${label}：${value}`);
-    button.append(document.createTextNode(`${label}：${value}`));
-    const cross = document.createElement("span");
-    cross.setAttribute("aria-hidden", "true");
-    cross.textContent = "×";
-    button.append(cross);
-    active.append(button);
-  }
-  active.hidden = active.childElementCount === 0;
-  const selected = selects.filter((select) => select.value).length;
-  filterCount.textContent = selected ? `（${selected} 項）` : "";
-}
-
-function showResults(matches: Set<string> | null, settled = true) {
-  status.dataset.state = "ready";
-  resultList.setAttribute("aria-busy", "false");
-  let visible = 0;
-  for (const card of cards) {
-    const accepted =
-      (!matches || matches.has(card.dataset.spotUrl!)) &&
-      selects.every(
-        (select) =>
-          !select.value ||
-          (select.name === "age"
-            ? card.dataset.age!.split("|").includes(select.value)
-            : card.dataset[select.name] === select.value),
-      );
-    card.hidden = !accepted;
-    if (accepted) visible++;
-  }
-  count.textContent = String(visible);
-  empty.hidden = visible > 0 || cards.length === 0;
-  status.textContent =
-    cards.length === 0 ? "目前尚無公開景點。" : `找到 ${visible} 個景點。`;
-  if (settled) restorePosition();
-}
-
-function update(delay = 0, syncUrl = true) {
-  window.clearTimeout(timer);
-  if (syncUrl) {
-    pendingReturn = undefined;
-    writeUrl();
-  }
-  showActiveFilters();
-  const current = ++request;
-  const query = input.value.trim();
-  if (!query || cards.length === 0) {
-    showResults(null);
-    return;
-  }
-  // While the index loads, keep browsing available without claiming a query match.
-  showResults(null, false);
-  status.dataset.state = "loading";
-  status.textContent = "搜尋中…";
-  resultList.setAttribute("aria-busy", "true");
-  timer = window.setTimeout(async () => {
+  async function searchHits(query: string) {
+    const path = "/pagefind/pagefind.js";
+    index ??= import(/* @vite-ignore */ path);
     try {
-      const path = "/pagefind/pagefind.js";
-      index ??= import(/* @vite-ignore */ path);
-      const result = await (await index).search(query);
+      const found = await (await index).search(query);
       const urls = await Promise.all(
-        result.results.map(async (hit) => (await hit.data()).url),
+        found.results.map(async (hit) => (await hit.data()).url),
       );
-      if (current !== request) return;
-      showResults(new Set(urls));
-    } catch {
-      if (current !== request) return;
+      return urls.flatMap((url) => /^\/spots\/([^/]+)\/$/.exec(url)?.[1] ?? []);
+    } catch (error) {
       index = undefined;
-      showResults(null);
-      status.dataset.state = "error";
-      status.textContent =
-        "搜尋暫時無法使用，已顯示符合篩選的景點。可清除條件或稍後重試。";
+      throw error;
     }
-  }, delay);
-}
+  }
 
-form.addEventListener("submit", (event) => {
-  event.preventDefault();
-  update();
-});
-input.addEventListener("input", (event) => {
-  if (!(event instanceof InputEvent) || !event.isComposing) update(200);
-});
-input.addEventListener("compositionend", () => update(200));
-for (const select of selects) select.addEventListener("change", () => update());
-active.addEventListener("click", (event) => {
-  if (!(event.target instanceof Element)) return;
-  const button = event.target.closest<HTMLButtonElement>("button[data-filter]");
-  const field = fields.find((item) => item.name === button?.dataset.filter);
-  if (!field) return;
-  field.value = "";
-  update();
-  input.focus();
-});
-form.addEventListener("reset", () => {
-  const recoverFocus =
-    empty.contains(document.activeElement) ||
-    active.contains(document.activeElement);
-  for (const field of fields) field.value = "";
-  update();
-  if (recoverFocus) input.focus();
-});
+  async function run(
+    current: number,
+    source: "edit" | "url",
+    raw: RawState,
+    afterPageChange: boolean,
+  ) {
+    const wantsText = raw.query !== "";
+    if (!rows || wantsText) {
+      setStatus("loading", rows ? "搜尋中…" : "載入中");
+    }
+    const [loaded, found] = await Promise.allSettled([
+      loadRows(),
+      wantsText ? searchHits(raw.query) : Promise.resolve(null),
+    ]);
+    if (current !== request) return;
+    if (loaded.status === "rejected" || !rows) {
+      setStatus(
+        "error",
+        "篩選資料暫時無法載入，目前顯示未篩選的第 1 頁。請重新整理後再試。",
+      );
+      return;
+    }
+    const hits = found.status === "fulfilled" ? found.value : null;
+    const result = queryList(rows, { ...raw, hits });
+    const state: ListState = { ...raw, ...result.conditions };
+    // 沒有任何條件的第 2 頁以後有靜態網址，不在 `/` 上渲染
+    if (!hasConditions(state) && state.page > 1) {
+      location.replace(staticPath(state.page));
+      return;
+    }
+    showFields(state);
+    showActiveFilters();
+    if (source === "edit") writeUrl(state);
+    else if (result.needsUrlReplace) writeUrl(state, "replace", false);
+    showResult(
+      result,
+      state,
+      hits !== null,
+      found.status === "rejected"
+        ? "搜尋暫時無法使用，已顯示符合篩選的景點。可清除條件或稍後重試。"
+        : "",
+    );
+    if (afterPageChange) focusRange();
+    else restorePosition();
+  }
 
-// The return position belongs to this browser history entry, not a shared device store.
-results.addEventListener("click", (event) => {
-  if (!(event.target instanceof Element)) return;
-  const link = event.target.closest<HTMLAnchorElement>("a[href]");
-  if (!link || !cards.some((card) => card.contains(link))) return;
-  history.replaceState(
-    {
-      ...history.state,
-      carlTravelList: {
-        scrollY: window.scrollY,
-        focusHref: link.getAttribute("href")!,
-        filtersOpen: filterOptions.open,
+  function update(source: "edit" | "url", delay = 0, afterPageChange = false) {
+    window.clearTimeout(timer);
+    const current = ++request;
+    const raw = source === "edit" ? stateFromFields() : stateFromUrl();
+    if (source === "edit") pendingReturn = undefined;
+    else showFields(raw);
+    showActiveFilters();
+    const conditioned =
+      hasConditions({ ...raw, page: 1 }) || (source === "url" && raw.page);
+    if (onStaticPage) {
+      // 靜態頁讀不到查詢參數：條件改走 `/?…`，由那裡的前端渲染
+      if (source === "edit") {
+        if (hasConditions({ ...raw, page: 1 }))
+          location.assign(listHref({ ...raw, page: 1 }));
+      } else if (conditioned) {
+        location.replace(listHref({ ...raw, page: Number(raw.page) || 1 }));
+      } else restorePosition();
+      return;
+    }
+    if (!conditioned && !rows) {
+      // 沒有條件也還沒載入列表資料：畫面就是靜態第 1 頁
+      writeUrl({ ...raw, page: 1 }, "replace", source === "edit");
+      setStatus("ready", staticRange);
+      restorePosition();
+      return;
+    }
+    timer = window.setTimeout(
+      () => void run(current, source, raw, afterPageChange),
+      delay,
+    );
+  }
+
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    update("edit");
+  });
+  input.addEventListener("input", (event) => {
+    if (onStaticPage) return;
+    if (!(event instanceof InputEvent) || !event.isComposing)
+      update("edit", 200);
+  });
+  input.addEventListener("compositionend", () => {
+    if (!onStaticPage) update("edit", 200);
+  });
+  input.addEventListener("focus", warm, { once: true });
+  filterOptions.addEventListener("toggle", () => {
+    if (filterOptions.open) warm();
+  });
+  for (const select of selects)
+    select.addEventListener("change", () => update("edit"));
+  active.addEventListener("click", (event) => {
+    if (!(event.target instanceof Element)) return;
+    const button = event.target.closest<HTMLButtonElement>(
+      "button[data-filter]",
+    );
+    const field = fields.find((item) => item.name === button?.dataset.filter);
+    if (!field) return;
+    field.value = "";
+    update("edit");
+    input.focus();
+  });
+  form.addEventListener("reset", () => {
+    const recoverFocus =
+      empty.contains(document.activeElement) ||
+      active.contains(document.activeElement);
+    for (const field of fields) field.value = "";
+    update("edit");
+    if (recoverFocus) input.focus();
+  });
+
+  // 分頁器：帶條件的連結（`/?…`）在同一份文件內換頁並留下瀏覽紀錄；
+  // 靜態連結（`/`、`/page/N/`）照一般導覽，新頁面載入時再把焦點移到範圍文字。
+  pager.addEventListener("click", (event) => {
+    if (!(event.target instanceof Element)) return;
+    const link = event.target.closest<HTMLAnchorElement>("a[href]");
+    if (
+      !link ||
+      event.defaultPrevented ||
+      event.button !== 0 ||
+      event.metaKey ||
+      event.ctrlKey ||
+      event.shiftKey ||
+      event.altKey ||
+      !link.getAttribute("href")!.startsWith("/?")
+    )
+      return;
+    event.preventDefault();
+    const state = { ...history.state };
+    delete state.carlTravelList;
+    history.pushState(state, "", link.href);
+    update("url", 0, true);
+  });
+
+  // 返回位置屬於這一筆瀏覽紀錄，不用共用的裝置儲存
+  results.addEventListener("click", (event) => {
+    if (!(event.target instanceof Element)) return;
+    const link = event.target.closest<HTMLAnchorElement>("a[href]");
+    if (!link || !listEl.contains(link)) return;
+    history.replaceState(
+      {
+        ...history.state,
+        carlTravelList: {
+          scrollY: window.scrollY,
+          focusHref: link.getAttribute("href")!,
+          filtersOpen: filterOptions.open,
+        },
       },
-    },
-    "",
-  );
-});
-window.addEventListener("popstate", () => {
-  readUrl();
-  update(0, false);
-});
-window.addEventListener("pageshow", (event) => {
-  if (!event.persisted) return;
-  readUrl();
-  update(0, false);
-});
-form.querySelector<HTMLFieldSetElement>("fieldset")!.disabled = false;
-document.querySelector<HTMLElement>("#search-help")!.hidden = true;
-readUrl();
-update(0, false);
+      "",
+    );
+  });
+  const restoreFromUrl = () => {
+    readReturnState();
+    update("url");
+  };
+  window.addEventListener("popstate", restoreFromUrl);
+  window.addEventListener("pageshow", (event) => {
+    if (event.persisted) restoreFromUrl();
+  });
+
+  form.querySelector<HTMLFieldSetElement>("fieldset")!.disabled = false;
+  document.querySelector<HTMLElement>(".search-help")!.hidden = true;
+  restoreFromUrl();
+  // 從列表的另一頁用分頁器過來時，從這一頁的開頭讀起
+  const arrival = performance.getEntriesByType("navigation")[0] as
+    PerformanceNavigationTiming | undefined;
+  if (arrival?.type === "navigate" && document.referrer) {
+    const from = new URL(document.referrer);
+    if (
+      from.origin === location.origin &&
+      (from.pathname === "/" || from.pathname.startsWith("/page/")) &&
+      from.href !== location.href &&
+      !pendingReturn
+    )
+      focusRange();
+  }
+}

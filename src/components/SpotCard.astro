@@ -1,6 +1,8 @@
 ---
-// 列表卡片（已知才列）。內容全由 cardView 產生，日後瀏覽器端依列表 JSON 渲染時共用同一個函式。
+// 列表卡片（已知才列）。標記由 list-html.ts 的 cardItemHtml 產生，瀏覽器端依列表 JSON
+// 渲染時用同一個函式，兩邊的卡片因此完全相同。內容全由 cardView 產生。
 import type { CardView } from "../content/list-card.ts";
+import { cardItemHtml } from "../content/list-html.ts";
 interface Props {
   card: CardView;
   preview?: string;
@@ -8,42 +10,23 @@ interface Props {
 const { card, preview } = Astro.props;
 ---
 
-<article class="spot-card">
-  <h3><a href={card.href}>{card.name}</a></h3>
-  <p class="card-meta">{card.meta}</p>
-  {card.status && <p class="card-status">{card.status}</p>}
-  {preview && <p class="preview-label">{preview} · 尚未發布</p>}
-  <div class="card-body">
-    {
-      card.thumbnail && (
-        <img
-          src={card.thumbnail.src}
-          alt={card.thumbnail.alt}
-          width={card.thumbnail.width}
-          height={card.thumbnail.height}
-          loading="lazy"
-          decoding="async"
-        />
-      )
-    }
-    <p class="spot-summary">{card.summary}</p>
-  </div>
-  {
-    card.tags.length > 0 && (
-      <ul class="card-tags" aria-label="已知親子條件">
-        {card.tags.map((tag) => (
-          <li data-negative={tag.negative ? "" : undefined}>{tag.text}</li>
-        ))}
-      </ul>
-    )
-  }
-  <p class="card-note">{card.note}</p>
-</article>
+<Fragment set:html={cardItemHtml(card, preview)} />
 
 <style is:global>
-  /* 全域樣式：日後瀏覽器端產生的卡片沒有 Astro 的 scope 屬性 */
+  /* 全域樣式：卡片由字串渲染（含瀏覽器端產生的），沒有 Astro 的 scope 屬性 */
+  .spots {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
   .spots > li {
     position: relative;
+    padding: 24px;
+    border-radius: 12px;
+    background: var(--paper-deep);
+  }
+  .spots > li + li {
+    margin-top: 12px;
   }
   .spots > li:has(.spot-card h3 a:focus-visible) {
     outline: 3px solid var(--ink);
@@ -119,6 +102,11 @@ const { card, preview } = Astro.props;
   .spot-card .card-tags li[data-negative] {
     border-color: #7b98a8;
     background: transparent;
+  }
+  @media (max-width: 700px) {
+    .spots > li {
+      padding: 20px;
+    }
   }
   @media (min-width: 701px) {
     .spot-card h3 {
