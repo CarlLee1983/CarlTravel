@@ -395,3 +395,27 @@ test("without JavaScript a conditioned URL shows the unfiltered first page and t
     await context.close();
   }
 });
+
+test("the home illustration is not downloaded at mobile width but still shows on desktop", async ({
+  page,
+}) => {
+  const illustration: string[] = [];
+  page.on("request", (request) => {
+    if (request.url().includes("family-outing"))
+      illustration.push(request.url());
+  });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  await page.waitForLoadState("networkidle");
+  await page.waitForTimeout(300);
+  expect(illustration).toEqual([]);
+  await expect(page.locator(".outing-art")).toBeHidden();
+  await page.setViewportSize({ width: 1366, height: 900 });
+  await page.goto("/");
+  const image = page.locator(".outing-art img");
+  await expect(image).toBeVisible();
+  await expect
+    .poll(() => image.evaluate((el: HTMLImageElement) => el.naturalWidth))
+    .toBe(1536);
+  expect(illustration).toHaveLength(1);
+});

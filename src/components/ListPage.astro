@@ -61,12 +61,20 @@ const filters = [
         <p>從地區與出遊條件，找適合一起探索的景點。</p>
       </div>
       <figure class="outing-art">
-        <img
-          src="/illustrations/family-outing.png"
-          width="1536"
-          height="1024"
-          alt={outingIllustrationAlt}
-        />
+        {/* 700px 以下插畫以 display:none 隱藏，display:none 的 img 仍會下載；
+             手機寬度改指向 1x1 的 data URI，瀏覽器就不會請求 2.7 MB 的 PNG */}
+        <picture>
+          <source
+            media="(max-width: 700px)"
+            srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
+          />
+          <img
+            src="/illustrations/family-outing.png"
+            width="1536"
+            height="1024"
+            alt={outingIllustrationAlt}
+          />
+        </picture>
       </figure>
     </section>
   )
@@ -263,6 +271,9 @@ const filters = [
     margin: 0;
     width: 200px;
     flex: none;
+  }
+  .outing-art picture {
+    display: block;
   }
   .outing-art img {
     display: block;
