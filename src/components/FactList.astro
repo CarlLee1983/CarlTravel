@@ -1,0 +1,108 @@
+---
+import type { SpotData } from "../content/schema.ts";
+import ExternalLink from "./ExternalLink.astro";
+interface Props {
+  section: SpotData["transport"];
+  refs: SpotData["officialRefs"];
+  // 開放時間與費用：沒有費用列時補上「尚未整理，未列出不代表免費」
+  feeMissing?: boolean;
+}
+const { section, refs, feeMissing = false } = Astro.props;
+const reference = (id: string) => refs.find((r) => r.id === id)!;
+---
+
+<dl>
+  {
+    section.facts.map((fact) => (
+      <div>
+        <dt>{fact.label}</dt>
+        <dd>
+          {fact.status === "ok" ? (
+            <>
+              {fact.value}
+              <span class="src">
+                <ExternalLink href={reference(fact.ref).url}>
+                  出處：{reference(fact.ref).title}
+                </ExternalLink>
+              </span>
+            </>
+          ) : fact.status === "unpublished" ? (
+            <span class="unknown">官方未公布</span>
+          ) : (
+            <>
+              <strong class="conflict">官方資訊有衝突</strong>
+              <ul>
+                {fact.claims.map((claim) => (
+                  <li>
+                    {claim.value}
+                    <span class="src">
+                      <ExternalLink href={reference(claim.ref).url}>
+                        出處：{reference(claim.ref).title}
+                      </ExternalLink>
+                    </span>
+                  </li>
+                ))}
+              </ul>
+              <p>{fact.contact}</p>
+            </>
+          )}
+        </dd>
+      </div>
+    ))
+  }
+  {
+    feeMissing && (
+      <div>
+        <dt>費用</dt>
+        <dd>尚未整理，未列出不代表免費</dd>
+      </div>
+    )
+  }
+</dl>
+<style>
+  dl {
+    margin: 16px 0 0;
+  }
+  dl > div {
+    display: grid;
+    grid-template-columns: 7em minmax(0, 1fr);
+    gap: 12px;
+    padding-block: 14px;
+    border-bottom: 1px solid var(--line);
+  }
+  dt {
+    font-weight: 600;
+  }
+  dd {
+    margin: 0;
+    min-width: 0;
+    line-height: 1.75;
+  }
+  .src {
+    display: block;
+    margin-top: 4px;
+    font-size: 14px;
+  }
+  .unknown {
+    display: inline-block;
+    padding: 0 8px;
+    border: 1px dashed var(--muted);
+    border-radius: 6px;
+    font-weight: 600;
+  }
+  .conflict {
+    display: inline-block;
+    padding: 2px 8px;
+    background: var(--surface);
+    border-radius: 6px;
+  }
+  ul {
+    padding-left: 20px;
+  }
+  @media (max-width: 600px) {
+    dl > div {
+      grid-template-columns: 1fr;
+      gap: 4px;
+    }
+  }
+</style>

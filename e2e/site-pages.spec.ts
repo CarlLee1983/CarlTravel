@@ -41,55 +41,25 @@ test("readers can find the content license and disclaimer from every page", asyn
   }
 });
 
-test("spot contents links match existing sections and work with the keyboard on mobile", async ({
+test("spot section rows replace the contents list and work with the keyboard on mobile", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 360, height: 800 });
-  for (const [route, labels] of [
-    [
-      "/spots/example-park/",
-      [
-        "親子清單",
-        "開放時間與費用",
-        "交通與停車",
-        "來源與官方出處",
-        "使用前確認",
-      ],
-    ],
-    [
-      "/spots/example-museum/",
-      [
-        "親子清單",
-        "開放時間與費用",
-        "交通與停車",
-        "設施",
-        "跟孩子一起看",
-        "原作者心得",
-        "Agent 建議",
-        "周邊安排",
-        "來源與官方出處",
-        "使用前確認",
-      ],
-    ],
-  ] as const) {
-    await page.goto(route);
-    const contents = page.getByRole("navigation", { name: "景點章節目錄" });
-    await expect(contents.getByRole("link")).toHaveText([...labels]);
-    for (const link of await contents.getByRole("link").all()) {
-      const href = await link.getAttribute("href");
-      expect(href).toMatch(/^#/);
-      await expect(page.locator(href!)).toHaveCount(1);
-    }
-    await contents.getByRole("link").first().focus();
-    for (let i = 1; i < labels.length; i++) await page.keyboard.press("Tab");
-    await expect(contents.getByRole("link").last()).toBeFocused();
-    await expect(contents.getByRole("link").last()).toBeInViewport();
-    await page.keyboard.press("Enter");
-    await expect(page.locator("#spot-disclaimer")).toBeInViewport();
-    await expect(page.locator("#spot-disclaimer")).toBeFocused();
-    await page.getByRole("link", { name: "查看使用前確認" }).click();
-    await expect(page).toHaveURL(/\/about\/#disclaimer$/);
-  }
+  await page.goto("/spots/example-park/");
+  await expect(
+    page.getByRole("navigation", { name: "景點章節目錄" }),
+  ).toHaveCount(0);
+  const hours = page.locator("#hours");
+  await hours.locator("summary").focus();
+  await page.keyboard.press("Enter");
+  await expect(hours).toHaveAttribute("open", "");
+  await page.keyboard.press("Enter");
+  await expect(hours).not.toHaveAttribute("open", "");
+  await page.goto("/spots/example-park/#spot-disclaimer");
+  await expect(page.locator("#spot-disclaimer")).toBeInViewport();
+  await expect(page.locator("#spot-disclaimer")).toBeFocused();
+  await page.getByRole("link", { name: "查看使用前確認" }).click();
+  await expect(page).toHaveURL(/\/about\/#disclaimer$/);
 });
 
 test("compact home shows search before the list at desktop and mobile widths", async ({
@@ -159,6 +129,7 @@ for (const route of [
   "/",
   "/spots/example-park/",
   "/spots/example-museum/",
+  "/spots/fx-00001/",
   "/about/",
   "/does-not-exist/",
 ]) {

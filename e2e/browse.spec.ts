@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { openAllSections } from "./sections.ts";
 
 test("@smoke home links to stable spot route with readable facts and citations", async ({
   page,
@@ -21,7 +22,10 @@ test("@smoke home links to stable spot route with readable facts and citations",
   await expect(
     page.getByRole("heading", { name: "範例親子公園", exact: true }),
   ).toBeVisible();
-  await expect(page.getByText("每日上午九點至下午五點。")).toBeVisible();
+  await openAllSections(page);
+  await expect(
+    page.locator("#hours").getByText("每日上午九點至下午五點。"),
+  ).toBeVisible();
   await expect(page.locator("time")).toHaveText([
     "2026-10-15",
     "2026-10-15",

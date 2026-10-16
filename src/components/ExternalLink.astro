@@ -1,0 +1,22 @@
+---
+// 離開本站的連結：可見的「↗」加報讀用的「（外部網站）」；同一分頁開啟，不加 target。
+interface Props {
+  href: string;
+}
+const { href } = Astro.props;
+---
+
+<a href={href}
+  ><slot /><span aria-hidden="true"> ↗</span><span class="sr">（外部網站）</span
+  ></a
+>
+<style>
+  .sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+</style>

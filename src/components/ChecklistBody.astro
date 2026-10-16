@@ -1,0 +1,140 @@
+---
+import type { PageSpot } from "../content/preview.ts";
+import { checklistView, statusText } from "../content/spot-page.ts";
+import ExternalLink from "./ExternalLink.astro";
+interface Props {
+  spot: PageSpot;
+}
+const { spot } = Astro.props;
+const { known, unknown, age, contact } = checklistView(spot);
+const official = (id: string) =>
+  spot.officialRefs.find((ref) => ref.id === id)!;
+---
+
+{
+  known.length === 0 ? (
+    <div class="none">
+      <p>
+        <strong>親子條件{age ? "" : "與年齡"}尚未整理。</strong>未知不代表沒有。
+      </p>
+      {age && <p>建議年齡：{age}</p>}
+      {contact && (
+        <p>
+          出發前可向{" "}
+          <ExternalLink href={contact.url}>{contact.organization}</ExternalLink>{" "}
+          確認推車、哺乳室、親子廁所、雨天備案與無障礙設施。
+        </p>
+      )}
+    </div>
+  ) : (
+    <>
+      <dl>
+        <div>
+          <dt>建議年齡</dt>
+          <dd>{age ?? <span class="unknown">年齡未標示</span>}</dd>
+        </div>
+        {known.map(({ label, item }) => (
+          <div>
+            <dt>{label}</dt>
+            <dd>
+              <span class="status" data-status={item.status}>
+                {statusText[item.status]}
+              </span>
+              {"note" in item && item.note && ` ${item.note}`}
+              {"ref" in item && (
+                <span class="src">
+                  <ExternalLink href={official(item.ref).url}>
+                    出處：{official(item.ref).title}
+                  </ExternalLink>
+                </span>
+              )}
+            </dd>
+          </div>
+        ))}
+      </dl>
+      {unknown.length > 0 && (
+        <p class="unknown-row">
+          未知 {unknown.length} 項：
+          {unknown.map((entry) => entry.label).join("、")}
+          ，未知不代表沒有
+          {contact && (
+            <>
+              ，可向{" "}
+              <ExternalLink href={contact.url}>
+                {contact.organization}
+              </ExternalLink>{" "}
+              確認
+            </>
+          )}
+        </p>
+      )}
+    </>
+  )
+}
+{spot.familyChecklist.notes && <p>{spot.familyChecklist.notes}</p>}
+<style>
+  .none {
+    margin-top: 16px;
+    padding: 16px 18px;
+    border: 1px dashed var(--muted);
+    border-radius: 12px;
+  }
+  .none p {
+    margin: 0 0 8px;
+  }
+  .none p:last-child {
+    margin-bottom: 0;
+  }
+  dl {
+    margin: 16px 0 0;
+  }
+  dl > div {
+    display: grid;
+    grid-template-columns: 7em minmax(0, 1fr);
+    gap: 12px;
+    padding-block: 14px;
+    border-bottom: 1px solid var(--line);
+  }
+  dt {
+    font-weight: 600;
+  }
+  dd {
+    margin: 0;
+    min-width: 0;
+  }
+  .status {
+    display: inline-block;
+    min-width: 2.5em;
+    padding: 0 8px;
+    border-radius: 6px;
+    background: var(--paper-deep);
+    font-weight: 600;
+    text-align: center;
+  }
+  .status[data-status="no"] {
+    background: none;
+    border: 1px solid var(--ground);
+  }
+  .unknown {
+    padding: 0 8px;
+    border: 1px dashed var(--muted);
+    border-radius: 6px;
+  }
+  .src {
+    display: block;
+    margin-top: 4px;
+    font-size: 14px;
+  }
+  .unknown-row {
+    margin-top: 14px;
+    padding: 12px 14px;
+    border: 1px dashed var(--muted);
+    border-radius: 10px;
+  }
+  @media (max-width: 600px) {
+    dl > div {
+      grid-template-columns: 1fr;
+      gap: 4px;
+    }
+  }
+</style>

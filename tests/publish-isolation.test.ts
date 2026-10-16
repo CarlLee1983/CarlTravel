@@ -69,10 +69,8 @@ test(
         .match(/<meta\b[^>]*property="og:image:alt"[^>]*>/)![0];
       const transportHeading = originals
         .get(page)!
-        .match(/<h2\b[^>]*id="transport-heading"[^>]*>交通與停車<\/h2>/)![0];
-      const transportLink = originals
-        .get(page)!
-        .match(/<a\b[^>]*href="#transport"[^>]*>交通與停車<\/a>/)![0];
+        .match(/<span\b[^>]*class="t"[^>]*>交通與停車<\/span>/)![0];
+      const transportLink = '<a href="#transport">交通與停車</a>';
       for (const [file, suffix] of [
         [home, "<p>步道</p>"],
         [home, hero],
@@ -89,7 +87,7 @@ test(
         [page, transportHeading],
         [page, transportLink],
         [home, transportHeading],
-        [page, transportHeading.replace("<h2 ", '<h2 title="交通與停車" ')],
+        [page, transportHeading.replace("<span ", '<span title="交通與停車" ')],
         [home, `<!--${hero}-->`],
         [
           home,

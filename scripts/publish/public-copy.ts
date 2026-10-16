@@ -85,23 +85,14 @@ export function maskPublicCopy(html: string, slots?: PublicCopySlots): string {
       attr(node, "src") === "/illustrations/family-outing.png"
     )
       maskAttribute(node, "alt", slots.imageAlt, "image");
+    // 景點頁的交通章節標題：摺疊列摘要裡的章節名稱
     if (
       slots.transport &&
-      node.tagName === "a" &&
-      attr(node, "href") === "#transport" &&
-      ancestors.some(
-        (item) =>
-          item.tagName === "nav" &&
-          attr(item, "class")?.split(/\s+/).includes("contents"),
-      )
-    )
-      maskText(node, "transport-link");
-    if (
-      slots.transport &&
-      node.tagName === "h2" &&
-      attr(node, "id") === "transport-heading" &&
-      parent?.tagName === "section" &&
-      attr(parent, "id") === "transport"
+      node.tagName === "span" &&
+      attr(node, "class")?.split(/\s+/).includes("t") &&
+      parent?.tagName === "summary" &&
+      ancestors.at(-2)?.tagName === "details" &&
+      attr(ancestors.at(-2)!, "id") === "transport"
     )
       maskText(node, "transport-heading");
     for (const child of node.childNodes) walk(child, [...ancestors, node]);
