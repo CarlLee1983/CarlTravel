@@ -24,3 +24,19 @@ export function listHref(state: ListState) {
   if (state.page > 1) params.set("page", String(state.page));
   return `/?${params}`;
 }
+
+// 景點頁用：把 document.referrer 認成列表網址（同源的 `/`、`/page/N/`（N≥2）或 `/?…`），
+// 回傳可直接當 href 的「路徑＋查詢」；不是列表就回傳 null。錨點不屬於列表狀態，去掉。
+export function listUrlFromReferrer(referrer: string, origin: string) {
+  let url: URL;
+  try {
+    url = new URL(referrer);
+  } catch {
+    return null;
+  }
+  if (url.origin !== origin) return null;
+  const isPage = /^\/page\/([2-9]|[1-9]\d+)\/$/.test(url.pathname);
+  if (url.pathname === "/" || (isPage && url.search === ""))
+    return url.pathname + url.search;
+  return null;
+}

@@ -34,7 +34,9 @@ test("@smoke home links to stable spot route with readable facts and citations",
   await expect(
     page.getByRole("link", { name: "出處：範例管理處公告（虛構）" }).first(),
   ).toHaveAttribute("href", "https://example.org/park");
-  await page.getByRole("link", { name: "全部景點", exact: true }).click();
+  await page
+    .getByRole("link", { name: "← 回到剛才的列表", exact: true })
+    .click();
   await expect(page).toHaveURL(/\/$/);
 });
 test("keyboard skip link reaches main", async ({ page }) => {

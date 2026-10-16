@@ -42,7 +42,7 @@ const nearbyKind = { food: "餐飲", stay: "住宿", activity: "活動" } as con
 
 <Layout title={spot.name}>
   <nav class="breadcrumb" aria-label="麵包屑">
-    <a href="/">全部景點</a> / {spot.name}
+    <a href="/" data-list-return>← 景點列表</a> / {spot.name}
   </nav>
   <article class="spot-article">
     {spot.preview && <p class="preview-label">{spot.preview} · 尚未發布</p>}
@@ -279,6 +279,7 @@ const nearbyKind = { food: "餐飲", stay: "住宿", activity: "活動" } as con
 </Layout>
 <script>
   import "../../browser/spot-sections.ts";
+  import "../../browser/list-return.ts";
 </script>
 <style>
   .breadcrumb {
