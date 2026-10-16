@@ -13,6 +13,9 @@ illustration:
   height: 1024
 ageRange:
   status: unknown
+tourismId:
+  value: Attraction_376430000A_000968
+  ref: tourism-positioning
 officialRefs:
   - id: farm
     title: 羊世界參觀與票價
@@ -34,6 +37,17 @@ officialRefs:
     url: https://travel.tycg.gov.tw/zh-tw/travel/attraction/968
     organization: 桃園市政府觀光旅遊局
     kind: page
+  - id: tourism-positioning
+    title: 觀光資訊資料庫－景點定位資料
+    url: https://data.gov.tw/dataset/7777
+    organization: 交通部觀光署
+    kind: openData
+    purpose: positioning
+    attribution:
+      provider: 交通部觀光署
+      year: 2026
+      dataset: 景點－觀光資訊資料庫
+      version: 2026-10-16 下載快照
 sources: []
 authorNotes: []
 facilities:
@@ -61,6 +75,9 @@ agentTips:
   - 動物餵食與DIY內容先向牧場確認，依工作人員指示操作。
   - 下雨時先問步道路況與可用教室，不只依照有室內空間就認定全部行程照常。
 nearby: []
+location:
+  lat: 24.98201
+  lng: 121.21029
 transport:
   checkedAt: 2026-10-16
   facts:

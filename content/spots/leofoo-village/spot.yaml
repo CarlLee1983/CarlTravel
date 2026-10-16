@@ -13,6 +13,9 @@ illustration:
   height: 1024
 ageRange:
   status: unknown
+tourismId:
+  value: Attraction_376440000A_000038
+  ref: tourism
 officialRefs:
   - id: traffic
     title: 六福村交通指南
@@ -49,6 +52,17 @@ officialRefs:
     url: https://admin.taiwan.net.tw/News/News?a=36&id=36339&p=2
     organization: 交通部觀光署
     kind: page
+  - id: tourism
+    title: 觀光署景點定位資料
+    url: https://data.gov.tw/dataset/7777
+    organization: 交通部觀光署
+    kind: openData
+    purpose: positioning
+    attribution:
+      provider: 交通部觀光署
+      year: 2026
+      dataset: 景點－觀光資訊資料庫
+      version: 2026-10-16 下載快照
 sources: []
 authorNotes: []
 facilities:
@@ -80,6 +94,9 @@ agentTips:
   - 把動物區排在較早時段，離開前再核對其他主題區的個別關閉時間。
   - 先量好孩子身高，再查欲搭乘設施的限制，避免只按票種判斷能否搭乘。
 nearby: []
+location:
+  lat: 24.8253091698669
+  lng: 121.180648497943
 transport:
   checkedAt: 2026-10-16
   facts:

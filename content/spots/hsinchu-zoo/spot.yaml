@@ -13,6 +13,9 @@ illustration:
   height: 1024
 ageRange:
   status: unknown
+tourismId:
+  value: Attraction_376580000A_000055
+  ref: tourism-positioning
 officialRefs:
   - id: zoo-home
     title: 新竹市立動物園首頁
@@ -44,6 +47,17 @@ officialRefs:
     url: https://zoo-info.hccg.gov.tw/park/animals/
     organization: 新竹市立動物園
     kind: page
+  - id: tourism-positioning
+    title: 觀光資訊資料庫－景點定位資料
+    url: https://data.gov.tw/dataset/7777
+    organization: 交通部觀光署
+    kind: openData
+    purpose: positioning
+    attribution:
+      provider: 交通部觀光署
+      year: 2026
+      dataset: 景點－觀光資訊資料庫
+      version: 2026-10-16 下載快照
 sources: []
 authorNotes: []
 facilities:
@@ -62,6 +76,9 @@ withKids:
     - 依園方分區找出兩種不同動物，觀察牠們所在的展示環境。
 agentTips: []
 nearby: []
+location:
+  lat: 24.80015607796872
+  lng: 120.97734687604826
 transport:
   checkedAt: 2026-10-15
   facts:

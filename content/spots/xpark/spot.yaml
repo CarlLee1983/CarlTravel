@@ -13,6 +13,9 @@ illustration:
   height: 1024
 ageRange:
   status: unknown
+tourismId:
+  value: Attraction_376430000A_001576
+  ref: tourism-positioning
 officialRefs:
   - id: traffic
     title: Xpark交通與停車
@@ -49,6 +52,17 @@ officialRefs:
     url: https://travel.tycg.gov.tw/zh-tw/travel/attraction/1576
     organization: 桃園市政府觀光旅遊局
     kind: page
+  - id: tourism-positioning
+    title: 觀光署景點定位資料
+    url: https://data.gov.tw/dataset/7777
+    organization: 交通部觀光署
+    kind: openData
+    purpose: positioning
+    attribution:
+      provider: 交通部觀光署
+      year: 2026
+      dataset: 景點－觀光資訊資料庫
+      version: 2026-10-16 下載快照
 sources: []
 authorNotes: []
 facilities:
@@ -79,6 +93,9 @@ agentTips:
   - 進館前先借推車或詢問電梯位置，減少在樓層之間折返。
   - 先挑一個水槽安靜停留，讓孩子描述游動方向，再繼續其他展區。
 nearby: []
+location:
+  lat: 25.01723
+  lng: 121.21427
 transport:
   checkedAt: 2026-10-16
   facts:

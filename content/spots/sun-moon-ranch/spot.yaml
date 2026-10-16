@@ -13,6 +13,9 @@ illustration:
   height: 1024
 ageRange:
   status: unknown
+tourismId:
+  value: Attraction_376470000A_000261
+  ref: tourism-positioning
 officialRefs:
   - id: farm
     title: 園方公開介紹
@@ -34,6 +37,17 @@ officialRefs:
     url: https://ezgo.ardswc.gov.tw/zh-tw/spot/195/
     organization: 農業部農村發展及水土保持署
     kind: page
+  - id: tourism-positioning
+    title: 觀光資訊資料庫－景點定位資料
+    url: https://data.gov.tw/dataset/7777
+    organization: 交通部觀光署
+    kind: openData
+    purpose: positioning
+    attribution:
+      provider: 交通部觀光署
+      year: 2026
+      dataset: 景點－觀光資訊資料庫
+      version: 2026-10-16 下載快照
 sources: []
 authorNotes: []
 facilities:
@@ -55,6 +69,9 @@ withKids:
 agentTips:
   - 到訪前先確認營業時段；團體解說、烤肉與野餐另外預約。
 nearby: []
+location:
+  lat: 24.05612
+  lng: 120.587
 transport:
   checkedAt: 2026-10-16
   facts:

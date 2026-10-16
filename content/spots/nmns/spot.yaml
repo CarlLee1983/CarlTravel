@@ -13,6 +13,9 @@ illustration:
   height: 1024
 ageRange:
   status: unknown
+tourismId:
+  value: Attraction_387000000A_000418
+  ref: tourism-positioning
 officialRefs:
   - id: ticket
     title: 票價資訊
@@ -44,6 +47,17 @@ officialRefs:
     url: https://www.nmns.edu.tw/ch/visit/service/disabled/
     organization: 國立自然科學博物館
     kind: page
+  - id: tourism-positioning
+    title: 觀光署景點定位資料
+    url: https://data.gov.tw/dataset/7777
+    organization: 交通部觀光署
+    kind: openData
+    purpose: positioning
+    attribution:
+      provider: 交通部觀光署
+      year: 2026
+      dataset: 景點－觀光資訊資料庫
+      version: 2026-10-16 下載快照
 sources: []
 authorNotes: []
 facilities:
@@ -73,6 +87,9 @@ agentTips:
   - 孩子若對聲響敏感，可先說明機械恐龍會動、會叫，再決定是否靠近。
   - 先選生命科學廳的少數主題；劇場及植物園依體力另作安排。
 nearby: []
+location:
+  lat: 24.15724
+  lng: 120.66606
 transport:
   checkedAt: 2026-10-16
   facts:
