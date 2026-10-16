@@ -4,6 +4,7 @@ import {
   illustrationCaption,
 } from "../../content/illustration.ts";
 import Layout from "../../layouts/Layout.astro";
+import { transportSectionTitle } from "../../site.ts";
 import CheckedAt from "../../components/CheckedAt.astro";
 import OfficialSection from "../../components/OfficialSection.astro";
 import { loadPageSpots, type PageSpot } from "../../content/preview.ts";
@@ -35,7 +36,7 @@ const checklistStatus = { yes: "有", no: "無", unknown: "未知" } as const;
 const sections = [
   { id: "checklist", label: "親子清單" },
   { id: "hours", label: "開放時間與費用" },
-  { id: "transport", label: "交通與停車" },
+  { id: "transport", label: transportSectionTitle },
   ...(spot.facilities ? [{ id: "facilities", label: "設施" }] : []),
   ...(spot.withKids ? [{ id: "with-kids", label: "跟孩子一起看" }] : []),
   ...(spot.authorNotes.length ? [{ id: "author", label: "原作者心得" }] : []),
@@ -143,7 +144,7 @@ const nearbyKind = { food: "餐飲", stay: "住宿", activity: "活動" } as con
       />
       <OfficialSection
         id="transport"
-        title="交通與停車"
+        title={transportSectionTitle}
         section={spot.transport}
         refs={spot.officialRefs}
         buildDate={buildDate}
