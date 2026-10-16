@@ -1,5 +1,5 @@
 ---
-import { siteUrl } from "../site.ts";
+import { siteUrl, outingSocialAlt } from "../site.ts";
 import { contentMode } from "../content/mode.ts";
 interface Props {
   title: string;
@@ -40,7 +40,7 @@ const preview = __CARLTRAVEL_DRAFT_PREVIEW__;
       property="og:image"
       content={`${siteUrl}/illustrations/family-outing.png`}
     />
-    <meta property="og:image:alt" content="親子沿步道散步的出遊情境插畫" />
+    <meta property="og:image:alt" content={outingSocialAlt} />
     <link
       rel="icon"
       type="image/svg+xml"

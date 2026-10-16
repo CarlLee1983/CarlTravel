@@ -8,6 +8,124 @@ import { buildSearchIndex } from "../scripts/search-index.ts";
 import { checkIsolation } from "../scripts/publish/isolation.ts";
 
 test(
+  "shared illustration alt copy is allowed only at its original attribute and occurrence",
+  { timeout: 120_000 },
+  async () => {
+    const { root, cleanup } = await workspace();
+    const { parse, stringify } = await import("yaml");
+    try {
+      const data = parse(
+        await readFile(
+          join(root, "content/spots/approved-park/spot.yaml"),
+          "utf8",
+        ),
+      );
+      data.name = "已發布測試公園";
+      data.summary = "觀察樹木與季節變化。";
+      await writeFile(
+        join(root, "content/spots/approved-park/spot.yaml"),
+        stringify(data),
+      );
+      data.name = "未發布插畫測試景點";
+      data.transport.facts[0].label = "步道";
+      data.hoursAndFees.facts[0].label = "交通與停車";
+      data.agentTips = ["季節", "季節privateprobe", "公園範例管理處"];
+      await mkdir(join(root, "drafts/spots/unpublished"), { recursive: true });
+      await writeFile(
+        join(root, "drafts/spots/unpublished/spot.yaml"),
+        stringify(data),
+      );
+      execFileSync(process.execPath, ["scripts/site.mjs", "build"], {
+        cwd: root,
+        stdio: "pipe",
+        timeout: 60_000,
+      });
+      const baseline = await checkIsolation(root);
+      assert.deepEqual(baseline.urls, ["/spots/approved-park/"]);
+      assert.ok(
+        baseline.texts.some((text) =>
+          text.includes('content="親子沿步道散步的出遊情境插畫"'),
+        ),
+      );
+      const home = join(root, "dist/index.html");
+      const about = join(root, "dist/about/index.html");
+      const notFound = join(root, "dist/404.html");
+      const page = join(root, "dist/spots/approved-park/index.html");
+      const originals = new Map(
+        await Promise.all(
+          [home, about, notFound, page].map(
+            async (file) => [file, await readFile(file, "utf8")] as const,
+          ),
+        ),
+      );
+      const hero = originals
+        .get(home)!
+        .match(/<img\b[^>]*alt="[^"]*步道[^"]*"[^>]*>/)![0];
+      const missing = originals
+        .get(notFound)!
+        .match(/<img\b[^>]*alt="[^"]*步道[^"]*"[^>]*>/)![0];
+      const og = originals
+        .get(home)!
+        .match(/<meta\b[^>]*property="og:image:alt"[^>]*>/)![0];
+      const transportHeading = originals
+        .get(page)!
+        .match(/<h2\b[^>]*id="transport-heading"[^>]*>交通與停車<\/h2>/)![0];
+      const transportLink = originals
+        .get(page)!
+        .match(/<a\b[^>]*href="#transport"[^>]*>交通與停車<\/a>/)![0];
+      for (const [file, suffix] of [
+        [home, "<p>步道</p>"],
+        [home, hero],
+        [home, og],
+        [notFound, missing],
+        [about, hero],
+        [home, missing],
+        [page, '<img alt="步道">'],
+        [about, '<span title="步道"></span>'],
+        [home, "<p>交通與停車</p>"],
+        [page, "<p>交通與停車</p>"],
+        [page, "<p>季節privateprobe</p>"],
+        [page, "<p>公園範例管理處</p>"],
+        [page, transportHeading],
+        [page, transportLink],
+        [home, transportHeading],
+        [page, transportHeading.replace("<h2 ", '<h2 title="交通與停車" ')],
+        [home, `<!--${hero}-->`],
+        [
+          home,
+          `<script type="application/json">${JSON.stringify(hero)}</script>`,
+        ],
+        [home, hero.replace("/illustrations/family-outing.png", "/other.png")],
+        [home, og.replace("og:image:alt", "other:alt")],
+        [home, hero.replace('alt="', 'alt="延伸')],
+        [home, hero.replace("<img ", '<img alt="步道" ')],
+      ] as const) {
+        await writeFile(file, originals.get(file)! + suffix);
+        await assert.rejects(checkIsolation(root), /草稿專有文字/);
+        await writeFile(file, originals.get(file)!);
+      }
+      await writeFile(
+        home,
+        originals
+          .get(home)!
+          .replace(hero, hero.replace("<img ", '<img title="步道" ')),
+      );
+      await assert.rejects(checkIsolation(root), /草稿專有文字/);
+      await writeFile(home, originals.get(home)!);
+      await writeFile(
+        page,
+        originals.get(page)!.replace("觀察樹木與季節變化。", "步道"),
+      );
+      await buildSearchIndex(join(root, "content/spots"), join(root, "dist"));
+      await writeFile(page, originals.get(page)!);
+      await assert.rejects(checkIsolation(root), /草稿專有文字/);
+    } finally {
+      await cleanup();
+    }
+  },
+);
+
+test(
   "formal pages, sitemap and real Pagefind exclude new and revised drafts after preview",
   { timeout: 120_000 },
   async () => {
@@ -104,6 +222,8 @@ test(
         ),
       );
       data.name = "未發布測試景點";
+      data.officialRefs[0].title = "步道";
+      data.agentTips = ["蝴蝶", "列車"];
       data.transport.facts[0].label = "開放時間";
       data.hoursAndFees.facts[0].label = "privatelabelprobe";
       await mkdir(join(root, "drafts/spots/unpublished"), { recursive: true });

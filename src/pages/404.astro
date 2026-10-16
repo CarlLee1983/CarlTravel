@@ -1,5 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import { notFoundIllustrationAlt } from "../site.ts";
 ---
 
 <Layout title="找不到這個頁面" noindex>
@@ -17,7 +18,7 @@ import Layout from "../layouts/Layout.astro";
     </div>
     <img
       src="/illustrations/family-outing.png"
-      alt="一家三口走在山間步道，遠處有列車經過"
+      alt={notFoundIllustrationAlt}
       width="1536"
       height="1024"
     />

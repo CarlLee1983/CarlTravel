@@ -2,12 +2,15 @@ import { createServer } from "node:http";
 import { readFile, readdir } from "node:fs/promises";
 import { join, resolve, sep } from "node:path";
 import { chromium } from "@playwright/test";
+import { maskPublicCopy, type PublicCopySlots } from "./public-copy.ts";
 import { allSpots } from "../research/records.ts";
 import { researchDirectory, writeLocal } from "../research/files.ts";
 import { checkOutput } from "../check-output.ts";
 import {
   officialInformationDescription,
   officialInformationDisclaimer,
+  outingIllustrationAlt,
+  notFoundIllustrationAlt,
 } from "../../src/site.ts";
 
 export function strings(value: unknown, key = ""): string[] {
@@ -38,6 +41,7 @@ export async function inspectIndex(
   output: string,
   terms: string[],
   html: string[] = [],
+  publicSlots: PublicCopySlots[] = [],
 ) {
   const base = resolve(output);
   const server = createServer(async (request, response) => {
@@ -77,11 +81,17 @@ export async function inspectIndex(
     const page = await browser.newPage();
     await page.goto(`http://127.0.0.1:${address.port}/`);
     return await page.evaluate(
-      async ({ queries, html }) => {
+      async ({ queries, html, scanHtml }) => {
         const entry = await (
           await fetch("/pagefind/pagefind-entry.json")
         ).json();
-        const decoded = html.map(
+        const documents = html.map((text) =>
+          new DOMParser().parseFromString(text, "text/html"),
+        );
+        const decoded = documents.map(
+          (doc) => doc.documentElement.textContent ?? "",
+        );
+        const scanDecoded = scanHtml.map(
           (text) =>
             new DOMParser().parseFromString(text, "text/html").documentElement
               .textContent ?? "",
@@ -94,6 +104,8 @@ export async function inspectIndex(
               queries.map((term) => [term, [] as string[]]),
             ),
             decoded,
+            scanHtml,
+            scanDecoded,
           };
         const path = "/pagefind/pagefind.js";
         const index = await import(path);
@@ -113,9 +125,17 @@ export async function inspectIndex(
           records: records as { url: string; content: string }[],
           matches,
           decoded,
+          scanHtml,
+          scanDecoded,
         };
       },
-      { queries: terms, html },
+      {
+        queries: terms,
+        html,
+        scanHtml: html.map((text, index) =>
+          maskPublicCopy(text, publicSlots[index]),
+        ),
+      },
     );
   } finally {
     await browser?.close();
@@ -148,17 +168,39 @@ export async function checkIsolation(root: string) {
     join(root, "tests/fixtures/spots"),
   );
   const { formal, drafts } = await allSpots(root);
-  const formalStrings = new Set(formal.flatMap((spot) => strings(spot)));
+  const formalStrings = formal.flatMap((spot) => strings(spot));
   const privateTerms = [
     ...new Set(drafts.flatMap((spot) => strings(spot))),
-  ].filter((text) => text.length > 1 && !formalStrings.has(text));
+  ].filter(
+    (text) =>
+      text.length > 1 &&
+      !formalStrings.some((publicText) => publicText.includes(text)),
+  );
   const files = await outputText(output);
   const raw = files.map((file) => file.text);
   const htmlFiles = files.filter((file) => file.text.includes("<html"));
+  const publicPages = new Set([
+    join(output, "index.html"),
+    join(output, "about/index.html"),
+    join(output, "404.html"),
+    ...formal.map((spot) => join(output, "spots", spot.id, "index.html")),
+  ]);
   const inspected = await inspectIndex(
     output,
     [...privateTerms, ...formal.map((spot) => spot.name)],
     htmlFiles.map((file) => file.text),
+    htmlFiles.map((file) => ({
+      social: publicPages.has(file.path),
+      transport: formal.some(
+        (spot) => file.path === join(output, "spots", spot.id, "index.html"),
+      ),
+      imageAlt:
+        file.path === join(output, "index.html")
+          ? outingIllustrationAlt
+          : file.path === join(output, "404.html")
+            ? notFoundIllustrationAlt
+            : undefined,
+    })),
   );
   const urls = inspected.records.map((record) => record.url).sort();
   if (
@@ -180,8 +222,14 @@ export async function checkIsolation(root: string) {
           .replace(officialInformationDisclaimer, "")
       : text;
   const scanTexts = [
-    ...files.map((file) => scanCopy(file.text, file.path)),
-    ...inspected.decoded.map((text, index) =>
+    ...files.map((file) => {
+      const index = htmlFiles.indexOf(file);
+      return scanCopy(
+        index < 0 ? file.text : inspected.scanHtml[index]!,
+        file.path,
+      );
+    }),
+    ...inspected.scanDecoded.map((text, index) =>
       scanCopy(text, htmlFiles[index]!.path),
     ),
     ...inspected.records.map((record) => record.content),
