@@ -1,0 +1,99 @@
+name: 南元花園休閒農場
+address: 臺南市柳營區果毅里南湖25號
+county: 臺南市
+district: 柳營區
+kind: 農場
+setting: 室內外皆有
+summary: 在林蔭步道與鳥園觀察動植物。
+illustration:
+  kind: ai-generated
+  alt: 枝葉倒影下多尾錦鯉游過藍綠水面的水彩示意
+  sha256: c74638f3733072a463bdfc68dc8fab4fdc3688c8f41582919d9e7aa6a0b8177e
+  width: 1536
+  height: 1024
+ageRange:
+  status: unknown
+officialRefs:
+  - id: fees
+    title: 園方收費與設施
+    url: https://nanyuanfarm.com.tw/page_08.php
+    organization: 南元花園休閒農場
+    kind: page
+  - id: intro
+    title: 園方生態分區介紹
+    url: https://www.nanyuanfarm.com.tw/page_01.php
+    organization: 南元花園休閒農場
+    kind: page
+  - id: tour
+    title: 臺南景點資訊
+    url: https://www.twtainan.net/zh-tw/attractions/detail/531/
+    organization: 臺南市政府觀光旅遊局
+    kind: page
+  - id: ezgo
+    title: 農業易遊網場域資訊
+    url: https://ezgo.ardswc.gov.tw/zh-tw/farm/229/
+    organization: 農業部農村發展及水土保持署
+    kind: page
+sources: []
+authorNotes: []
+facilities:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 生態分區
+      value: 園方介紹林蔭步道、湖泊區、鳥園及動物島，另列可愛動物區與生態鳥園。
+      ref: intro
+withKids:
+  checkedAt: 2026-10-16
+  facts:
+    - text: 園方介紹鳥園與動物島提供生態解說，湖中也可見錦鯉。
+      ref: intro
+  activities:
+    - 選一種鳥觀察嘴形與移動方式；保持距離和音量。
+    - 比較湖邊與林蔭步道的植物葉形。
+agentTips:
+  - 先確認日遊開放時段；動物區依飼養員當日指示參觀及餵食。
+nearby: []
+transport:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 地址
+      value: 臺南市柳營區果毅里南湖25號，06-6990726。
+      ref: tour
+    - status: ok
+      label: 停車
+      value: 園方停車券每台50元。
+      ref: fees
+hoursAndFees:
+  checkedAt: 2026-10-16
+  facts:
+    - status: conflict
+      label: 參觀時間
+      claims:
+        - value: 農業易遊網列每日08:00–17:00。
+          ref: ezgo
+        - value: 臺南旅遊網列每日08:00–23:00。
+          ref: tour
+      contact: 可能涵蓋不同服務範圍，日遊及動物區時段先洽06-6990726。
+    - status: ok
+      label: 門票
+      value: 全票350元；4至12歲及65歲以上300元；未滿4歲免門票（戶外教學方案除外）。
+      ref: fees
+    - status: ok
+      label: 其他優惠
+      value: 持身障證明者與有陪同需求的一位陪同者，各175元；30人以上預約團體每人300元。
+      ref: fees
+familyChecklist:
+  checkedAt: 2026-10-16
+  stroller:
+    status: unknown
+  nursingRoom:
+    status: unknown
+  familyToilet:
+    status: unknown
+  rainyDay:
+    status: unknown
+  accessibility:
+    status: unknown
+  notes: 推車完整路線、哺乳空間、親子廁所、無障礙與雨天動物區開放方式尚未核實。

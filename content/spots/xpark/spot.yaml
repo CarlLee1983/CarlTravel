@@ -1,0 +1,136 @@
+name: Xpark
+address: 桃園市中壢區春德路105號
+county: 桃園市
+district: 中壢區
+kind: 動物園／水族館
+setting: 室內外皆有
+summary: 從臺灣近海魚群看起的都會水生公園。
+illustration:
+  kind: ai-generated
+  alt: 銀色魚群在上層水域游動、魟魚貼近沙底的水彩示意
+  sha256: 91d371464e80d77c8810ffd08ac9a6f262855fc2ed7a7af0be5aea262f665893
+  width: 1536
+  height: 1024
+ageRange:
+  status: unknown
+officialRefs:
+  - id: traffic
+    title: Xpark交通與停車
+    url: https://www.xpark.com.tw/visit
+    organization: Xpark
+    kind: page
+  - id: qa
+    title: Xpark常見問答
+    url: https://www.xpark.com.tw/qa
+    organization: Xpark
+    kind: page
+  - id: ticket
+    title: Xpark票價與購票
+    url: https://www.xpark.com.tw/ticket
+    organization: Xpark
+    kind: page
+  - id: floor
+    title: Xpark館內導覽
+    url: https://www.xpark.com.tw/floor1
+    organization: Xpark
+    kind: page
+  - id: rain
+    title: Xpark場館與雨天說明
+    url: https://www.xpark.com.tw/news/23
+    organization: Xpark
+    kind: page
+  - id: prevention
+    title: Xpark2026年10月防疫活動調整
+    url: https://www.xpark.com.tw/news/78
+    organization: Xpark
+    kind: page
+  - id: tourism
+    title: 桃園觀光網Xpark資訊
+    url: https://travel.tycg.gov.tw/zh-tw/travel/attraction/1576
+    organization: 桃園市政府觀光旅遊局
+    kind: page
+sources: []
+authorNotes: []
+facilities:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 借用與寄物
+      value: 館內提供免費嬰兒車、輪椅借用，向服務台洽詢；沒有置物櫃或行李託放服務。
+      ref: qa
+    - status: ok
+      label: 攝影規則
+      value: 館內不得開閃光燈，也不能使用自拍棒或腳架。
+      ref: qa
+    - status: ok
+      label: 互動展演調整
+      value: 2026年10月5日防疫通知表示「與眾同樂」的鸚鵡與老鷹互動展演暫停，海獅及其他生物仍可見面；實際場次依當日公告。
+      ref: prevention
+withKids:
+  checkedAt: 2026-10-16
+  facts:
+    - text: 福爾摩沙展區以臺灣近海生態為主題，展示魚群與魟魚。
+      ref: floor
+    - text: 官方生物介紹指出粗尾魟屬底棲性，銀鱗鯧有群游習性。
+      ref: floor
+  activities:
+    - 留意魚群在水槽中的高度，再比較魟魚靠近底部移動的姿態。
+agentTips:
+  - 進館前先借推車或詢問電梯位置，減少在樓層之間折返。
+  - 先挑一個水槽安靜停留，讓孩子描述游動方向，再繼續其他展區。
+nearby: []
+transport:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 高鐵與機捷
+      value: 可至高鐵桃園站或機捷A18，再經華泰名品城步行至館。官方步行路線含樓梯，推車或輪椅請另確認電梯動線。
+      ref: traffic
+    - status: ok
+      label: 置地廣場停車
+      value: 與影城及飯店共用停車場，每半小時30元；每車可用一張成人票折抵兩小時，不能累計。
+      ref: traffic
+    - status: conflict
+      label: 華泰停車折抵
+      claims:
+        - value: Xpark交通頁及QA列一張成人票可折抵兩小時。
+          ref: traffic
+        - value: 桃園觀光網列華泰停車場成人票折抵一小時。
+          ref: tourism
+      contact: 兩處折抵說明不同，停車前請向場館或停車場確認；Xpark電話03-287-5000。
+hoursAndFees:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 一般營業時間
+      value: 週日至週五及收假日10:00–18:00；週六及國定假日10:00–20:00。閉館前一小時停止入場，特殊日期另查官網。
+      ref: qa
+    - status: ok
+      label: 現場票價
+      value: 成人600元；12歲以上持有效學生證者430元；4歲至未滿12歲兒童270元。博愛票270元，適用身障者及一名陪同、孕婦與65歲以上長者，購票入場均備證件。
+      ref: ticket
+    - status: ok
+      label: 免票與加價
+      value: 未滿4歲且有家長陪同幼兒可免費入場；部分展區及活動另付費。票券依指定日期和場次使用，部分生物區域不全天開放。
+      ref: ticket
+familyChecklist:
+  checkedAt: 2026-10-16
+  stroller:
+    status: yes
+    ref: qa
+    note: 可向服務台免費借用嬰兒車。
+  nursingRoom:
+    status: yes
+    ref: floor
+    note: 官方二樓導覽圖標有哺乳室及尿布照護圖示。
+  familyToilet:
+    status: unknown
+  rainyDay:
+    status: yes
+    ref: rain
+    note: 官方說明可於晴雨天參觀；特定戶外或互動活動仍需核對天候與公告。
+  accessibility:
+    status: yes
+    ref: floor
+    note: 二樓官方導覽圖標有電梯；特定通行需求請先向服務台確認。
+  notes: 展區和活動可能依生物狀態調整；館外步行、停車與館內參觀分別規劃。

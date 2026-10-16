@@ -1,0 +1,105 @@
+name: 屏科大保育類野生動物收容中心與沙林生命教育館
+address: 屏東縣內埔鄉老埤村學府路1號（由屏科大正門進入，至沙林生命教育館報到）
+county: 屏東縣
+district: 內埔鄉
+kind: 其他
+setting: 室內外皆有
+summary: 沙林館認識生命，收容園區限預約導覽。
+illustration:
+  kind: ai-generated
+  alt: 攤開的自然圖鑑、植物葉片與書本的水彩生命教育情境插畫
+  sha256: ba7888418edddac617779f358d7b6237eb39acde0d3214c5d3016131d2866647
+  width: 1536
+  height: 1024
+ageRange:
+  status: unknown
+officialRefs:
+  - id: visit
+    title: 參觀資訊
+    url: https://ptrc.npust.edu.tw/參觀資訊/
+    organization: 國立屏東科技大學保育類野生動物收容中心
+    kind: page
+  - id: hall
+    title: 沙林生命教育館
+    url: https://ptrc.npust.edu.tw/沙林生命教育館-2/
+    organization: 國立屏東科技大學保育類野生動物收容中心
+    kind: page
+  - id: phone
+    title: 2026預約電話更新
+    url: https://ptrc.npust.edu.tw/2026/09/📣【收容中心直撥電話更新通知】/
+    organization: 國立屏東科技大學保育類野生動物收容中心
+    kind: page
+sources: []
+authorNotes: []
+facilities:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 沙林館
+      value: 二樓設生態書籍閱覽空間、動物標本區與室內圓形劇場。
+      ref: hall
+    - status: ok
+      label: 戶外參訪規範
+      value: 收容園區以戶外環境為主，較無遮陰；禁止拍照攝影、撐傘、攜帶飲料食物及大聲喧嘩，可帶裝白開水的水壺。
+      ref: visit
+withKids:
+  checkedAt: 2026-10-16
+  facts:
+    - text: 沙林館透過動物標本、生態書籍及影像空間傳遞生命教育。
+      ref: hall
+  activities:
+    - 從標本或書籍挑一種動物，討論牠在野外需要哪些生活條件。
+    - 完成導覽後，記下照養員為動物安排的環境與照護工作。
+agentTips:
+  - 先確認人數與預約，依工作人員安排觀察，不自行進入照養區。
+nearby: []
+transport:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 參訪入口與報到
+      value: 由屏科大正門進入校園；收容園區預約者須提前10分鐘至沙林生命教育館櫃台報到購票。
+      ref: visit
+    - status: ok
+      label: 停車
+      value: 使用中心專用停車場，請勿開車或騎車到收容中心或沙林館門口。
+      ref: visit
+hoursAndFees:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 沙林生命教育館
+      value: 08:30–17:00，週一休館，免費；此開放範圍不等於可自由走入收容園區。
+      ref: visit
+    - status: ok
+      label: 收容園區導覽
+      value: 週一、四休園，開放日10:00及15:00兩場，每場約1.5小時；一般100元、屏科大教職員生憑證50元。
+      ref: visit
+    - status: ok
+      label: 預約與年齡限制
+      value: 園區入內皆須導覽陪同，謝絕未滿5歲兒童；5至14人須一週前實名預約，15人以上須三週前申請，不接受當日臨時預約。
+      ref: visit
+    - status: ok
+      label: 未達成團人數
+      value: 最低5人成團，不足5人可先詢問合併參訪名額；當日不足預約人數仍依預約人數計費。
+      ref: visit
+    - status: ok
+      label: 預約專線
+      value: 2026年9月更新為08-7740388，或08-7703202分機5136、5123、5121；15人以上團體預約窗口請一併確認。
+      ref: phone
+familyChecklist:
+  checkedAt: 2026-10-16
+  stroller:
+    status: unknown
+  nursingRoom:
+    status: unknown
+  familyToilet:
+    status: unknown
+  rainyDay:
+    status: yes
+    ref: hall
+    note: 沙林館有室內閱覽與劇場空間；此項僅指教育館，不代表戶外導覽可照常。
+  accessibility:
+    status: yes
+    ref: hall
+    note: 沙林館介紹列無障礙步道；園區完整導覽路線請預約時確認。

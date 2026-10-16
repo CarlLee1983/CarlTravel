@@ -1,0 +1,73 @@
+name: 八卦山昆蟲生態休閒農場
+address: 彰化縣芬園鄉大彰路五段51號
+county: 彰化縣
+district: 芬園鄉
+kind: 農場
+setting: 室內外皆有
+summary: 昆蟲生態農場，現今接待狀況尚待確認。
+illustration:
+  kind: ai-generated
+  alt: 葉片上的蝴蝶、幼蟲與懸垂蛹的昆蟲教育水彩示意
+  sha256: becbaa80ccb3d924eca6670f805c61b0077e4f62f1e7412a0a8a99a954810178
+  width: 1536
+  height: 1024
+ageRange:
+  status: unknown
+officialRefs:
+  - id: county
+    title: 昆蟲生態農場介紹
+    url: https://tourism.chcg.gov.tw/Kid/ecology_c1.asp
+    organization: 彰化縣政府
+    kind: page
+  - id: route
+    title: 彰化旅遊行程附件
+    url: https://tourism.chcg.gov.tw/includes/GetFile.ashx?chk=74f8e903-dc90-4716-b5f5-e40dafee657f&id=2507&mID=11
+    organization: 彰化縣政府
+    kind: page
+sources: []
+authorNotes: []
+facilities:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 官方介紹的展示區
+      value: 縣府兒童版介紹蝴蝶館、幼蟲展示館、昆蟲展示館與食草區；目前實際開放範圍未確認。
+      ref: county
+withKids:
+  checkedAt: 2026-10-16
+  facts:
+    - text: 縣府介紹以蝴蝶、幼蟲、昆蟲與食草展示認識生態。
+      ref: county
+  activities:
+    - 若確認開放，可觀察幼蟲與成蝶的外形差異，再找牠們使用的食草。
+agentTips:
+  - 現今營運與接待條件尚未確認，先取得園方回覆再安排行程。
+nearby: []
+transport:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 所在地
+      value: 縣府旅遊行程附件列芬園鄉大彰路五段51號；現今入口與接待狀況仍需確認。
+      ref: route
+    - status: unpublished
+      label: 當前交通與停車資訊
+hoursAndFees:
+  checkedAt: 2026-10-16
+  facts:
+    - status: unpublished
+      label: 當前營運狀況、參觀時間與預約條件
+    - status: unpublished
+      label: 門票與體驗費用
+familyChecklist:
+  checkedAt: 2026-10-16
+  stroller:
+    status: unknown
+  nursingRoom:
+    status: unknown
+  familyToilet:
+    status: unknown
+  rainyDay:
+    status: unknown
+  accessibility:
+    status: unknown

@@ -1,0 +1,118 @@
+name: 走馬瀨農場
+address: 臺南市大內區二溪里唭子瓦60號
+county: 臺南市
+district: 大內區
+kind: 農場
+setting: 室內外皆有
+summary: 在牧草地與放牧區認識農場生態。
+illustration:
+  kind: ai-generated
+  alt: 牧草穗與芒果枝葉襯著綠色原野的水彩示意
+  sha256: 31cd439a571ccfd6646649a91dc6369f4d14f7b90a1b8cc3e52029b2090161d4
+  width: 1536
+  height: 1024
+ageRange:
+  status: unknown
+officialRefs:
+  - id: farm
+    title: 入園與設施資訊
+    url: https://www.farm.com.tw/about.php
+    organization: 臺南市農會走馬瀨農場
+    kind: page
+  - id: home
+    title: 園方最新提示
+    url: https://www.farm.com.tw/
+    organization: 臺南市農會走馬瀨農場
+    kind: page
+  - id: moa
+    title: 食農場域資訊
+    url: https://fae.moa.gov.tw/theme_data.php?id=46&theme=field
+    organization: 農業部
+    kind: page
+  - id: tour
+    title: 西拉雅園區資訊
+    url: https://www.siraya-nsa.gov.tw/zh-tw/attractions/detail/18
+    organization: 交通部觀光署西拉雅國家風景區管理處
+    kind: page
+  - id: nursing
+    title: 臺南市自願設置哺集乳室名冊（1150705更新）
+    url: https://health.tainan.gov.tw/warehouse/01FD5F9D-E30E-4EEF-BED1-1B11EF6CA70F/F_1783503493042e.pdf
+    organization: 臺南市政府衛生局
+    kind: page
+sources: []
+authorNotes: []
+facilities:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 參觀與遊憩
+      value: 入園票可參觀動物區、放牧區、芒果主題館等；單項遊樂設施另計。
+      ref: farm
+    - status: ok
+      label: 設施暫停提示
+      value: 官網目前列高爾夫打擊設施暫停公告，行前確認最新開放狀況。
+      ref: home
+withKids:
+  checkedAt: 2026-10-16
+  facts:
+    - text: 園方提供放牧區、農業體驗區與芒果主題館等參觀區域。
+      ref: farm
+  activities:
+    - 看看牧草葉片與其他園內植物有何不同，再找解說牌上的用途。
+agentTips:
+  - 行前確認當日動物區與設施，勿把場區24小時開放當作夜間仍有表演或互動。
+nearby: []
+transport:
+  checkedAt: 2026-10-16
+  facts:
+    - status: conflict
+      label: 地址門牌
+      claims:
+        - value: 園方列臺南市大內區二溪里唭子瓦60號。
+          ref: home
+        - value: 農業部食農頁列二溪里其子瓦61號。
+          ref: moa
+      contact: 以園方60號作本篇地址，行前洽06-5760121確認入口，勿以資料頁門牌推論另一園區。
+    - status: ok
+      label: 公車
+      value: 可從臺鐵善化站轉大臺南公車橘幹線往玉井方向，至走馬瀨農場。
+      ref: moa
+    - status: ok
+      label: 停車
+      value: 小型車50元、大型車100元、機車20元。
+      ref: farm
+hoursAndFees:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 遊憩設施時段
+      value: 平日09:00–17:00，假日08:00–17:00；官網另稱場區全年24小時開放，不代表設施與動物區夜間持續服務。
+      ref: farm
+    - status: conflict
+      label: 門票
+      claims:
+        - value: 園方全票299元、優待249元、孩童及博愛149元，贈一次遊園小火車。
+          ref: farm
+        - value: 西拉雅頁全票250元、優待200元、孩童及博愛120元。
+          ref: tour
+      contact: 票價不同，購票前洽06-5760121確認。
+    - status: ok
+      label: 園方優惠資格
+      value: 優待票為學生、7歲以上及30人團體；孩童票3至6歲；博愛票65歲以上、身障者與一位陪同，須出示證件。
+      ref: farm
+familyChecklist:
+  checkedAt: 2026-10-16
+  stroller:
+    status: unknown
+  nursingRoom:
+    status: yes
+    ref: nursing
+    note: 衛生局2026年7月名冊列有供員工及顧客使用的哺集乳室；位置與使用方式請洽06-5760121分機2120。
+  familyToilet:
+    status: unknown
+  rainyDay:
+    status: unknown
+  accessibility:
+    status: yes
+    ref: moa
+    note: 列無障礙步道、廁所與停車場；不代表每項遊樂設施皆可使用。

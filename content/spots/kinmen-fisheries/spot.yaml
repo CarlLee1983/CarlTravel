@@ -1,0 +1,115 @@
+name: 金門縣水產試驗所
+address: 金門縣金城鎮西海路2號
+county: 金門縣
+district: 金城鎮
+kind: 其他
+setting: 室內外皆有
+summary: 從鱟生態與水族展示認識金門海洋。
+illustration:
+  kind: ai-generated
+  alt: 一隻鱟停在潮間帶淺水沙地的水彩生態教育示意
+  sha256: b1542c3de87490011d37fc6ad0136e804919947cef8bac90a7e45c1e83757ab5
+  width: 1536
+  height: 1024
+ageRange:
+  status: unknown
+officialRefs:
+  - id: faq
+    title: 參觀景點、時間與預約FAQ
+    url: https://kfri.kinmen.gov.tw/News_Content.aspx?n=7592CA717475C3AE&s=274D035A457D4266&sms=B675900615BB79BF
+    organization: 金門縣水產試驗所
+    kind: page
+  - id: apply
+    title: 遊客參訪申請表（1120825修，列表含PDF）
+    url: https://kfri.kinmen.gov.tw/News.aspx?n=0BA4E75B3E592574&sms=4FEFD09995C4BB81
+    organization: 金門縣水產試驗所
+    kind: page
+  - id: department
+    title: 養殖漁業課展示服務
+    url: https://kfri.kinmen.gov.tw/cp.aspx?n=6077266F5B391872
+    organization: 金門縣水產試驗所
+    kind: page
+  - id: tour
+    title: 鱟生態之旅預約課程
+    url: https://www.kinmen.travel/zh-tw/discover/tour/834
+    organization: 金門縣政府觀光處
+    kind: page
+  - id: accessibleGuide
+    title: 金門無障礙旅遊手冊（水試所第49頁）
+    url: https://www.kinmen.travel/file/683/
+    organization: 金門縣政府觀光處
+    kind: page
+sources: []
+authorNotes: []
+facilities:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 展示與參訪項目
+      value: 申請表列鱟影片、鱟生態文化館導覽，以及珍奇異色水族館、養殖區與旅客服務中心參觀；活動內容依申請與館方排定。
+      ref: apply
+    - status: ok
+      label: 潮間帶觀察規範
+      value: 鱟生態之旅以不觸碰、不干擾為原則；官方說明金門全縣海域為三棘鱟禁捕區域。
+      ref: tour
+withKids:
+  checkedAt: 2026-10-16
+  facts:
+    - text: 館方提供鱟生態文化館、影片及水族展示等認識海洋生物的參訪項目。
+      ref: faq
+  activities:
+    - 在館內觀察鱟的外形，畫下背甲、尾部與眼睛位置；是否參與戶外課程再依潮汐及孩子體力安排。
+agentTips:
+  - 先電話確認想看的展館與日期，再預約導覽；研究與養殖工作區請依館方安排參訪。
+nearby: []
+transport:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 地址與預約電話
+      value: 位於西海路2號，參訪預約電話082-326408。
+      ref: apply
+    - status: unpublished
+      label: 現行停車位置與費率
+hoursAndFees:
+  checkedAt: 2026-10-16
+  facts:
+    - status: conflict
+      label: 展示開放時段
+      claims:
+        - value: 館方參訪FAQ列週一至五08:00–17:30，部分景點例假日亦開放。
+          ref: faq
+        - value: 養殖漁業課介紹列水族展示館每日09:00–15:00、全年無休。
+          ref: department
+      contact: 不同頁面範圍與時段不一致；特別是假日參觀水族館，請先致電082-326408確認可入區域與當日時段。
+    - status: ok
+      label: 影片與專人解說
+      value: 館方FAQ列3人即可申請影片及專人導覽，可事先預約。
+      ref: faq
+    - status: ok
+      label: 申請與導覽時段
+      value: 112年8月25日修訂申請表要求至少3天前提出；參訪週一至五08:00–12:00、13:30–17:30，國定例假日無預約導覽，可自行參觀。經排定後館方仍可能因重要活動通知取消或延期。
+      ref: apply
+    - status: ok
+      label: 一般展館門票
+      value: 官方無障礙旅遊手冊列水試所免費參觀。
+      ref: accessibleGuide
+    - status: ok
+      label: 鱟生態之旅另約另計
+      value: 官方旅遊網2026年5月更新課程：每人350元，10人成行、上限20人，約2.5小時；週一至日可來電提前預約，須配合潮汐。這是專案課程，與一般展館參觀分開確認。
+      ref: tour
+familyChecklist:
+  checkedAt: 2026-10-16
+  stroller:
+    status: unknown
+  nursingRoom:
+    status: unknown
+  familyToilet:
+    status: unknown
+  rainyDay:
+    status: unknown
+  accessibility:
+    status: yes
+    ref: accessibleGuide
+    note: 官方手冊列無障礙車位、廁所與通道；個別養殖或潮間帶課程路線需另確認。
+  notes: 親子照護設備與推車通行尚待館方確認；館內展示及戶外養殖、潮間帶不能視為同一種雨備環境。

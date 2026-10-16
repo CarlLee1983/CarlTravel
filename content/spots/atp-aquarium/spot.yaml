@@ -1,0 +1,108 @@
+name: 農業科技園區觀賞水族展示廳
+address: 屏東縣長治鄉園西一路農業科技園區飛宇樓3樓（門牌待確認）
+county: 屏東縣
+district: 長治鄉
+kind: 動物園／水族館
+setting: 室內
+summary: 在飛宇樓認識淡海水觀賞魚蝦與水族產業。
+illustration:
+  kind: ai-generated
+  alt: 金魚在上方水域游動、觀賞蝦停在水草旁的水彩示意
+  sha256: c2b04ca6dcbbd266e667c11532aa39d2934bdb9c096d3debb6805270369708da
+  width: 1536
+  height: 1024
+ageRange:
+  status: unknown
+officialRefs:
+  - id: visit
+    title: 農科園區參訪預約
+    url: https://www.atp.gov.tw/CHT/cl0106.aspx
+    organization: 農業部農業科技園區管理中心
+    kind: page
+  - id: law
+    title: 觀賞水族展示廳現行收費標準
+    url: https://law.moa.gov.tw/LawContent.aspx?id=GL000781&media=print
+    organization: 農業部
+    kind: page
+  - id: fishdb
+    title: 臺灣魚類資料庫水族展示場館介紹
+    url: https://fishdb.sinica.edu.tw/chi/culture/a11.php
+    organization: 中央研究院生物多樣性研究中心
+    kind: page
+  - id: tourism
+    title: 屏東旅遊導覽手冊
+    url: https://www.pingtungtour.com.tw/files/download/02_PGT__RGB_FA.pdf
+    organization: 屏東縣政府交通旅遊處
+    kind: page
+sources: []
+authorNotes: []
+facilities:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 展示內容
+      value: 展示位於三樓，內容涵蓋淡水、海水觀賞魚蝦及珊瑚等水族主題，兼具產業展示與解說功能。
+      ref: visit
+withKids:
+  checkedAt: 2026-10-16
+  facts:
+    - text: 官方展示主題包括淡水觀賞蝦、金魚、海馬與海葵魚，呈現不同水域的觀賞水族。
+      ref: visit
+  activities:
+    - 選魚與蝦各一種，從缸外比較牠們身體構造與停留的位置。
+agentTips:
+  - 出發前一併確認門牌、休館日與三樓通行方式，再安排到訪。
+nearby: []
+transport:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 參觀範圍
+      value: 管理中心官方頁確認展示廳位於亞太水族中心飛宇樓三樓；園區管理中心的神農路1號地址不能當作展示廳入口。
+      ref: visit
+    - status: conflict
+      label: 入口門牌
+      claims:
+        - value: 中研院場館介紹列園西一路2號3樓，屬較早期資料。
+          ref: fishdb
+        - value: 屏東官方旅遊手冊列園西一路12號。
+          ref: tourism
+      contact: 建物與三樓展廳已確認，門牌仍有落差；出發前請先致電08-7620163確認實際入口，勿只導航管理中心。
+    - status: unpublished
+      label: 現行停車位置與費率
+hoursAndFees:
+  checkedAt: 2026-10-16
+  facts:
+    - status: conflict
+      label: 每週休館日
+      claims:
+        - value: 管理中心現行參訪頁列週三至週一09:00–17:00，週二休館，國定假日例外。
+          ref: visit
+        - value: 屏東官方旅遊手冊列09:00–17:00、週一休館，連假或國定假日例外。
+          ref: tourism
+      contact: 兩處休館日記載不同，請以08-7620163確認預定日期。
+    - status: ok
+      label: 2026年施行票價
+      value: 2026年1月1日起全票80元、20人以上團體60元；在學學生及6歲至未滿12歲兒童優待40元。65歲以上平日免費、假日優待40元。
+      ref: law
+    - status: ok
+      label: 免費與證件
+      value: 未滿6歲、身障者及一位陪同、持志願服務榮譽卡志工等，依標準可免費入場；優待或免費均應出示相關證明。
+      ref: law
+    - status: ok
+      label: 團體參訪
+      value: 團體須主動聯繫預約參訪與導覽，園方建議至少提前一天。
+      ref: visit
+familyChecklist:
+  checkedAt: 2026-10-16
+  stroller:
+    status: unknown
+  nursingRoom:
+    status: unknown
+  familyToilet:
+    status: unknown
+  rainyDay:
+    status: unknown
+  accessibility:
+    status: unknown
+  notes: 展廳在三樓；推車、電梯實際開放及照護需求請先洽08-7620163，不能用園區通用設施推論展廳可用狀態。

@@ -1,0 +1,127 @@
+name: 台中海洋館
+address: 臺中市清水區海洋路168號
+county: 臺中市
+district: 清水區
+kind: 動物園／水族館
+setting: 室內外皆有
+summary: 循河川、濕地到海洋，從不同角度看水中生物。
+illustration:
+  kind: ai-generated
+  alt: 兩隻麥哲倫企鵝站在岩上、另一隻在水中游動的水彩示意
+  sha256: cc608d66a81a40857941627c4fa832b7c8c5ad469d47c7715d8d07e44fc783c7
+  width: 1536
+  height: 1024
+ageRange:
+  status: unknown
+officialRefs:
+  - id: faq
+    title: 台中海洋館常見問題
+    url: https://tcaqua.com.tw/faq/
+    organization: 台中海洋館
+    kind: page
+  - id: business
+    title: 台中海洋館營業與服務
+    url: https://tcaqua.com.tw/business-hours-visiting-notes_revised/
+    organization: 台中海洋館
+    kind: page
+  - id: price
+    title: 台中海洋館票價與預約
+    url: https://tcaqua.com.tw/priceandbooking/
+    organization: 台中海洋館
+    kind: page
+  - id: floors
+    title: 台中海洋館樓層與動線
+    url: https://tcaqua.com.tw/floormaps/
+    organization: 台中海洋館
+    kind: page
+  - id: river
+    title: 台中海洋館三樓河川與水母
+    url: https://tcaqua.com.tw/canguanzhiyin/3f/
+    organization: 台中海洋館
+    kind: page
+  - id: penguin
+    title: 台中海洋館二樓海洋展示
+    url: https://tcaqua.com.tw/canguanzhiyin/2f/
+    organization: 台中海洋館
+    kind: page
+sources: []
+authorNotes: []
+facilities:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 嬰兒車、輪椅及寄物
+      value: 推車與輪椅數量有限，目前持有效證件可免費借用。一樓置物櫃小櫃每次30元、大櫃50元，需備零錢。
+      ref: faq
+    - status: ok
+      label: 觀察規範
+      value: 禁閃光燈、拍打展缸、越缸或擅自餵食；12歲以下需成人同行。四樓潮汐池若參與下水體驗，須自備毛巾拖鞋並先洗腳。
+      ref: business
+    - status: ok
+      label: 導覽動線
+      value: 全館五層，一至四樓有生物展示；官網建議由三樓、四樓、三樓、二樓再回一樓參觀。
+      ref: floors
+withKids:
+  checkedAt: 2026-10-16
+  facts:
+    - text: 三樓河川區以大甲溪上、中、下游為展示線索，另有水母生命週期主題。
+      ref: river
+    - text: 二樓展示麥哲倫企鵝、珊瑚與鯊魚，可從觀景隧道看企鵝在水中移動。
+      ref: penguin
+  activities:
+    - 比較河川區不同段落的水流與環境，找出展示景觀如何改變。
+    - 看企鵝在陸上與水中各如何移動，描述牠使用身體哪個部位。
+agentTips:
+  - 先依官方樓層順序圈出最想看的展區，將休息安排在換樓層之前。
+nearby: []
+transport:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 公車
+      value: 官網列178、179、309、679、688路可至台中海洋館；實際路線與班次先查臺中市公車動態資訊。
+      ref: faq
+    - status: ok
+      label: 停車
+      value: 設戶外汽機車停車場，汽車每次50元、機車每次20元，離館前先於一樓出口繳費或依現場QR Code付款。
+      ref: faq
+hoursAndFees:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 2026年時間
+      value: 09:30–17:30，16:30停止入場，每週二休館。官網已預告2027年調整，其他年度與特殊日期須重查。
+      ref: business
+    - status: ok
+      label: 牌價與預約
+      value: 全票500元、優待票400元、65歲以上博愛票250元；20名以上有價票團體450元。各優惠須證件正本，依指定時段入場，建議先於官方平台購票。
+      ref: price
+    - status: conflict
+      label: 兒童免票條件文字
+      claims:
+        - value: 票價頁寫未滿6歲「及」身高115公分以下、與持票家長或師長同行。
+          ref: price
+        - value: FAQ說明採擇優，未滿6歲「或」未滿115公分其中一項即免費，須至服務台持證兌票。
+          ref: faq
+      contact: 兩頁條件與115公分邊界表述不同；購票前請洽04-2657-0518確認，並備年齡證件。
+familyChecklist:
+  checkedAt: 2026-10-16
+  stroller:
+    status: yes
+    ref: faq
+    note: 推車可持證免費借用，數量有限。
+  nursingRoom:
+    status: yes
+    ref: faq
+    note: 一樓及五樓各設哺集乳室。
+  familyToilet:
+    status: yes
+    ref: faq
+    note: 四樓女廁及戶外驛站男女廁設親子廁所；其他樓層另有兒童座或幼童馬桶墊，不能視為同一設施。
+  rainyDay:
+    status: unknown
+  accessibility:
+    status: yes
+    ref: faq
+    note: 館內列有無障礙電梯、廁所與入口服務鈴。
+  notes: 館內展示及戶外停車、驛站分別安排；需要避雨或特定通行協助時先詢問服務台。

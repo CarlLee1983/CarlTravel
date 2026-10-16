@@ -1,0 +1,129 @@
+name: 國立自然科學博物館
+address: 臺中市北區館前路1號
+county: 臺中市
+district: 北區
+kind: 博物館
+setting: 室內外皆有
+summary: 從恐龍化石與機械模型觀察生命演化。
+illustration:
+  kind: ai-generated
+  alt: 恐龍頭骨化石、植物化石與空白觀察筆記的水彩情境插畫
+  sha256: 5329211be1e2e3072d17b592f56257dc36721a01e4c378f255f3a9b635586fa8
+  width: 1536
+  height: 1024
+ageRange:
+  status: unknown
+officialRefs:
+  - id: ticket
+    title: 票價資訊
+    url: https://www.nmns.edu.tw/ch/visit/ticket/index.html
+    organization: 國立自然科學博物館
+    kind: page
+  - id: hours
+    title: 開放時間
+    url: https://www.nmns.edu.tw/ch/visit/hours/
+    organization: 國立自然科學博物館
+    kind: page
+  - id: traffic
+    title: 交通與停車
+    url: https://www.nmns.edu.tw/ch/visit/traffic/
+    organization: 國立自然科學博物館
+    kind: page
+  - id: service
+    title: 綜合服務中心
+    url: https://www.nmns.edu.tw/ch/visit/space/helpdesk/index.html
+    organization: 國立自然科學博物館
+    kind: page
+  - id: life
+    title: 生命科學廳
+    url: https://www.nmns.edu.tw/ch/exhibitions/galleries/life-science-hall/index.html
+    organization: 國立自然科學博物館
+    kind: page
+  - id: access
+    title: 無障礙服務
+    url: https://www.nmns.edu.tw/ch/visit/service/disabled/
+    organization: 國立自然科學博物館
+    kind: page
+sources: []
+authorNotes: []
+facilities:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 服務中心
+      value: 提供娃娃車、輪椅借用、哺集乳室與熱開水。
+      ref: service
+    - status: ok
+      label: 化妝室暫停提示
+      value: 生命科學廳地下1樓化妝室自2026年10月1日起暫停使用，行前確認替代位置。
+      ref: hours
+    - status: ok
+      label: 生命科學展示
+      value: 一樓設恐龍時代、植物的演化等展示，二樓有哺乳類的演化與適應。
+      ref: life
+withKids:
+  checkedAt: 2026-10-16
+  facts:
+    - text: 恐龍展示包含會動會叫的機械暴龍，以及竊蛋龍化石、頭骨與骨架等標本。
+      ref: life
+  activities:
+    - 找出機械模型與化石標本，看看哪些部位有保存骨骼證據。
+    - 比較不同恐龍的頭骨與四肢形狀，把觀察到的差異畫下來。
+agentTips:
+  - 孩子若對聲響敏感，可先說明機械恐龍會動、會叫，再決定是否靠近。
+  - 先選生命科學廳的少數主題；劇場及植物園依體力另作安排。
+nearby: []
+transport:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 高鐵轉乘
+      value: 高鐵臺中站出口6第13月台搭159號至植物園（西屯路）站；也可搭捷運至市政府站轉公車至科博館（專用道）。
+      ref: traffic
+    - status: ok
+      label: 停車與電梯
+      value: 館方提供博館路、植物園與西屯路三處停車場；後兩處設電梯。
+      ref: traffic
+    - status: ok
+      label: 持票日間停車
+      value: 08:00–19:00，參觀觀眾憑有效票根或恐龍卡，小車15元／半小時、大車30元／半小時，上限180元；QR票須先入館掃碼驗票並於出車前折抵。
+      ref: traffic
+hoursAndFees:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 開館與休館
+      value: 週二至週日09:00–17:00，售票至16:30；週一、除夕及初一休館，週一逢國定假日或補假照常開館。
+      ref: hours
+    - status: ok
+      label: 展示場票價
+      value: 一般120元、6歲以上未滿12歲60元、12歲以上學生90元，未滿6歲免費；展示場含生命科學廳、人類文化廳與地球環境廳。
+      ref: ticket
+    - status: ok
+      label: 分區購票
+      value: 植物園溫室與科學中心一般票各20元；太空劇場100元、必可飛劇場70元，須另依票種購票。
+      ref: ticket
+    - status: ok
+      label: 2026限定優惠
+      value: 2026年每週五14:00–17:00展示場免費，其他區域仍按各自票制。
+      ref: ticket
+familyChecklist:
+  checkedAt: 2026-10-16
+  stroller:
+    status: yes
+    ref: service
+    note: 服務中心可借娃娃車。
+  nursingRoom:
+    status: yes
+    ref: service
+    note: 服務中心列哺集乳室。
+  familyToilet:
+    status: unknown
+  rainyDay:
+    status: yes
+    ref: life
+    note: 生命科學廳提供室內樓層展示；戶外移動仍需備雨具。
+  accessibility:
+    status: yes
+    ref: access
+    note: 館方提供分障別參觀建議與輔具服務，可先洽詢動線。

@@ -1,0 +1,104 @@
+name: 日月山景休閒農場
+address: 彰化縣彰化市水月台路218號
+county: 彰化縣
+district: 彰化市
+kind: 農場
+setting: 室內外皆有
+summary: 從乳牛與山羊開始認識酪農生活。
+illustration:
+  kind: ai-generated
+  alt: 樹蔭下休息的山羊與遠處乳牛水彩示意
+  sha256: 9eb7cbf7a868527fa9b78a3bf247e04422493a793db6c3b979d3251e790c6a55
+  width: 1536
+  height: 1024
+ageRange:
+  status: unknown
+officialRefs:
+  - id: farm
+    title: 園方公開介紹
+    url: https://www.facebook.com/profile.php?id=100063752997043
+    organization: 日月山景休閒農場
+    kind: page
+  - id: county
+    title: 彰化農業處場域介紹
+    url: https://www.chcg.gov.tw/DTO/agriculture/07other/other01_con.aspx?data_id=10230&topsn=17
+    organization: 彰化縣政府農業處
+    kind: page
+  - id: tour
+    title: 彰化旅遊園區資訊
+    url: https://tourism.chcg.gov.tw/AttractionsContent.aspx?chk=da8a4256-f706-4f2b-aee5-8a22345c45c4&id=303&topic=1%2C2
+    organization: 彰化縣政府
+    kind: page
+  - id: ezgo
+    title: 農業易遊網入園資訊
+    url: https://ezgo.ardswc.gov.tw/zh-tw/spot/195/
+    organization: 農業部農村發展及水土保持署
+    kind: page
+sources: []
+authorNotes: []
+facilities:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 園區設施
+      value: 官方介紹有餐飲空間、烤肉區與會議室。
+      ref: tour
+withKids:
+  checkedAt: 2026-10-16
+  facts:
+    - text: 農業處介紹乳牛生態觀察及餵牛活動。
+      ref: county
+    - text: 園方簡介列有餵牛與餵羊活動。
+      ref: farm
+  activities:
+    - 先觀察乳牛吃草的動作，想參加餵食時再問現場人員。
+agentTips:
+  - 到訪前先確認營業時段；團體解說、烤肉與野餐另外預約。
+nearby: []
+transport:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 地址與位置
+      value: 彰化市水月台路218號，位於139縣道與台74甲線交會一帶。
+      ref: county
+    - status: ok
+      label: 聯絡電話
+      value: 04-7370949；可先確認農場當日服務與預約。
+      ref: county
+hoursAndFees:
+  checkedAt: 2026-10-16
+  facts:
+    - status: conflict
+      label: 營業時間
+      claims:
+        - value: 園方Facebook列週一、五09:00–18:00；週二至四09:00–17:00；週末07:00–20:00。
+          ref: farm
+        - value: 彰化旅遊網列平日09:00–18:00；假日07:00–18:00。
+          ref: tour
+        - value: 農業易遊網列平日09:00–17:00；週末07:00–20:00。
+          ref: ezgo
+      contact: 公開時段不一致，行前洽04-7370949確認。
+    - status: ok
+      label: 入園
+      value: 園方簡介列免費入園，禁止攜帶外食。
+      ref: farm
+    - status: ok
+      label: 烤肉與野餐
+      value: 農業易遊網列須預約，烤肉或野餐每人清潔費100元；先與農場確認服務與費用。
+      ref: ezgo
+    - status: unpublished
+      label: 動物餵食與導覽現行收費
+familyChecklist:
+  checkedAt: 2026-10-16
+  stroller:
+    status: unknown
+  nursingRoom:
+    status: unknown
+  familyToilet:
+    status: unknown
+  rainyDay:
+    status: unknown
+  accessibility:
+    status: unknown
+  notes: 推車動線、哺乳空間、親子廁所、無障礙設施及雨天動物區開放方式尚未核實。

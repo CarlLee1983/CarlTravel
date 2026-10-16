@@ -1,0 +1,135 @@
+name: 綠世界生態農場
+address: 新竹縣北埔鄉大湖村尾隘子7鄰20號
+county: 新竹縣
+district: 北埔鄉
+kind: 農場
+setting: 室內外皆有
+summary: 從湖畔水鳥走到蝴蝶與雨林植物展區。
+illustration:
+  kind: ai-generated
+  alt: 蝴蝶停在葉片上，枝下垂掛蛹，遠處湖面有水鳥的水彩生態意象。
+  sha256: 1bc5251a98050f10612fa83cdd78337b6fe27a60a3a5d7a7211eef455e11268a
+  width: 1536
+  height: 1024
+ageRange:
+  status: unknown
+officialRefs:
+  - id: ticket
+    title: 綠世界票價與入園規定
+    url: https://www.green-world.com.tw/ticket.php
+    organization: 綠世界生態農場
+    kind: page
+  - id: traffic
+    title: 綠世界交通指南
+    url: https://www.green-world.com.tw/traffic.php
+    organization: 綠世界生態農場
+    kind: page
+  - id: map
+    title: 綠世界導覽摺頁
+    url: https://www.green-world.com.tw/dm.pdf
+    organization: 綠世界生態農場
+    kind: page
+  - id: barrier-free
+    title: 獅山北埔無障礙遊程
+    url: https://www.trimt-nsa.gov.tw/zh-tw/tour/2382/
+    organization: 交通部觀光署參山國家風景區管理處
+    kind: page
+  - id: tourism
+    title: 參山綠世界景點資訊
+    url: https://www.trimt-nsa.gov.tw/zh-tw/attraction/45/
+    organization: 交通部觀光署參山國家風景區管理處
+    kind: page
+  - id: butterfly
+    title: 綠世界蝴蝶生態展區
+    url: https://www.green-world.com.tw/guide2.php
+    organization: 綠世界生態農場
+    kind: page
+  - id: schedule
+    title: 綠世界動物活動時段
+    url: https://www.green-world.com.tw/time.php
+    organization: 綠世界生態農場
+    kind: page
+sources: []
+authorNotes: []
+facilities:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 哺乳空間
+      value: 導覽圖在美食天地附近標有哺乳室。
+      ref: map
+    - status: ok
+      label: 無障礙設施
+      value: 參山遊程列有1間無障礙廁所、2格無障礙車位及1處無障礙通道。
+      ref: barrier-free
+    - status: ok
+      label: 地形
+      value: 園內有階梯及較陡坡道，行走與推行輔具前宜先確認路線。
+      ref: ticket
+withKids:
+  checkedAt: 2026-10-16
+  facts:
+    - text: 蝴蝶園介紹產卵、結蛹和羽化，並設有培育昆蟲的大自然教室。
+      ref: butterfly
+    - text: 鳥園以模擬鳥類棲地的開放式空間展示鳥類。
+      ref: butterfly
+    - text: 羊駝散步排在每日10:30、13:00及14:30，地點為綠野廣場，遇雨可能取消。
+      ref: schedule
+  activities:
+    - 看蝴蝶時，找找成蟲和蛹在外形上的不同。
+    - 在湖邊挑一隻水鳥，觀察牠游動與整理羽毛的動作。
+agentTips:
+  - 先選湖邊、蝴蝶園或鳥園其中一區，再依孩子體力決定是否繼續走。
+  - 出發前確認動物活動是否調整，並向園方詢問推車避開階梯的走法。
+nearby: []
+transport:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 開車
+      value: 由國道3號竹林交流道往竹東，接台3線往北埔，在79公里處轉入，續行約2公里抵達。
+      ref: traffic
+    - status: ok
+      label: 公車與接駁
+      value: 高鐵新竹站可轉台灣好行至綠世界站，下車後致電03-580-1000分機9聯繫入園接駁。
+      ref: traffic
+    - status: ok
+      label: 停車
+      value: 設有停車場。
+      ref: tourism
+hoursAndFees:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 開放與售票
+      value: 開園08:30–17:30，例假日可能延長；售票於16:00結束。
+      ref: ticket
+    - status: ok
+      label: 一般門票
+      value: 全票480元；優惠票400元供持證國高中生、65歲以上長者、教師及符合資格的特約廠商員工購買。
+      ref: ticket
+    - status: ok
+      label: 兒童門票
+      value: 兒童票350元，列3至12歲或身高90公分以上兒童；未滿3歲持健保卡免票。身高免票邊界請洽售票處確認。
+      ref: ticket
+    - status: ok
+      label: 愛心票
+      value: 身心障礙手冊持有人與陪同1人可憑證購240元愛心票；票價以現場公告為準。
+      ref: ticket
+familyChecklist:
+  checkedAt: 2026-10-16
+  stroller:
+    status: unknown
+  nursingRoom:
+    status: yes
+    ref: map
+    note: 導覽圖標示於美食天地附近。
+  familyToilet:
+    status: unknown
+  rainyDay:
+    status: unknown
+  accessibility:
+    status: yes
+    ref: barrier-free
+    note: 有無障礙廁所、車位與通道；不代表所有展區皆可通行。
+  notes: 推車可行路線、親子廁間與雨天可參觀範圍仍須詢問園方，服務電話03-580-1000。

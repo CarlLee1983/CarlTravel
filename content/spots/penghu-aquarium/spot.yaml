@@ -1,0 +1,117 @@
+name: 澎湖水族館
+address: 澎湖縣白沙鄉岐頭村58號
+county: 澎湖縣
+district: 白沙鄉
+kind: 動物園／水族館
+setting: 室內外皆有
+summary: 由沿岸、珊瑚礁到大洋，認識澎湖海洋生物。
+illustration:
+  kind: ai-generated
+  alt: 海馬以捲曲尾部勾住海藻、周圍是淺海岩礁的水彩示意
+  sha256: 70935f316e37ac84632c760c633d7b04d212575429fa45dcaa22b3a8a8e004d8
+  width: 1536
+  height: 1024
+ageRange:
+  status: unknown
+officialRefs:
+  - id: info
+    title: 館方交通票價與須知
+    url: https://www.penghu-aquarium.com/information
+    organization: 澎湖水族館
+    kind: page
+  - id: home
+    title: 官方營業與館休公告
+    url: https://www.penghu-aquarium.com/
+    organization: 澎湖水族館
+    kind: page
+  - id: intro
+    title: 館內介紹與地圖
+    url: https://www.penghu-aquarium.com/introduction
+    organization: 澎湖水族館
+    kind: page
+  - id: access
+    title: 澎湖水族館無障礙旅遊資訊
+    url: https://www.tfrin.gov.tw/theme_data.php?id=1&theme=accessible_travel
+    organization: 農業部水產試驗所
+    kind: page
+sources: []
+authorNotes: []
+facilities:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 通行設施
+      value: 水試所無障礙專區以圖片列出斜坡道、電梯及無障礙廁所；特定通行需求可先致電確認。
+      ref: access
+    - status: ok
+      label: 攝影與觀察規範
+      value: 可拍照攝影，但禁止閃光燈及拍打缸體，入館依現場規定。
+      ref: info
+withKids:
+  checkedAt: 2026-10-16
+  facts:
+    - text: 一樓有沿岸、礁岩及大洋展示，並以14公尺海底隧道提供水下觀察視角。
+      ref: intro
+    - text: 館方介紹的海馬可用尾巴勾住藻類；海龜則屬爬蟲類。
+      ref: intro
+  activities:
+    - 觀察海馬尾巴與魚的尾鰭有何不同，再找牠停留的位置。
+    - 穿過隧道時，留意頭頂與身旁生物的游動方向。
+agentTips:
+  - 北環行程先核對休館日，再決定上午或下午入館。
+nearby: []
+transport:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 公車與開車
+      value: 館方指引由馬公搭藍線外垵線至岐頭水族館站；開車沿203縣道往白沙，再轉澎9鄉道。公車停靠與班次出發前核對。
+      ref: info
+    - status: unpublished
+      label: 現行停車收費
+hoursAndFees:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 一般時間
+      value: 官網列09:00–17:00；水試所資訊列16:30停止售票，另有冬季休館公告，出發前須核對日期。
+      ref: access
+    - status: ok
+      label: 2026至2027冬季館休
+      value: 官方首頁公告2026年11月至2027年2月每週二休館，連假例外；2026年12月7日至24日年度館休。11月28日僅12:30–17:00營業，2027年2月5日除夕休館、2月6日至11日正常營業。
+      ref: home
+    - status: ok
+      label: 常態門票
+      value: 全票300元；學生、軍警持證優待票210元；65歲以上與澎湖縣民愛心票150元；20人以上同機關團體240元，須提前三天預約。
+      ref: info
+    - status: ok
+      label: 免費資格
+      value: 白沙鄉居民持證、未達110公分兒童，以及持身障證明者與一位陪同可免費。
+      ref: info
+    - status: conflict
+      label: 幼兒免費年齡邊界
+      claims:
+        - value: 館方參觀資訊列未滿6歲兒童免費。
+          ref: info
+        - value: 水試所資訊列6歲以下兒童免費。
+          ref: access
+      contact: 已滿6歲但尚未滿7歲的適用資格請洽06-993-3006，不自行將兩種文字視為相同。
+    - status: ok
+      label: 幼兒陪同
+      value: 水試所規定免費入館的幼兒須由家長陪同，優惠資格須出示有效證件。
+      ref: access
+familyChecklist:
+  checkedAt: 2026-10-16
+  stroller:
+    status: unknown
+  nursingRoom:
+    status: unknown
+  familyToilet:
+    status: unknown
+  rainyDay:
+    status: unknown
+  accessibility:
+    status: yes
+    ref: access
+    note: 有斜坡道、電梯及無障礙廁所資訊；不保證每處皆可自行通行。
+  notes: 館內展示與戶外觀景台分別安排；哺乳、親子廁所及個別照護需求可先洽06-993-3006。

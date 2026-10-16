@@ -1,0 +1,168 @@
+name: 遠雄海洋公園
+address: 花蓮縣壽豐鄉鹽寮村福德189號
+county: 花蓮縣
+district: 壽豐鄉
+kind: 動物園／水族館
+setting: 室內外皆有
+summary: 從水族展示與解說認識海洋動物。
+illustration:
+  kind: ai-generated
+  alt: 海牛在陽光穿透的海草水域中游動的水彩生態情境插畫
+  sha256: 017695d9df6723101eb1c3e91bb44af60ed73d1770f5881c6a43fe78158d20f8
+  width: 1536
+  height: 1024
+ageRange:
+  status: unknown
+officialRefs:
+  - id: tickets
+    title: 一般票價
+    url: https://www.farglory-oceanpark.com.tw/tickets
+    organization: 遠雄海洋公園
+    kind: page
+  - id: hours
+    title: 2026營業時間
+    url: https://www.farglory-oceanpark.com.tw/opening
+    organization: 遠雄海洋公園
+    kind: page
+  - id: traffic
+    title: 交通資訊
+    url: https://www.farglory-oceanpark.com.tw/traffic
+    organization: 遠雄海洋公園
+    kind: page
+  - id: faq
+    title: 遊園常見問題
+    url: https://www.farglory-oceanpark.com.tw/faq/752yN80qMdpm4PG6
+    organization: 遠雄海洋公園
+    kind: page
+  - id: service
+    title: 入園服務
+    url: https://www.farglory-oceanpark.com.tw/service
+    organization: 遠雄海洋公園
+    kind: page
+  - id: service-cn
+    title: 簡體版入園服務
+    url: https://www.farglory-oceanpark.com.tw/zh-Hans/service
+    organization: 遠雄海洋公園
+    kind: page
+  - id: map
+    title: 全區導覽圖
+    url: https://www.farglory-oceanpark.com.tw/files/Download%20files/map20240913.pdf
+    organization: 遠雄海洋公園
+    kind: page
+  - id: venues
+    title: 展演場館介紹
+    url: https://www.farglory-oceanpark.com.tw/park-list/Ed5YN73nZ7Ty5Sr7
+    organization: 遠雄海洋公園
+    kind: page
+  - id: notice
+    title: 保養停演公告
+    url: https://www.farglory-oceanpark.com.tw/notice
+    organization: 遠雄海洋公園
+    kind: page
+  - id: east
+    title: 東海岸景點資訊
+    url: https://www.eastcoast-nsa.gov.tw/zh-tw/attractions/detail/5/
+    organization: 交通部觀光署東部海岸國家風景區管理處
+    kind: page
+sources: []
+authorNotes: []
+facilities:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 動物展示
+      value: 海洋探索館以海牛生態解說與聲光展示介紹海洋生物；海洋生態中心介紹海豚習性與生態。
+      ref: venues
+    - status: conflict
+      label: 推車租金
+      claims:
+        - value: 繁體服務頁列150元／次，押證件或押金500元。
+          ref: service
+        - value: 簡體服務頁列大車100元、小車50元／次，押證件或押金500元。
+          ref: service-cn
+      contact: 語言版本不同，租用前向5樓驗票中心確認當日租金。
+    - status: ok
+      label: 育嬰設施
+      value: 官方導覽圖列育嬰室，備溫水、嬰兒床架等供沖奶與換尿布；未確認哺乳用途。
+      ref: map
+    - status: ok
+      label: 保養安排
+      value: 2026保養公告列多項機械設施及劇場停用時段，另有不定期安檢；遊玩前查看當日公告。
+      ref: notice
+    - status: conflict
+      label: 海豚節目狀態
+      claims:
+        - value: 園方場館總覽仍以海豚秀介紹主題表演。
+          ref: venues
+        - value: 東管處2026更新文字稱原海豚秀已結束並轉向海洋教育。
+          ref: east
+      contact: 官方頁不同步，先洽03-8123100確認當日節目，勿以舊介紹安排表演。
+withKids:
+  checkedAt: 2026-10-16
+  facts:
+    - text: 海洋探索館的解說主題包含海牛生活習性，海洋生態中心則介紹海豚。
+      ref: venues
+  activities:
+    - 觀察動物的尾部、鰭與游動方式，聽解說找出牠們如何適應水中生活。
+agentTips:
+  - 先確認開放場館與保養時段，再選少數展示；推車動線以坡道與電梯安排。
+  - 孩子的身高與年齡限制依各項設施判斷，勿用入園票種當作遊樂設施搭乘許可。
+nearby: []
+transport:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 公車
+      value: 花蓮火車站可搭1140或1145海線至海洋公園站，班次請查花蓮交通e點通或統聯客運。
+      ref: traffic
+    - status: ok
+      label: 停車
+      value: 汽車平假日優惠200元、連假250元、春節初一至初五300元；機車50元／次，實際以現場為準。
+      ref: faq
+hoursAndFees:
+  checkedAt: 2026-10-16
+  facts:
+    - status: conflict
+      label: 一般營業時間
+      claims:
+        - value: 園方2026年表列平日、週末與連假09:30–17:00。
+          ref: hours
+        - value: 東管處頁列週末09:00–17:00，平日09:30–17:00。
+          ref: east
+      contact: 出發前洽03-8123100確認日期與當日開門時間。
+    - status: ok
+      label: 入園截止
+      value: 售票截止、停車場停止開放與最後入園時間為營業結束前兩小時。
+      ref: hours
+    - status: ok
+      label: 一般票
+      value: 全票990元；13至18歲或持有效學生證890元；7至12歲學童690元；幼童與博愛票490元。
+      ref: tickets
+    - status: ok
+      label: 幼童資格疑點
+      value: 票價頁同時列幼童票3至6歲或100公分以上至115公分，以及免費條件三歲以下或100公分以下（含）；3歲與100公分交界請先洽03-8123100確認。
+      ref: tickets
+    - status: ok
+      label: 團體
+      value: 20人以上團體須入園前一日預約，票價來電洽詢。
+      ref: tickets
+familyChecklist:
+  checkedAt: 2026-10-16
+  stroller:
+    status: yes
+    ref: faq
+    note: 有嬰兒車租借，限15公斤以下，須押證件、不可預約；租金差異見設施。
+  nursingRoom:
+    status: unknown
+  familyToilet:
+    status: yes
+    ref: map
+    note: 官方圖例標示親子廁所，位置包括海洋村客服中心旁與歡樂廣場化妝室旁。
+  rainyDay:
+    status: yes
+    ref: faq
+    note: FAQ稱雨天大致照常，但風雨大或設施異常可能暫停，仍需戶外移動。
+  accessibility:
+    status: yes
+    ref: service
+    note: 園方列無障礙專用道、電梯與廁所，依導覽圖選路線。

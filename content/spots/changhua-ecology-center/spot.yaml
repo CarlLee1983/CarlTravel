@@ -1,0 +1,88 @@
+name: 彰化縣自然生態教育中心（白色海豚屋）
+address: 彰化縣伸港鄉慶安路800號
+county: 彰化縣
+district: 伸港鄉
+kind: 博物館
+setting: 室內外皆有
+summary: 在白色海豚屋看海洋與濕地生態展示。
+illustration:
+  kind: ai-generated
+  alt: 大翅鯨與白海豚的水彩生態圖像，下方並置濕地與水鳥意象
+  sha256: 3fde40147ad6d2984159d5b1393296205ce7ae58c73afcb0e88a17f9d544b49f
+  width: 1536
+  height: 1024
+ageRange:
+  status: unknown
+officialRefs:
+  - id: tourism
+    title: 彰化縣自然生態教育中心參觀資訊
+    url: https://tourism.chcg.gov.tw/AttractionsContent.aspx?chk=a24f8533-2d75-49b2-9e5c-2937a66d0b38&id=415&l=CH
+    organization: 彰化縣政府城市暨觀光發展處
+    kind: page
+  - id: opening
+    title: 白色海豚屋光環境暨委託營運啟用公告
+    url: https://www.chcg.gov.tw/ch2/print_all.aspx?bull_id=399487
+    organization: 彰化縣政府
+    kind: page
+sources: []
+authorNotes: []
+facilities:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 目前核對的室內範圍
+      value: 縣府旅遊頁目前列一樓室內展演空間開放，附設商品販賣部及公廁。
+      ref: tourism
+    - status: unpublished
+      label: 二、三樓現行對外開放範圍
+    - status: ok
+      label: 海洋與濕地展覽
+      value: 一樓依檔期規畫濕地、海鳥和鯨豚特展，介紹中華白海豚、大翅鯨、抹香鯨等主題，並有海浪沙灘沉浸式體驗及生態影片。
+      ref: tourism
+    - status: ok
+      label: 咖啡休憩
+      value: 縣府委外營運啟用公告介紹館內海洋咖啡館、飲品及文創商品等服務。
+      ref: opening
+withKids:
+  checkedAt: 2026-10-16
+  facts:
+    - text: 一樓以濕地、鳥類及鯨豚主題傳遞海洋保育知識，並提供生態影片。
+      ref: tourism
+  activities:
+    - 在展示中找出一種鯨豚與一種濕地生物，比較牠們需要什麼棲地，再說一項能保護海洋的日常行動。
+agentTips:
+  - 以一樓展覽作主要參觀目標；遇風雨時縮短草坡與水岸停留，跟著孩子體力調整戶外活動。
+nearby: []
+transport:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 地址與停車
+      value: 位於慶安路800號，可沿慶安水道旁慶安路抵達；縣府於慶安路旁設大型停車場。
+      ref: tourism
+    - status: unpublished
+      label: 停車費率與一般車位數
+hoursAndFees:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 展館開放
+      value: 官方旅遊資訊列09:00–17:00、週一休館。
+      ref: tourism
+    - status: ok
+      label: 門票與洽詢
+      value: 免費參觀，服務電話04-7910500。
+      ref: tourism
+familyChecklist:
+  checkedAt: 2026-10-16
+  stroller:
+    status: unknown
+  nursingRoom:
+    status: unknown
+  familyToilet:
+    status: unknown
+  rainyDay:
+    status: unknown
+  accessibility:
+    status: unknown
+  notes: 已知公廁不等同親子廁所；推車、照護設備、無障礙實際路線及樓上開放，請先向04-7910500確認。屋頂草坡與戶外水岸不當完整雨備。

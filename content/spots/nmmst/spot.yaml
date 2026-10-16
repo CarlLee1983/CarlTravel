@@ -1,0 +1,154 @@
+name: 國立海洋科技博物館（含潮境智能海洋館）
+address: 基隆市中正區北寧路367號（主題館；潮境館另址）
+county: 基隆市
+district: 中正區
+kind: 博物館
+setting: 室內外皆有
+summary: 分館探索海洋科技、生態與水族展示。
+illustration:
+  kind: ai-generated
+  alt: 木製船模、無字學習書籍與藍綠海浪的水彩海洋科技意象
+  sha256: 04d8021911a3fae99c3fef2cdc99012e6c3f4558e3fb03c4e3e949f59be6cc72
+  width: 1536
+  height: 1024
+ageRange:
+  status: unknown
+officialRefs:
+  - id: contact
+    title: 聯絡資訊
+    url: https://www.nmmst.gov.tw/chhtml/content/217
+    organization: 國立海洋科技博物館
+    kind: page
+  - id: hours
+    title: 各館開放時間
+    url: https://www.nmmst.gov.tw/chhtml/content/215
+    organization: 國立海洋科技博物館
+    kind: page
+  - id: prices
+    title: 各場館基本票價
+    url: https://www.nmmst.gov.tw/chhtml/content/216
+    organization: 國立海洋科技博物館
+    kind: page
+  - id: floors
+    title: 場館樓層平面圖與主題館全覽
+    url: https://www.nmmst.gov.tw/chhtml/content/369
+    organization: 國立海洋科技博物館
+    kind: page
+  - id: stroller
+    title: 嬰兒車使用相關資訊
+    url: https://www.nmmst.gov.tw/chhtml/faqdetail/36/1350
+    organization: 國立海洋科技博物館
+    kind: page
+  - id: parking
+    title: 停車資訊
+    url: https://www.nmmst.gov.tw/chhtml/content/444
+    organization: 國立海洋科技博物館
+    kind: page
+  - id: train
+    title: 臺鐵火車交通
+    url: https://www.nmmst.gov.tw/chhtml/content/441
+    organization: 國立海洋科技博物館
+    kind: page
+  - id: iocean
+    title: 潮境智能海洋館參觀資訊
+    url: https://iocean.nmmst.gov.tw/ioceanC/index
+    organization: 國立海洋科技博物館
+    kind: page
+  - id: about
+    title: 潮境智能海洋館定位與展區
+    url: https://iocean.nmmst.gov.tw/ioceanE/content/677
+    organization: 國立海洋科技博物館
+    kind: page
+  - id: tourism
+    title: 國立海洋科技博物館景點介紹
+    url: https://travel.klcg.gov.tw/TourContent.aspx?n=7834&s=395&sms=12546
+    organization: 基隆市政府觀光及城市行銷處
+    kind: page
+sources: []
+authorNotes: []
+facilities:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 主題館展廳
+      value: 主題館平面圖列海洋環境、海洋文化、海洋科學、水產、船舶與海洋工程、深海展示與兒童廳等空間。
+      ref: floors
+    - status: ok
+      label: 潮境館分區
+      value: 潮境智能海洋館是海科館場館之一，設A主展區、B互動體驗休憩區、C海洋中心及D商店區，結合水族展示、復育與科技體驗。
+      ref: about
+withKids:
+  checkedAt: 2026-10-16
+  facts:
+    - text: 主題館以海洋科技、環境與文化等互動展覽認識海洋。
+      ref: tourism
+    - text: 潮境智能海洋館另有水族展示與復育主題。
+      ref: about
+  activities:
+    - 在主題館選一項海洋科學互動，再到潮境館從缸外找出一種感興趣的生物，說說科技如何協助認識海洋。
+agentTips:
+  - 先選主題館或潮境館為主要行程，再依孩子體力決定是否加另一館；購票前確認各館及B區加購範圍。
+nearby: []
+transport:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 主題館地址與聯絡
+      value: 主題館所在館址為北寧路367號；旅客服務電話02-2469-6000轉9。
+      ref: contact
+    - status: ok
+      label: 潮境館另址
+      value: 潮境智能海洋館請導航北寧路369巷61號，與主題館分開抵達。
+      ref: iocean
+    - status: ok
+      label: 鐵路與公車
+      value: 可於瑞芳轉深澳線至海科館站；或從基隆車站搭103路線至海科館／碧水巷。
+      ref: train
+    - status: ok
+      label: 小客車停車
+      value: 海洋劇場地下停車場位於北寧路367號B1、B2，07:00–22:00；平日30元／時、假日50元／時。潮境公園與復育公園停車場24小時開放，小客車亦為平日30元／時、假日50元／時。
+      ref: parking
+hoursAndFees:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 主題館與潮境館一般開放
+      value: 09:00–17:00，售票至16:00；除夕與週一休館，遇暑假、國定假日及連續假期另依官網規則。
+      ref: hours
+    - status: ok
+      label: 潮境館暑期
+      value: 每年7、8月週一照常開館；週一至五09:00–17:00，週六、日至18:00，最後售票分別為16:00、17:00。
+      ref: iocean
+    - status: ok
+      label: 主題館票價
+      value: 成人200元；6歲以上學童及學生140元，20人以上團體每人140元。未滿6歲免費，65歲以上平日免費、假日100元，優惠請出示證明。
+      ref: prices
+    - status: ok
+      label: 潮境館票價與加購
+      value: A+C區一般票300元，6歲以上學生／兒童與20人以上團體250元；未滿6歲、65歲以上平日免費，長者假日150元，優惠憑證。B區N次元聯票須持智能館門票另加購150元，須滿7歲且身高110公分以上。
+      ref: iocean
+    - status: ok
+      label: 各館分項計價
+      value: 官方表分列主題館、潮境智能海洋館與8K海洋劇場票價；8K海洋劇場成人150元，6歲以上學童及學生100元。規劃多館時須分辨票種涵蓋範圍。
+      ref: prices
+familyChecklist:
+  checkedAt: 2026-10-16
+  stroller:
+    status: yes
+    ref: stroller
+    note: 區域探索館及主題館1、3樓服務台提供嬰兒車租借；未據此保證潮境館全區通行。
+  nursingRoom:
+    status: yes
+    ref: floors
+    note: 主題館全覽標示哺集乳室；海洋劇場1、2樓及區域探索館3樓亦列哺乳室。
+  familyToilet:
+    status: unknown
+  rainyDay:
+    status: yes
+    ref: tourism
+    note: 官方旅遊介紹列晴雨皆適合；以主題館室內展覽作雨備，館間與戶外園區移動仍需雨具。
+  accessibility:
+    status: yes
+    ref: floors
+    note: 主題館樓層圖有電梯及無障礙廁所；此項不代表戶外與潮境館所有動線均已確認。
+  notes: 兩館距離與入口不同，照護設施請按實際到訪館別確認；親子廁所尚無足夠官方明細。

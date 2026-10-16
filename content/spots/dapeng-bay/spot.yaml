@@ -1,0 +1,115 @@
+name: 大鵬灣遊客中心與潟湖生態場域
+address: 屏東縣東港鎮大鵬里大潭路169號（遊客中心；大潭濕地另在大潭路5-5號）
+county: 屏東縣
+district: 東港鎮
+kind: 其他
+setting: 室內外皆有
+summary: 先看潟湖解說，再到大潭濕地觀察水鳥。
+illustration:
+  kind: ai-generated
+  alt: 水鳥在淺水邊低頭覓食，藍色水面與植被相間的潟湖生態水彩意象。
+  sha256: c272a340323422e67609cd6b3205ada71ff0ed392ead6e6e3acb6d6eb0eed1ec
+  width: 1536
+  height: 1024
+ageRange:
+  status: unknown
+officialRefs:
+  - id: center
+    title: 大鵬灣遊客中心資訊
+    url: https://www.dbnsa.gov.tw/attraction/AttractionPage?a=183
+    organization: 交通部觀光署大鵬灣國家風景區管理處
+    kind: page
+  - id: ticket
+    title: 大鵬灣各場域門票資訊
+    url: https://www.dbnsa.gov.tw/zh-tw/TripInfo/articles?a=525
+    organization: 交通部觀光署大鵬灣國家風景區管理處
+    kind: page
+  - id: traffic
+    title: 大鵬灣區外交通
+    url: https://www.dbnsa.gov.tw/zh-TW/PlanTrip/articles?a=163
+    organization: 交通部觀光署大鵬灣國家風景區管理處
+    kind: page
+  - id: wetland
+    title: 大潭濕地公園資訊
+    url: https://www.dbnsa.gov.tw/attraction/AttractionPage?a=246
+    organization: 交通部觀光署大鵬灣國家風景區管理處
+    kind: page
+  - id: friendly
+    title: 觀光署大鵬灣友善指引
+    url: https://www.tad.gov.tw/m1.aspx?id=484&sno=0001016
+    organization: 交通部觀光署
+    kind: page
+sources: []
+authorNotes: []
+facilities:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 中心服務
+      value: 提供旅遊諮詢、展覽解說及團體影片預約服務。
+      ref: center
+    - status: ok
+      label: 無障礙與哺乳空間
+      value: 遊客中心有無障礙廁所、車位及輪椅借用；觀光署友善指引另標示哺集乳室及斜坡。
+      ref: friendly
+withKids:
+  checkedAt: 2026-10-16
+  facts:
+    - text: 遊客中心可取得潮汐與灣區資訊，協助認識濕地觀察時機。
+      ref: center
+    - text: 大潭濕地兼具滯洪與水質處理功能，設有不同水深與植被的生態空間。
+      ref: wetland
+  activities:
+    - 在中心先看地圖，指出遊客中心與大潭濕地的不同位置。
+    - 到濕地時從步道觀察鳥的腳長與覓食位置，不進入水池。
+agentTips:
+  - 雨勢較大時先以室內展示為行程，是否前往濕地另看當天天候與通行公告。
+  - 向遊客中心詢問當天濕地動線與潮汐，別把灣區地圖上的每個範圍都當成可步行進入的區域。
+nearby: []
+transport:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 遊客中心公車
+      value: 高鐵左營站可轉台灣好行9127D或9127G至大鵬灣遊客中心站，下車再走約2分鐘；班次與預約另查路線公告。
+      ref: traffic
+    - status: ok
+      label: 遊客中心停車
+      value: 中心設有免費停車場，這項規則不代表灣區其他停車場也免費。
+      ref: ticket
+    - status: ok
+      label: 濕地位置
+      value: 大潭濕地公園在東港鎮大潭路5-5號，臨台17線；與遊客中心分處兩個位置，需另外安排移動。
+      ref: wetland
+hoursAndFees:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 遊客中心
+      value: 每日09:00–17:00，免費入館。
+      ref: ticket
+    - status: ok
+      label: 大潭濕地開放
+      value: 官方列每日開放；參觀以現場可通行步道為準。
+      ref: wetland
+    - status: unpublished
+      label: 大潭濕地門票與停車費用
+familyChecklist:
+  checkedAt: 2026-10-16
+  stroller:
+    status: unknown
+  nursingRoom:
+    status: yes
+    ref: friendly
+    note: 位於遊客中心，不能外推至大潭濕地。
+  familyToilet:
+    status: unknown
+  rainyDay:
+    status: yes
+    ref: center
+    note: 僅指遊客中心內的資訊展示；戶外濕地仍受天候影響。
+  accessibility:
+    status: yes
+    ref: friendly
+    note: 遊客中心有無障礙設施，濕地全程通行條件需另問。
+  notes: 本篇以遊客中心及大潭濕地兩處為範圍，中心地址與設施不代表整片潟湖；推車及親子廁間尚未確認。

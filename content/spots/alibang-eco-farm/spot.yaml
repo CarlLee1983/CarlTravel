@@ -1,0 +1,93 @@
+name: 阿里磅生態農場
+address: 新北市石門區阿里磅84號
+county: 新北市
+district: 石門區
+kind: 農場
+setting: 戶外
+summary: 預約走進池塘、森林與草地交織的棲地。
+illustration:
+  kind: ai-generated
+  alt: 池塘倒映林冠，一隻未指定種類的青蛙停在濕葉上的水彩生態意象。
+  sha256: f4fe9a7dd264d79461cc4e58f3ff63175e68c9fa685ff3045153a6ee36b1876f
+  width: 1536
+  height: 1024
+ageRange:
+  status: unknown
+officialRefs:
+  - id: operator
+    title: 阿里磅園區資訊
+    url: https://tnf.org.tw/alibang-eco-farm
+    organization: 自然保育與環境資訊基金會
+    kind: page
+  - id: reserve
+    title: 阿里磅活動預約與交通
+    url: https://tnf.org.tw/alibang-eco-farm/reserve
+    organization: 自然保育與環境資訊基金會
+    kind: page
+  - id: county
+    title: 新北農業局阿里磅農場介紹
+    url: https://www.agriculture.ntpc.gov.tw/infor_detail.php?flag=menu&id=56&p_id=22
+    organization: 新北市政府農業局
+    kind: page
+  - id: ecology
+    title: 阿里磅棲地介紹
+    url: https://tnf.org.tw/alibang-eco-farm/ecology
+    organization: 自然保育與環境資訊基金會
+    kind: page
+sources: []
+authorNotes: []
+withKids:
+  checkedAt: 2026-10-16
+  facts:
+    - text: 農場有淡水濕地、草生地和淺山森林，池塘與溪流提供不同生物棲地。
+      ref: ecology
+    - text: 園方以濕地與森林維護為主，並安排自然導覽等環境教育活動。
+      ref: operator
+  activities:
+    - 跟著導覽比較池邊和森林裡看到的葉片形狀。
+    - 聽見蛙鳴時先停下來聽，請解說員說明聲音可能來自哪種棲地。
+agentTips:
+  - 先把孩子年齡、參加人數及預計日期告訴園方，再確認可預約的課程與報價。
+  - 帶水瓶、長褲及防滑包鞋，是否參加涉水活動另與園方確認。
+nearby: []
+transport:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 開車路線
+      value: 由台2線到石門，經區公所轉入北21鄉道；園方建議沿濱海公路前往，避免導航帶入較難行駛的金山或石門山路。
+      ref: reserve
+    - status: ok
+      label: 抵達前確認
+      value: 先完成預約，再向園方確認入園位置；聯絡電話02-2638-2745。
+      ref: operator
+hoursAndFees:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 參訪方式
+      value: 採預約入園；團體活動10人以上成行，需於至少7天前安排，個別公開活動另依公告報名。
+      ref: reserve
+    - status: conflict
+      label: 開園日
+      claims:
+        - value: 園方頁列09:00–18:00，週二、週三休息。
+          ref: operator
+        - value: 農業局頁列週三至週日09:00–18:00。
+          ref: county
+      contact: 休息日說法不同，請先致電02-2638-2745確認預約日期，勿直接到場。
+    - status: unpublished
+      label: 一般入園與客製課程現行費用
+familyChecklist:
+  checkedAt: 2026-10-16
+  stroller:
+    status: unknown
+  nursingRoom:
+    status: unknown
+  familyToilet:
+    status: unknown
+  rainyDay:
+    status: unknown
+  accessibility:
+    status: unknown
+  notes: 預約時一併確認推車路線、哺乳與廁所設備、雨天是否調整課程，並告知孩子年齡與行動需求。

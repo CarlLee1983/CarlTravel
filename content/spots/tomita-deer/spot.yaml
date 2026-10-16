@@ -1,0 +1,96 @@
+name: 花鹿秘境
+address: 桃園市大溪區美華里美山路二段一巷261號
+county: 桃園市
+district: 大溪區
+kind: 農場
+setting: 戶外
+summary: 觀察梅花鹿與水豚，也有季節蔬果體驗。
+illustration:
+  kind: ai-generated
+  alt: 筆記本中畫有梅花鹿，旁邊散放綠葉的教育靜物水彩意象。
+  sha256: 4ef23e10b387d7da7edf9adaa1ee6c16f3b325074cb066a08caae1bf57659d62
+  width: 1536
+  height: 1024
+ageRange:
+  status: unknown
+officialRefs:
+  - id: park
+    title: 花鹿秘境園區介紹
+    url: https://www.tomitalove.com.tw/intro
+    organization: 花鹿秘境
+    kind: page
+  - id: transport
+    title: 花鹿秘境交通資訊
+    url: https://www.tomitalove.com.tw/drive
+    organization: 花鹿秘境
+    kind: page
+  - id: plan
+    title: 花鹿秘境行程與團體
+    url: https://www.tomitalove.com.tw/plan
+    organization: 花鹿秘境
+    kind: page
+  - id: animals
+    title: 花鹿秘境動物明星
+    url: https://www.tomitalove.com.tw/animalstar
+    organization: 花鹿秘境
+    kind: page
+sources: []
+authorNotes: []
+facilities:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 戶外休息
+      value: 園區有休息座椅；烤肉區另設遮陽棚、洗手檯與桌椅，器具租借及食材代訂需洽園方。
+      ref: park
+withKids:
+  checkedAt: 2026-10-16
+  facts:
+    - text: 園方介紹梅花鹿、水豚和小羊的觀察與餵食互動，指定拍照區域開放拍照，不可驚嚇或追逐動物。
+      ref: animals
+    - text: 蔬果園提供季節採摘；釣魚體驗標示7歲以上且家長陪同，夏季戲水區標示2歲以上，屬個別活動條件。
+      ref: park
+  activities:
+    - 觀察梅花鹿、水豚與小羊移動、休息及進食的差異，依現場指示保持距離。
+    - 先詢問當季可採作物，再比較葉片、果實與生長位置。
+agentTips:
+  - 動物互動、採摘與水上體驗先確認當日開放及費用，勿把團體範例行程當成每日固定節目。
+  - 有水邊活動需求時，先向園方確認孩子年齡、陪同方式與裝備，再準備替換衣物。
+nearby: []
+transport:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 大眾運輸
+      value: 官網指引從桃園或中壢搭客運至大溪，再轉往蝙蝠洞方向，在小角仔下車後步行約1公里；出發前確認班次及步行路況。
+      ref: transport
+    - status: ok
+      label: 開車停放
+      value: 園區備有停車場；停車收費及車位數未列。
+      ref: transport
+hoursAndFees:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 開園時間
+      value: 5至8月09:00–17:30，9至4月10:00–17:00，每週三公休；臨時休園請先向園方確認。
+      ref: park
+    - status: unpublished
+      label: 一般門票與個別體驗費用
+    - status: ok
+      label: 團體洽詢
+      value: 官網提供15至25人客製親子團及30人以上校外教學方案，活動與報價須向園方洽詢。
+      ref: plan
+familyChecklist:
+  checkedAt: 2026-10-16
+  stroller:
+    status: unknown
+  nursingRoom:
+    status: unknown
+  familyToilet:
+    status: unknown
+  rainyDay:
+    status: unknown
+  accessibility:
+    status: unknown
+  notes: 推車通行、哺乳空間、親子廁間、無障礙動線與雨天安排尚未確認，可致電03-388-6600詢問；遮陽棚不代表全程能避雨。

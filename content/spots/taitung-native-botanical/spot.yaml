@@ -1,0 +1,122 @@
+name: 臺東原生應用植物園
+address: 臺東縣卑南鄉明峰村試驗場8號
+county: 臺東縣
+district: 卑南鄉
+kind: 其他
+setting: 室內外皆有
+summary: 看原生植物，也到園內牧場觀察動物。
+illustration:
+  kind: ai-generated
+  alt: 闊葉、細葉與水生植物圍繞水面的水彩示意
+  sha256: f65364ea85a2183845b9e9f5d6dfc5eb6723576b84a116b05ce8e12d81e470d3
+  width: 1536
+  height: 1024
+ageRange:
+  status: unknown
+officialRefs:
+  - id: farm
+    title: 園內親子牧場介紹
+    url: https://web.yuan-sen.com.tw/introduction/index/Family-ranch
+    organization: 臺東原生應用植物園
+    kind: page
+  - id: erv
+    title: 縱谷景區的植物園資訊
+    url: https://www.erv-nsa.gov.tw/zh-tw/attractions/detail/7
+    organization: 交通部觀光署花東縱谷國家風景區管理處
+    kind: page
+  - id: town
+    title: 卑南鄉植物園介紹
+    url: https://www.beinan.gov.tw/portfolio-item/原生應用植物園/
+    organization: 卑南鄉公所
+    kind: page
+  - id: access
+    title: 臺東無障礙旅遊資訊
+    url: https://tour.taitung.gov.tw/zh-tw/tour/accessible-tour
+    organization: 臺東縣政府
+    kind: page
+  - id: tad
+    title: 植物園交通與友善指引
+    url: https://www.tad.gov.tw/m1.aspx?id=A12-00417&sNo=0001123
+    organization: 交通部觀光署
+    kind: page
+sources: []
+authorNotes: []
+facilities:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 園區空間
+      value: 有植物園步道、觀景區、販賣部及公廁。
+      ref: erv
+withKids:
+  checkedAt: 2026-10-16
+  facts:
+    - text: 園方親子牧場介紹有乳牛、小羊及鴕鳥，是植物園內的參觀區。
+      ref: farm
+    - text: 園區介紹區分香氛、水生及地被等植物主題。
+      ref: erv
+  activities:
+    - 比較兩種不同植物的葉形，不自行採摘或品嚐。
+    - 先觀察動物，再詢問工作人員當日是否可以參與餵食。
+agentTips:
+  - 門票與時段說法不同，先電話確認；不要依其他園區或餐廳的營業時段推算動物區開放。
+nearby: []
+transport:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 地址與停車
+      value: 臺東縣卑南鄉明峰村試驗場8號，設有停車場。
+      ref: erv
+    - status: ok
+      label: 大眾運輸
+      value: 觀光署列台灣好行8168A縱谷鹿野線至原生植物園站，無障礙乘車須預約。
+      ref: tad
+hoursAndFees:
+  checkedAt: 2026-10-16
+  facts:
+    - status: conflict
+      label: 開放時間
+      claims:
+        - value: 縱谷景區頁的週間表：週一至四08:30–17:30；週五至日08:30–19:30，但同頁上方將後者寫到20:00。
+          ref: erv
+        - value: 卑南鄉公所列08:00–21:00。
+          ref: town
+      contact: 時間口徑不同，出發前洽0800-385858確認。
+    - status: ok
+      label: 一般門票
+      value: 縱谷景區頁列成人200元，65歲以上及臺東居民與親友100元。
+      ref: erv
+    - status: conflict
+      label: 身心障礙入園資格
+      claims:
+        - value: 縱谷景區頁列持手冊者與一位陪同者免費。
+          ref: erv
+        - value: 卑南鄉公所列持手冊者適用100元優惠票。
+          ref: town
+      contact: 優惠有落差，請帶證件並先洽0800-385858確認。
+    - status: conflict
+      label: 兒童票資格
+      claims:
+        - value: 縱谷景區頁列7至12歲兒童優惠票100元。
+          ref: erv
+        - value: 卑南鄉公所列身高110至140公分兒童優惠票100元，140公分以上適用成人票。
+          ref: town
+      contact: 年齡與身高口徑不同，140公分邊界亦須確認，購票前洽0800-385858。
+familyChecklist:
+  checkedAt: 2026-10-16
+  stroller:
+    status: yes
+    ref: access
+    note: 臺東旅遊網列可提供娃娃車；數量與可用動線行前確認。
+  nursingRoom:
+    status: unknown
+  familyToilet:
+    status: unknown
+  rainyDay:
+    status: unknown
+  accessibility:
+    status: yes
+    ref: tad
+    note: 觀光署列無障礙廁所、汽機車位與輪椅借用；不保證全園每條路線皆通行。
+  notes: 哺乳空間、親子廁所、雨天牧場開放及精確適齡尚未核實。
