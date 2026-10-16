@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {
   cardItemHtml,
+  optionLabel,
   pageNumbers,
   paginatorHtml,
   rangeText,
@@ -89,7 +90,14 @@ test("卡片字串會跳脫文字，標籤與備註照 cardView 輸出", () => {
 });
 
 test("網址約定：沒有條件走靜態路徑，有條件走 /?…，第 1 頁不帶 page", () => {
-  const none = { query: "", county: "", kind: "", setting: "", age: "" };
+  const none = {
+    query: "",
+    county: "",
+    district: "",
+    kind: "",
+    setting: "",
+    age: "",
+  };
   assert.equal(listHref({ ...none, page: 1 }), "/");
   assert.equal(listHref({ ...none, page: 2 }), "/page/2/");
   assert.equal(
@@ -100,4 +108,10 @@ test("網址約定：沒有條件走靜態路徑，有條件走 /?…，第 1 �
     listHref({ ...none, query: "a b", age: "3–6 歲", page: 3 }),
     "/?query=a+b&age=3%E2%80%936+%E6%AD%B2&page=3",
   );
+});
+
+test("optionLabel 在名稱後附筆數，千位加逗號", () => {
+  assert.equal(optionLabel("新北市", 12), "新北市（12）");
+  assert.equal(optionLabel("新北市", 0), "新北市（0）");
+  assert.equal(optionLabel("新北市", 1234), "新北市（1,234）");
 });

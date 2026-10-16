@@ -3,54 +3,41 @@
 // 靜態頁只能是無條件的分頁；有條件時由 src/browser/search.ts 依列表 JSON 在瀏覽器端渲染，見 docs/adr/0003。
 import { outingIllustrationAlt } from "../site.ts";
 import { loadPageSpots } from "../content/preview.ts";
-import { ageBands, ageBandRanges } from "../content/search.ts";
 import SpotCard from "./SpotCard.astro";
 import { buildList } from "../content/list-build.ts";
 import { cardView } from "../content/list-card.ts";
-import { paginatorHtml, rangeText } from "../content/list-html.ts";
+import { optionLabel, paginatorHtml, rangeText } from "../content/list-html.ts";
 import { listEntries } from "../content/list-pages.ts";
-import { queryList } from "../content/list-query.ts";
+import { filterKeys, filterOptions, queryList } from "../content/list-query.ts";
 import { staticPath } from "../content/list-url.ts";
 interface Props {
   page: number;
 }
 const { page } = Astro.props;
 const spots = await loadPageSpots(__CARLTRAVEL_DRAFT_PREVIEW__);
-const usedAges = new Set(spots.flatMap((spot) => ageBands(spot.ageRange)));
-const hasKnownAges = spots.some((spot) => spot.ageRange.status === "known");
 // 卡片與瀏覽器端渲染吃同一份列表資料，經 encode／decode 取得同樣的 ListEntry。
-const result = queryList(listEntries(spots), { page: String(page) });
+const entries = listEntries(spots);
+const result = queryList(entries, { page: String(page) });
 const previews = new Map(spots.map((spot) => [spot.id, spot.preview]));
 const listUrl = spots.length > 0 ? (await buildList()).url : "";
 const intro = page === 1;
-const filters = [
-  {
-    name: "county",
-    label: "縣市",
-    all: "全部縣市",
-    values: [...new Set(spots.map((spot) => spot.county))],
-  },
-  {
-    name: "kind",
-    label: "類型",
-    all: "全部類型",
-    values: [...new Set(spots.map((spot) => spot.kind))],
-  },
-  {
-    name: "setting",
-    label: "環境",
-    all: "全部環境",
-    values: [...new Set(spots.map((spot) => spot.setting))],
-  },
-  {
-    name: "age",
-    label: "年齡帶",
-    all: "全部年齡",
-    values: [...ageBandRanges.map((band) => band.label), "年齡未標示"].filter(
-      (label) => usedAges.has(label),
-    ),
-  },
-].filter((filter) => filter.name !== "age" || hasKnownAges);
+// 選項與可見性由查詢模組決定，瀏覽器端依條件與文字命中重算同一份；
+// 這裡輸出無條件時的初始狀態，避免載入列表資料前版面跳動
+const filterLabels = {
+  county: ["縣市", "全部縣市"],
+  district: ["行政區", "全部行政區"],
+  kind: ["類型", "全部類型"],
+  setting: ["環境", "全部環境"],
+  age: ["年齡帶", "全部年齡"],
+} as const;
+const initialOptions = filterOptions(entries, {});
+const filters = filterKeys.map((name) => ({
+  name,
+  label: filterLabels[name][0],
+  all: filterLabels[name][1],
+  visible: initialOptions[name].visible,
+  options: initialOptions[name].options,
+}));
 ---
 
 {
@@ -112,14 +99,19 @@ const filters = [
                 </summary>
                 <div class="filter-fields">
                   {filters.map((filter) => (
-                    <div class="filter">
+                    <div class="filter" hidden={!filter.visible}>
                       <label for={`filter-${filter.name}`}>
                         {filter.label}
                       </label>
                       <select id={`filter-${filter.name}`} name={filter.name}>
                         <option value="">{filter.all}</option>
-                        {filter.values.map((value) => (
-                          <option value={value}>{value}</option>
+                        {filter.options.map((option) => (
+                          <option
+                            value={option.value}
+                            disabled={option.disabled}
+                          >
+                            {optionLabel(option.value, option.count)}
+                          </option>
                         ))}
                       </select>
                     </div>

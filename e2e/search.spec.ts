@@ -142,7 +142,14 @@ test("search and four combined filters preserve list details, order, and keyboar
   await search.fill("summaryprobe");
   await search.press("Enter");
   await expect(cards).toHaveText(["範例探索館"]);
-  await page.getByLabel("年齡帶", { exact: true }).selectOption("年齡未標示");
+  // 這組條件下沒有「年齡未標示」的景點：選項標 0 筆並停用，改用沒有命中的文字進入空結果
+  await expect(
+    page
+      .getByLabel("年齡帶", { exact: true })
+      .locator("option", { hasText: "年齡未標示" }),
+  ).toBeDisabled();
+  await search.fill("zzzznomatchingplace");
+  await search.press("Enter");
   await expect(
     page.getByText("沒有符合條件的景點，請調整搜尋文字或清除條件。"),
   ).toBeVisible();

@@ -1,13 +1,17 @@
 import { cardView } from "../content/list-card.ts";
 import {
   cardItemHtml,
+  optionLabel,
   paginatorHtml,
   rangeText,
 } from "../content/list-html.ts";
 import { decodeList, type ListData, type ListEntry } from "../content/list.ts";
 import {
   filterKeys,
+  filterOptions as optionsFor,
   queryList,
+  type FilterKey,
+  type FilterOptions,
   type ListQueryResult,
 } from "../content/list-query.ts";
 import {
@@ -60,6 +64,8 @@ function start(form: HTMLFormElement) {
   let request = 0;
   let timer: number | undefined;
   let pendingReturn: ListReturn | undefined;
+  // 選項與筆數是否已由一次完整查詢（含文字命中）算過；之前只有載入列表資料後的初始版本
+  let optionsFromQuery = false;
 
   // 列表 JSON：無條件頁面不下載，第一次聚焦搜尋框、打開篩選區或帶條件進站時才抓
   function loadRows() {
@@ -75,7 +81,13 @@ function start(form: HTMLFormElement) {
       });
     return rowsRequest;
   }
-  const warm = () => void loadRows().catch(() => {});
+  const warm = () =>
+    void loadRows()
+      .then(() => {
+        if (!optionsFromQuery)
+          showOptions(optionsFor(rows!, stateFromFields()));
+      })
+      .catch(() => {});
 
   function readReturnState() {
     const value: unknown = history.state?.carlTravelList;
@@ -118,15 +130,23 @@ function start(form: HTMLFormElement) {
     rangeEl.focus({ preventScroll: true });
   }
 
+  const conditionsFrom = (value: (name: string) => string) =>
+    Object.fromEntries(filterKeys.map((key) => [key, value(key)])) as Record<
+      FilterKey,
+      string
+    >;
+
+  const clearField = (name: string) => {
+    const field = fields.find((item) => item.name === name);
+    if (field) field.value = "";
+  };
+
   function stateFromFields(): RawState {
     const value = (name: string) =>
       fields.find((field) => field.name === name)?.value.trim() ?? "";
     return {
       query: value("query"),
-      county: value("county"),
-      kind: value("kind"),
-      setting: value("setting"),
-      age: value("age"),
+      ...conditionsFrom(value),
       page: null,
     };
   }
@@ -136,18 +156,42 @@ function start(form: HTMLFormElement) {
     const value = (name: string) => (params.get(name) ?? "").trim();
     return {
       query: value("query"),
-      county: value("county"),
-      kind: value("kind"),
-      setting: value("setting"),
-      age: value("age"),
+      ...conditionsFrom(value),
       page: params.get("page"),
     };
+  }
+
+  // 每個選項標上選了之後剩幾筆；0 筆的停用，沒有區分作用的維度整個隱藏。
+  // 選項內容沒變就只改文字與停用狀態，不重建（避免打斷正在操作的下拉選單）。
+  function showOptions(view: FilterOptions) {
+    for (const select of selects) {
+      const dimension = view[select.name as FilterKey];
+      select.closest<HTMLElement>(".filter")!.hidden = !dimension.visible;
+      const current = [...select.options].slice(1);
+      const same =
+        current.length === dimension.options.length &&
+        current.every(
+          (option, i) => option.value === dimension.options[i]!.value,
+        );
+      const options = same
+        ? current
+        : dimension.options.map(() => document.createElement("option"));
+      dimension.options.forEach((item, i) => {
+        const option = options[i]!;
+        const label = optionLabel(item.value, item.count);
+        option.value = item.value;
+        if (option.textContent !== label) option.textContent = label;
+        option.disabled = item.disabled;
+      });
+      if (!same) select.replaceChildren(select.options[0]!, ...options);
+      select.value = dimension.selected;
+    }
   }
 
   function showFields(state: ListState | RawState) {
     input.value = state.query;
     for (const select of selects) {
-      const value = state[select.name as (typeof filterKeys)[number]];
+      const value = state[select.name as FilterKey];
       select.value = [...select.options].some(
         (option) => option.value === value,
       )
@@ -288,6 +332,8 @@ function start(form: HTMLFormElement) {
       location.replace(staticPath(state.page));
       return;
     }
+    showOptions(optionsFor(rows, { ...result.conditions, hits }));
+    optionsFromQuery = true;
     showFields(state);
     showActiveFilters();
     if (source === "edit") writeUrl(state);
@@ -353,7 +399,11 @@ function start(form: HTMLFormElement) {
     if (filterOptions.open) warm();
   });
   for (const select of selects)
-    select.addEventListener("change", () => update("edit"));
+    select.addEventListener("change", () => {
+      // 行政區屬於縣市：改縣市就清掉行政區（即使新縣市有同名的區）
+      if (select.name === "county") clearField("district");
+      update("edit");
+    });
   active.addEventListener("click", (event) => {
     if (!(event.target instanceof Element)) return;
     const button = event.target.closest<HTMLButtonElement>(
@@ -362,6 +412,7 @@ function start(form: HTMLFormElement) {
     const field = fields.find((item) => item.name === button?.dataset.filter);
     if (!field) return;
     field.value = "";
+    if (field.name === "county") clearField("district");
     update("edit");
     input.focus();
   });

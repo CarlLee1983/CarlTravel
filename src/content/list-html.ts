@@ -45,6 +45,10 @@ export function cardItemHtml(card: CardView, preview?: string) {
 const grouped = (value: number) =>
   String(value).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 
+// 篩選選項的文字，例如「新北市（1,234）」；沒有筆數的「全部…」選項不走這裡
+export const optionLabel = (value: string, count: number) =>
+  `${value}（${grouped(count)}）`;
+
 // 唯一的筆數播報處，例如「第 25–48 筆，共 6,000 筆」
 export function rangeText(range: { from: number; to: number; total: number }) {
   if (range.total === 0) return "沒有符合條件的景點";

@@ -214,6 +214,7 @@ test("資料裡沒有的條件值被忽略並標示網址要修正，不會變�
   });
   assert.deepEqual(result.conditions, {
     county: "",
+    district: "",
     kind: "",
     setting: "",
     age: "",
