@@ -21,8 +21,8 @@ pnpm dev:fixture
 | `pnpm format` / `pnpm format:check`           | 格式化／檢查應用程式與測試；不改既有規劃文件                             |
 | `pnpm check`                                  | Astro 與 TypeScript 檢查                                                 |
 | `pnpm check:content`                          | 載入並驗證正式 YAML                                                      |
-| `pnpm test`                                   | Node 內容載入接受／拒絕測試                                              |
-| `pnpm test:e2e`                               | 建置 fixture，以 Playwright 測導航、出處、日期、鍵盤、axe 與五種螢幕寬度；Chromium 全跑，WebKit 只跑 `@smoke` |
+| `pnpm test`                                   | Node 單元測試（內容、列表查詢與標記、輸出檢查、發布流程等）               |
+| `pnpm test:e2e`                               | 建置 fixture，以 Playwright 測使用者流程、axe（多條路由 × 5 種寬度）與無 JavaScript 案例；Chromium 全跑，WebKit 只跑 `@smoke`，範圍見[公開介面](public-interface.md#驗證入口與範圍) |
 | `pnpm check:scale`                            | 產生 6,000 筆虛構景點並建置到暫存目錄，檢查輸出檔案數與列表 JSON 大小；結束即刪除，不碰 `dist/`  |
 | `pnpm verify`                                 | 共用整合關卡；最後重建並檢查正式輸出                                     |
 
@@ -51,6 +51,12 @@ node --experimental-strip-types scripts/scale/generate-spots.ts [--seed 20261017
 `pnpm build:fixture` 與 `pnpm dev:fixture` 由 `scripts/site.mjs` 先呼叫 `scripts/scale/fixture-root.ts`，把手寫的 `tests/fixtures/spots`（2 筆）與固定種子（`FIXTURE_SEED`）產生的 `FIXTURE_COUNT`（60）筆組成暫存內容根目錄，經 `CARLTRAVEL_FIXTURE_ROOT` 交給 `src/content/mode.ts`，結束時刪除。該變數只在 fixture 模式有效，`scripts/site.mjs` 也會清掉繼承而來的值。e2e 因此看到 62 筆景點；`e2e/fixture.ts` 的 `TOTAL_SPOTS` 要與兩者同步。
 
 產生景點的名稱同樣納入 `pnpm check:output` 的洩漏檢查，與手寫 fixture 一視同仁。WebKit project 只執行標題含 `@smoke` 的案例（瀏覽與景點頁、文字搜尋、篩選還原與移除），其餘案例只在 Chromium 執行。
+
+## 手動驗收
+
+兩項不進 CI 的手動驗收：6,000 筆的計時預算用 `scripts/scale/perf.mjs`（見下一節與[驗收文件](acceptance.md)的量測紀錄）；螢幕閱讀器行為用 [VoiceOver 手動清單](voiceover-checklist.md)，由人在 macOS Safari 逐項走過。
+
+加壓找競態時，用 `E2E_PORT=<空閒埠> pnpm exec playwright test --repeat-each=3 --workers=10`（`pnpm build:fixture` 後）。
 
 ## 列表 JSON 與規模檢查
 

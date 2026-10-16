@@ -40,14 +40,21 @@
 
 ## 驗證入口與範圍
 
+驗收矩陣依「誰在跑、跑什麼」分層；各層的指令與目前測試數量以 `pnpm test` 與 `pnpm exec playwright test --list` 的輸出為準，本文不重複數字。
+
 - `pnpm check`：Astro 與 TypeScript 型別。
-- `node --experimental-strip-types --test tests/content.test.ts tests/output.test.ts`：縣市／同縣市排序、正式輸出頁面、sitemap 白名單與 fixture 隔離。以暫存內容測正式景點的收錄與漏列；不寫入正式景點目錄。
-- `pnpm build:fixture && pnpm exec playwright test e2e/site-pages.spec.ts`：站內導覽、404 回應、授權與免責連結、手機鍵盤章節跳轉、桌面／手機首頁布局、fixture sitemap XML。
-- 列表入口另在 **390、1024、1200、1366px** 驗證精簡標題、桌面插畫及搜尋區不重疊；手機可直接操作搜尋，進階條件收合且可用鍵盤展開。減少動態偏好下不播放動畫。
-- 同一份瀏覽器測試對首頁、`/page/2/`、一個帶條件的網址（`/?setting=戶外&page=2`）、最小景點、完整景點、關於頁、404，分別在 **360、390、430、1366、1920px** 執行 axe 與頁面水平溢出檢查。`e2e/paging.spec.ts` 驗證分頁：用 `/` 與 `/page/N/` 翻完 62 筆、第 2 頁以後沒有首頁介紹、分頁器兩種版本、略過連結、帶條件的換頁（網址、瀏覽紀錄、焦點）、改條件回第 1 頁、上一頁還原、頁碼修正、在 `/page/N/` 套用篩選導向 `/?…`、無條件頁面不下載列表 JSON，以及無 JavaScript 的翻頁與帶參數進站；其中標示 `@smoke` 的案例也在 WebKit 執行。`e2e/recovery.spec.ts` 驗證年齡未標示說明（筆數與連結）、無結果的逐項移除筆數與連結、「清除條件」連結、「查看 N 筆結果」（手機與桌面；收合、捲動、焦點、改選項不捲動）、載入中→搜尋中…→結果的順序與 `aria-busy`、台／臺互通，以及年齡說明與無結果狀態在 5 種寬度的 axe 與水平溢出檢查（無結果、清除條件與「查看 N 筆結果」也在 WebKit 冒煙組）。`e2e/district-filter.spec.ts` 驗證兩層篩選：選縣市才出現行政區、改縣市清掉行政區、網址帶不符的行政區被忽略並修正、選項筆數與結果一致、文字命中改變筆數、0 筆選項停用而已選的不停用，並在 5 種寬度、行政區可見時執行 axe 與水平溢出檢查（兩層篩選與停用選項也在 WebKit 冒煙組）。完整景點測試另保留三種資訊、所有狀態、出處與開放資料顯名的內容驗證。
+- `pnpm test`（Node 單元測試，`tests/`）：內容載入、列表查詢與選項（`list-query`、`list-options`）、列表編解碼與卡片／範圍文字／分頁器標記、恢復與返回列表的純函式、景點頁呈現、搜尋索引、輸出檢查與 fixture 隔離、規模產生器與發布流程。以暫存內容測正式景點的收錄與漏列；不寫入正式景點目錄。
+- Playwright（`pnpm build:fixture && pnpm exec playwright test`，fixture 62 筆）：Chromium 全跑，WebKit project 只跑標題含 `@smoke` 的冒煙組（用 `/page/N/` 翻頁與帶條件換頁、網址還原與移除單項條件、兩層篩選與停用選項、文字搜尋、「查看 N 筆結果」、無結果恢復與清除條件、台／臺互通、卡片摺疊列與錨點、返回列表、頁首目前位置、404 表單）。範圍如下。
+  - 使用者流程：`e2e/paging.spec.ts`（用 `/` 與 `/page/N/` 翻完、第 2 頁以後沒有首頁介紹、分頁器兩種版本、略過連結、帶條件的換頁網址／瀏覽紀錄／焦點、改條件回第 1 頁、頁碼修正、無條件頁面不下載列表 JSON、列表 JSON 失敗時保留靜態第 1 頁）、`e2e/district-filter.spec.ts`（兩層篩選、選項筆數與結果一致、0 筆選項停用）、`e2e/recovery.spec.ts`（年齡未標示說明、無結果恢復、「查看 N 筆結果」、載入中→搜尋中…→結果與 `aria-busy`）、`e2e/search.spec.ts`（實際建置的 Pagefind 索引與中文查詢）、`e2e/spot-page.spec.ts` 與 `e2e/back-to-list.spec.ts`（摺疊列、章節錨點、返回列表）、`e2e/site-pages.spec.ts`（共用頁首頁尾、關於、404 表單、手機鍵盤章節跳轉、桌面／手機首頁版面）。
+  - axe 與水平溢出：`e2e/site-pages.spec.ts` 對首頁、`/page/2/`、一個帶條件的網址（`/?setting=戶外&page=2`）、最小與完整景點、全未知景點（`/spots/fx-00001/`）、關於頁、404，各在 **360、390、430、1366、1920px** 執行；展開後的景點頁、年齡未標示說明與無結果狀態（`e2e/recovery.spec.ts`）、行政區可見的篩選區（`e2e/district-filter.spec.ts`）也各在 5 種寬度執行。
+  - 無 JavaScript：用 `/page/N/` 翻完全部景點、帶參數進站時顯示未篩選第 1 頁與說明、搜尋篩選控制項缺席並以一行說明、`<details>` 摺疊列可手動展開、404 表單可送出並落在列表頁說明。
+- `pnpm check:output`：正式輸出的頁面、sitemap 白名單、縮圖、Pagefind 與 `spot-ids.json` 涵蓋、檔案數 ≤ 18,000，以及列表 JSON 邊界（原始 ≤ 1.5 MB、brotli ≤ 400 KB、筆數與 id 對得上、不含 fixture 或草稿）。
+- `pnpm check:scale`（PR CI 的 `scale` 工作）：6,000 筆虛構景點建置到暫存目錄，重用同一組檔案數與列表 JSON 檢查。
+- 手動計時：`scripts/scale/perf.mjs`，在 6,000 筆輸出上以 390px、4 倍 CPU 降速、Slow 4G、無快取量測 FCP、帶條件進站到出結果、Pagefind 傳輸；不進 CI，結果記在[驗收文件](acceptance.md)。
+- VoiceOver 手動清單：[VoiceOver 手動清單](voiceover-checklist.md)，由 Carl 在 macOS Safari 實際走過；自動化測不到實際播報內容。
 - `pnpm verify`：完整整合關卡，最後重新建置正式內容並檢查輸出。沒有直接部署討論原型或 fixture 的步驟。
 
-自動無障礙檢查的範圍為 Chromium／axe，搭配鍵盤操作與桌面、手機截圖人工檢視；不宣稱涵蓋所有瀏覽器或螢幕閱讀器。真實來源、私人草稿索引隔離與正式部署驗收由後續票交付。
+自動無障礙檢查的範圍為 axe（Chromium），搭配鍵盤操作與桌面、手機截圖人工檢視；WebKit 只跑冒煙組，不跑 axe。不宣稱涵蓋所有瀏覽器，螢幕閱讀器行為只由上述手動清單驗證。真實來源、私人草稿索引隔離與正式部署驗收由後續票交付。
 
 ## 搜尋索引與模式
 
@@ -69,7 +76,7 @@ Astro 完成靜態頁面後，`scripts/search-index.ts` 只讀取當前模式載
 
 台／臺視為同一字，索引與查詢兩邊都套用：建置時送進 Pagefind 的 HTML 先把「臺」換成「台」（磁碟上的頁面不變，`normalizeSearchText` 在 `src/content/search.ts`），查詢字串送出前也先轉成「台」，所以索引裡只有一種寫法，混用兩種寫法的頁面也找得到，查詢也只需一次搜尋。其他異體字暫不處理。正式輸出隔離檢查（`scripts/publish/isolation.ts`）比對隱私詞與送出查詢時同樣先正規化，否則含「臺」的草稿專有詞會比不到已轉成「台」的索引內容。
 
-瀏覽器按需載入 Pagefind 索引。Pagefind 命中的 `id` 就是片段檔名，景點 id 只在片段內容裡，逐筆 `data()` 取 url 會對每個命中各發一個請求。所以建置時由 `scripts/search-index.ts` 讀出所有片段的 url，寫成 `pagefind/spot-ids.json`（`{命中 id: 景點 id}`；`pnpm check:output` 驗證它恰好涵蓋正式景點），瀏覽器第一次文字搜尋時與索引一起載入這一個檔案，不再載入任何片段。命中的景點 id（依相關度）交給列表查詢模組與其他條件取交集，用結果重畫當頁的 24 張卡片，有文字查詢時依相關度排序。6,000 筆（`pnpm check:scale --keep` 加 `scripts/scale/perf.mjs`）第一次文字搜尋的 Pagefind 傳輸，「公園」（734 筆命中）約 187 KB／7 個請求，窄查詢約 221 KB／9 個請求（壓縮後本文，含 `spot-ids.json` 約 47 KB），預算 ≤ 300 KB。輸入採短暫延遲並支援中文組字；新查詢與清除會使舊回應失效。索引載入失敗時明示搜尋不可用，保留符合篩選的可瀏覽列表；未啟用 JavaScript 時保留全部景點並說明互動功能需要 JavaScript。
+瀏覽器按需載入 Pagefind 索引。Pagefind 命中的 `id` 就是片段檔名，景點 id 只在片段內容裡，逐筆 `data()` 取 url 會對每個命中各發一個請求。所以建置時由 `scripts/search-index.ts` 讀出所有片段的 url，寫成 `pagefind/spot-ids.json`（`{命中 id: 景點 id}`；`pnpm check:output` 驗證它恰好涵蓋正式景點），瀏覽器第一次文字搜尋時與索引一起載入這一個檔案，不再載入任何片段。命中的景點 id（依相關度）交給列表查詢模組與其他條件取交集，用結果重畫當頁的 24 張卡片，有文字查詢時依相關度排序。6,000 筆（`pnpm check:scale --keep` 加 `scripts/scale/perf.mjs`）第一次文字搜尋的 Pagefind 傳輸，「公園」（734 筆命中）約 187 KB／7 個請求，窄查詢「青梅生態池2號」約 271 KB／11 個請求（壓縮後本文，含 `spot-ids.json` 約 47 KB），預算 ≤ 300 KB。輸入採短暫延遲並支援中文組字；新查詢與清除會使舊回應失效。索引載入失敗時明示搜尋不可用，保留符合篩選的可瀏覽列表；未啟用 JavaScript 時保留全部景點並說明互動功能需要 JavaScript。
 
 搜尋與條件以 `query`、`county`、`district`、`kind`、`setting`、`age`、`page` 網址參數保存。條件值依列表資料驗證，未知值忽略；`district` 只在與 `county` 相符時有效，只帶 `district` 或與 `county` 不符時忽略並以 `replaceState` 修正網址；其餘網址參數及錨點保留。修改條件以 `history.replaceState` 更新同一筆瀏覽紀錄並回到第 1 頁，避免每次輸入都增加上一頁步驟；換頁以 `history.pushState` 新增一筆，上一頁／下一頁從網址還原條件與頁碼。載入、重新整理及瀏覽歷史切換時恢復條件，非同步搜尋仍以最新請求為準。
 
