@@ -11,12 +11,12 @@ const optionTexts = (page: Page, label: string) =>
 // 「高雄市（8）」→ 8
 const countOf = (text: string) =>
   Number(/（([\d,]+)）$/.exec(text)![1]!.replace(/,/g, ""));
-const total = async (page: Page) =>
-  Number(
-    /共 ([\d,]+) 筆/
-      .exec((await page.getByRole("status").textContent())!)![1]!
-      .replace(/,/g, ""),
-  );
+// 篩選變更後範圍文字會先經過「載入中」「搜尋中…」；讀到過渡文字時回傳 NaN，讓 expect.poll 重試
+const total = async (page: Page) => {
+  const text = await page.getByRole("status").textContent();
+  const match = /共 ([\d,]+) 筆/.exec(text ?? "");
+  return match ? Number(match[1]!.replace(/,/g, "")) : NaN;
+};
 const params = (page: Page) => new URL(page.url()).searchParams;
 
 test("@smoke the district select appears under a county and is cleared when the county changes", async ({
@@ -67,7 +67,8 @@ test("a district that does not match the county is ignored and the URL is correc
   await page.goto(
     "/?county=%E9%AB%98%E9%9B%84%E5%B8%82&district=%E4%B8%AD%E5%8D%80",
   );
-  await expect(page.getByRole("status")).toHaveText(RANGE_RESULT);
+  // 靜態第 1 頁的範圍文字也符合 RANGE_RESULT，要等到篩選套用後（筆數少於全部）才算數
+  await expect.poll(() => total(page)).toBeLessThan(TOTAL_SPOTS);
   const kaohsiung = await total(page);
   await expect.poll(() => params(page).get("district")).toBeNull();
   expect(params(page).get("county")).toBe("高雄市");
