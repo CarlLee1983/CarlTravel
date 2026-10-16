@@ -10,7 +10,7 @@ test("@smoke complete spot keeps the reading order, states, citations, and map e
     "範例探索館",
   );
   // 摺疊列本身就是目錄：順序即閱讀順序，預設只展開親子清單
-  const summaries = page.locator("details > summary > .t");
+  const summaries = page.locator("details > summary > .section-title");
   await expect(summaries).toHaveText([
     "親子清單",
     "開放時間與費用",
@@ -88,7 +88,7 @@ test("basic spot lists unorganised official sections instead of dropping them", 
 }) => {
   await page.goto("/spots/example-park/");
   // 有資料的章節是摺疊列；官方章節沒有資料時列成不能展開的「尚未整理」
-  await expect(page.locator("details > summary > .t")).toHaveText([
+  await expect(page.locator("details > summary > .section-title")).toHaveText([
     "親子清單",
     "開放時間與費用",
     "交通與停車",
