@@ -13,6 +13,9 @@ illustration:
   height: 1024
 ageRange:
   status: unknown
+tourismId:
+  value: Attraction_A15010200H_000040
+  ref: tourism-positioning
 officialRefs:
   - id: info
     title: 館方交通票價與須知
@@ -34,6 +37,17 @@ officialRefs:
     url: https://www.tfrin.gov.tw/theme_data.php?id=1&theme=accessible_travel
     organization: 農業部水產試驗所
     kind: page
+  - id: tourism-positioning
+    title: 觀光資訊資料庫－景點定位資料
+    url: https://data.gov.tw/dataset/7777
+    organization: 交通部觀光署
+    kind: openData
+    purpose: positioning
+    attribution:
+      provider: 交通部觀光署
+      year: 2026
+      dataset: 景點－觀光資訊資料庫
+      version: 2026-10-16 下載快照
 sources: []
 authorNotes: []
 facilities:
@@ -60,6 +74,9 @@ withKids:
 agentTips:
   - 北環行程先核對休館日，再決定上午或下午入館。
 nearby: []
+location:
+  lat: 23.65189
+  lng: 119.6079
 transport:
   checkedAt: 2026-10-16
   facts:

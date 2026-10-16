@@ -13,6 +13,9 @@ illustration:
   height: 1024
 ageRange:
   status: unknown
+tourismId:
+  value: Attraction_387000000A_001906
+  ref: tourism-positioning
 officialRefs:
   - id: faq
     title: 台中海洋館常見問題
@@ -44,6 +47,17 @@ officialRefs:
     url: https://tcaqua.com.tw/canguanzhiyin/2f/
     organization: 台中海洋館
     kind: page
+  - id: tourism-positioning
+    title: 觀光資訊資料庫－景點定位資料
+    url: https://data.gov.tw/dataset/7777
+    organization: 交通部觀光署
+    kind: openData
+    purpose: positioning
+    attribution:
+      provider: 交通部觀光署
+      year: 2026
+      dataset: 景點－觀光資訊資料庫
+      version: 2026-10-16 下載快照
 sources: []
 authorNotes: []
 facilities:
@@ -74,6 +88,9 @@ withKids:
 agentTips:
   - 先依官方樓層順序圈出最想看的展區，將休息安排在換樓層之前。
 nearby: []
+location:
+  lat: 24.29675
+  lng: 120.51964
 transport:
   checkedAt: 2026-10-16
   facts:

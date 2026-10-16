@@ -51,6 +51,9 @@ withKids:
 agentTips:
   - 有導覽需求先湊足人數並提早申請；一般小家庭可先致電確認當天自行參觀方式。
 nearby: []
+location:
+  lat: 22.34438
+  lng: 120.37513
 transport:
   checkedAt: 2026-10-16
   facts:

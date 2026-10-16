@@ -13,6 +13,9 @@ illustration:
   height: 1024
 ageRange:
   status: unknown
+tourismId:
+  value: Attraction_376470000A_000415
+  ref: tourism-positioning
 officialRefs:
   - id: tourism
     title: 彰化縣自然生態教育中心參觀資訊
@@ -24,6 +27,17 @@ officialRefs:
     url: https://www.chcg.gov.tw/ch2/print_all.aspx?bull_id=399487
     organization: 彰化縣政府
     kind: page
+  - id: tourism-positioning
+    title: 觀光署景點定位資料
+    url: https://data.gov.tw/dataset/7777
+    organization: 交通部觀光署
+    kind: openData
+    purpose: positioning
+    attribution:
+      provider: 交通部觀光署
+      year: 2026
+      dataset: 景點－觀光資訊資料庫
+      version: 2026-10-16 下載快照
 sources: []
 authorNotes: []
 facilities:
@@ -53,6 +67,9 @@ withKids:
 agentTips:
   - 以一樓展覽作主要參觀目標；遇風雨時縮短草坡與水岸停留，跟著孩子體力調整戶外活動。
 nearby: []
+location:
+  lat: 24.15791
+  lng: 120.4564
 transport:
   checkedAt: 2026-10-16
   facts:

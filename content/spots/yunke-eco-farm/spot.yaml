@@ -13,6 +13,9 @@ illustration:
   height: 1024
 ageRange:
   status: unknown
+tourismId:
+  value: Attraction_376490000A_000065
+  ref: tourism-positioning
 officialRefs:
   - id: farm
     title: 農場服務與聯絡方式
@@ -29,6 +32,17 @@ officialRefs:
     url: https://ezgo.ardswc.gov.tw/zh-tw/farm/220/
     organization: 農業部農村發展及水土保持署
     kind: page
+  - id: tourism-positioning
+    title: 觀光資訊資料庫－景點定位資料
+    url: https://data.gov.tw/dataset/7777
+    organization: 交通部觀光署
+    kind: openData
+    purpose: positioning
+    attribution:
+      provider: 交通部觀光署
+      year: 2026
+      dataset: 景點－觀光資訊資料庫
+      version: 2026-10-16 下載快照
 sources: []
 authorNotes: []
 facilities:
@@ -48,6 +62,9 @@ withKids:
 agentTips:
   - 先湊足團體並取得農場確認，再安排交通；詢問當季可做的採果和生態活動。
 nearby: []
+location:
+  lat: 23.69805
+  lng: 120.54842
 transport:
   checkedAt: 2026-10-16
   facts:
