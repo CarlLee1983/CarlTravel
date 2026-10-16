@@ -8,7 +8,10 @@ import { loadSpots } from "../src/content/load.ts";
 import {
   illustrationUrl,
   validateIllustration,
+  readIllustration,
 } from "../src/content/illustration.ts";
+
+import { renderThumbnail, thumbnailUrl } from "../src/content/thumbnail.ts";
 
 export async function checkOutput(
   output = "dist",
@@ -27,6 +30,16 @@ export async function checkOutput(
   );
   for (const [path, meta] of images)
     validateIllustration(await readFile(path), meta);
+  const thumbnails = new Set<string>();
+  for (const spot of formal.filter((spot) => spot.illustration)) {
+    const path = resolve(output, `.${thumbnailUrl(spot.id)}`);
+    const expected = await renderThumbnail(
+      await readIllustration(join(content, spot.id), spot.illustration!),
+    );
+    if (!(await readFile(path)).equals(expected))
+      throw new Error(`${path}: 縮圖不符合已驗證插畫`);
+    thumbnails.add(path);
+  }
   async function requirePage(path: string) {
     const html = await readFile(path, "utf8");
     if (!/<html[\s>]/i.test(html) || !/<main[\s>]/i.test(html))
@@ -99,6 +112,7 @@ export async function checkOutput(
         !(
           entry.isFile() &&
           (images.has(resolve(path)) ||
+            thumbnails.has(resolve(path)) ||
             (await isApprovedSiteAsset(output, path)))
         )
       )

@@ -90,7 +90,7 @@ test("spot contents links match existing sections and work with the keyboard on 
   }
 });
 
-test("compact home shows its browsing scope beside the list on desktop and above it on mobile", async ({
+test("compact home shows search before the list at desktop and mobile widths", async ({
   page,
 }) => {
   for (const width of [1366, 390]) {
@@ -101,6 +101,18 @@ test("compact home shows its browsing scope beside the list on desktop and above
     await expect(
       browsing.getByRole("searchbox", { name: "搜尋景點" }),
     ).toBeVisible();
+    if (width === 390) {
+      const firstCard = (await results
+        .locator("li[data-spot-url]")
+        .first()
+        .boundingBox())!;
+      expect(firstCard.y).toBeLessThan(900);
+    }
+    await expect(browsing.locator("#filter-options")).not.toHaveAttribute(
+      "open",
+      "",
+    );
+    await browsing.locator("#filter-options > summary").click();
     await expect(browsing.getByRole("combobox")).toHaveCount(4);
     await expect(results.getByRole("heading", { level: 3 })).toHaveText([
       "範例親子公園",
@@ -108,45 +120,35 @@ test("compact home shows its browsing scope beside the list on desktop and above
     ]);
     const sidebar = (await browsing.boundingBox())!;
     const list = (await results.boundingBox())!;
-    if (width > 900)
-      expect(sidebar.x + sidebar.width).toBeLessThanOrEqual(list.x);
-    else expect(sidebar.y + sidebar.height).toBeLessThanOrEqual(list.y);
+    expect(sidebar.y + sidebar.height).toBeLessThanOrEqual(list.y);
   }
 });
 
 for (const width of [390, 1024, 1200, 1366]) {
-  test(`cover action reaches keyboard-operable search with reduced motion at ${width}`, async ({
+  test(`compact cover keeps keyboard-operable search in reach at ${width}`, async ({
     page,
   }) => {
     await page.setViewportSize({ width, height: 900 });
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto("/");
-    const action = page.getByRole("link", { name: "瀏覽景點" });
-    await expect(action).toBeInViewport();
-    const actionBox = (await action.boundingBox())!;
+    await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+    const search = page.getByRole("searchbox", { name: "搜尋景點" });
+    await expect(search).toBeVisible();
     const artwork = page.locator(".outing-art img");
-    await expect(artwork).toBeVisible();
-    await expect
-      .poll(() =>
-        artwork.evaluate((image: HTMLImageElement) => image.naturalWidth),
-      )
-      .toBe(1536);
-    const artBox = (await artwork.boundingBox())!;
-    expect(artBox.y + artBox.height).toBeLessThanOrEqual(actionBox.y);
-    const titleBox = (await page.locator(".outing-title").boundingBox())!;
-    if (width > 700)
-      expect(titleBox.x + titleBox.width).toBeLessThanOrEqual(artBox.x);
-    else expect(titleBox.y + titleBox.height).toBeLessThanOrEqual(artBox.y);
-    await action.focus();
-    await page.keyboard.press("Enter");
-    await expect(page.locator("#browse")).toBeFocused();
-    await page.keyboard.press("Tab");
-    await expect(
-      page.getByRole("searchbox", { name: "搜尋景點" }),
-    ).toBeFocused();
-    await expect(
-      page.getByRole("searchbox", { name: "搜尋景點" }),
-    ).toBeInViewport();
+    if (width > 700) {
+      await expect(artwork).toBeVisible();
+      await expect
+        .poll(() =>
+          artwork.evaluate((image: HTMLImageElement) => image.naturalWidth),
+        )
+        .toBe(1536);
+    } else await expect(artwork).toBeHidden();
+    await search.focus();
+    await expect(search).toBeFocused();
+    await expect(search).toBeInViewport();
+    await search.fill("範例");
+    await search.press("Enter");
+    await expect(page.getByRole("status")).toHaveText("找到 2 個景點。");
     expect(await page.evaluate(() => document.getAnimations().length)).toBe(0);
   });
 }
