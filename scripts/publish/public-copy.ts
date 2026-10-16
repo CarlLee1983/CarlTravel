@@ -89,7 +89,7 @@ export function maskPublicCopy(html: string, slots?: PublicCopySlots): string {
     if (
       slots.transport &&
       node.tagName === "span" &&
-      attr(node, "class")?.split(/\s+/).includes("t") &&
+      attr(node, "class")?.split(/\s+/).includes("section-title") &&
       parent?.tagName === "summary" &&
       ancestors.at(-2)?.tagName === "details" &&
       attr(ancestors.at(-2)!, "id") === "transport"

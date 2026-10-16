@@ -69,7 +69,7 @@ test(
         .match(/<meta\b[^>]*property="og:image:alt"[^>]*>/)![0];
       const transportHeading = originals
         .get(page)!
-        .match(/<span\b[^>]*class="t"[^>]*>交通與停車<\/span>/)![0];
+        .match(/<span\b[^>]*class="section-title"[^>]*>交通與停車<\/span>/)![0];
       const transportLink = '<a href="#transport">交通與停車</a>';
       for (const [file, suffix] of [
         [home, "<p>步道</p>"],

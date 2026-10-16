@@ -358,7 +358,10 @@ test("output gate fails when the list JSON leaks fixture names or ids, or its ro
       listFile,
       JSON.stringify(encodeList([{ ...real, id: "fx-00001" }])),
     );
-    await assert.rejects(checkOutput(root, content, fixtures), /fixture|id/);
+    await assert.rejects(
+      checkOutput(root, content, fixtures),
+      /列表 JSON 含 fixture 名稱或草稿 id/,
+    );
     // 產生器 fixture 的名稱同樣不得出現
     const generated = describeSpots({
       seed: FIXTURE_SEED,

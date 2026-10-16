@@ -68,8 +68,11 @@ test("built search index includes only the allowed spot text", async ({
     expect(matches[term], term).toContain("/spots/example-museum/");
   for (const term of included.filter((t) => !["新北市", "板橋區"].includes(t)))
     expect(matches[term], term).toEqual(["/spots/example-museum/"]);
-  // 產生景點的虛構文字可能與排除詞共用單字；只要求手寫案例沒有被索引到
-  for (const term of excluded)
+  // 產生景點的中文虛構文字可能與這兩個詞共用單字；只要求手寫案例沒有被索引到
+  const cjkExcluded = ["姓名標示", "這條路"];
+  for (const term of excluded.filter((t) => !cjkExcluded.includes(t)))
+    expect(matches[term], term).toEqual([]);
+  for (const term of cjkExcluded)
     for (const url of ["/spots/example-museum/", "/spots/example-park/"])
       expect(matches[term], term).not.toContain(url);
   const urls = records.map((record) => record.url);

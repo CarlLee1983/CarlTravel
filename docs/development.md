@@ -48,7 +48,7 @@ node --experimental-strip-types scripts/scale/generate-spots.ts [--seed 20261017
 
 沒給 `--out` 時建立 `carltravel-spots-*` 暫存目錄，stdout 只印出該路徑。產生的 id 為 `fx-00001` 起，名稱都帶「（虛構）」。每第 20 筆是完整形態並附共用的 1536×1024 插畫，每第 7 筆是已知年齡但無插畫的公開資料頁形態，其餘年齡未標示且親子條件全為未知。前四筆固定為臺中市與高雄市各兩個行政區，所以任何筆數都涵蓋兩層縣市與行政區。
 
-`pnpm build:fixture` 與 `pnpm dev:fixture` 由 `scripts/site.mjs` 先呼叫 `scripts/scale/fixture-root.ts`，把手寫的 `tests/fixtures/spots`（2 筆）與固定種子（`FIXTURE_SEED`）產生的 `FIXTURE_COUNT`（60）筆組成暫存內容根目錄，經 `CARLTRAVEL_FIXTURE_ROOT` 交給 `src/content/mode.ts`，結束時刪除。該變數只在 fixture 模式有效，`scripts/site.mjs` 也會清掉繼承而來的值。e2e 因此看到 62 筆景點；`e2e/fixture.ts` 的 `TOTAL_SPOTS` 要與兩者同步。
+`pnpm build:fixture` 與 `pnpm dev:fixture` 由 `scripts/site.mjs` 先呼叫 `scripts/scale/fixture-root.ts`，把手寫的 `tests/fixtures/spots`（2 筆）與固定種子（`FIXTURE_SEED`）產生的 `FIXTURE_COUNT`（60）筆組成暫存內容根目錄，經 `CARLTRAVEL_FIXTURE_ROOT` 交給 `src/content/mode.ts`，結束時刪除。該變數只在 fixture 模式有效，`scripts/site.mjs` 也會清掉繼承而來的值。e2e 因此看到 62 筆景點；`e2e/fixture.ts` 的 `TOTAL_SPOTS` 與 `OUTDOOR_SPOTS` 由 `FIXTURE_COUNT` 與 `describeSpots` 推導，不必手動同步（手寫 2 筆的數量是該檔內的常數）。
 
 產生景點的名稱同樣納入 `pnpm check:output` 的洩漏檢查，與手寫 fixture 一視同仁。WebKit project 只執行標題含 `@smoke` 的案例（瀏覽與景點頁、文字搜尋、篩選還原與移除），其餘案例只在 Chromium 執行。
 
@@ -103,6 +103,8 @@ Astro 提供靜態頁面與型別檢查；`yaml` 解析單檔內容，`zod` 共�
 完整搜尋操作：`pnpm build:fixture && pnpm preview:fixture`，首頁輸入「範例」或景點名稱，搭配縣市、類型、環境、年齡帶縮小結果，使用「清除條件」還原。搜尋按 Enter 或按鈕立即執行，輸入時也會短暫延遲後搜尋；選單可透過原生鍵盤操作。一般 `pnpm dev:fixture` 不產生索引，只提供即時頁面與條件篩選，完整搜尋需重新建置並預覽。
 
 新增固定版本 `pagefind@1.5.2` 作為建置依賴，提供靜態全文索引、中文斷詞與瀏覽器搜尋，不新增伺服器服務。建置 hook、欄位白名單、失敗及無 JavaScript 行為見[公開介面](public-interface.md#搜尋索引與模式)。Astro 設定將資產輸出為外部檔，避免此版本將搜尋程式內嵌時留下尚未完成的 Vite 動態載入引用，並讓瀏覽器可快取搜尋程式。
+
+`scripts/search-index.ts` 依賴 Pagefind 未公開的片段格式（gunzip 後以 `pagefind_dcd` 前綴辨識的片段內容，用來建立命中 id 到景點 id 的對照表）；這不是文件化的 API，升級 Pagefind 時要重新確認該格式，格式不符時建置索引會丟錯。
 
 `pnpm verify` 自動在正式／fixture 建置後各產生該模式索引；最後的正式輸出檢查要求索引模組存在，並比對 Pagefind 的頁數與正式景點數，避免空正式站殘留 fixture 索引。這個筆數檢查不取代後續發布票對私人草稿、同 id 修訂及每個搜尋網址的隔離驗證。現有 YAML 資料契約不變，篩選值由同一批景點推導；沒有另存需要維護的景點資料。
 

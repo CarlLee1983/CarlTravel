@@ -115,7 +115,7 @@ const nearbyKind = { food: "餐飲", stay: "住宿", activity: "活動" } as con
         sections.map((entry) =>
           entry.missing ? (
             <div class="acc-missing">
-              <span class="t">{entry.label}</span>　
+              <span class="section-title">{entry.label}</span>　
               <span class="g">尚未整理</span>
             </div>
           ) : (
@@ -406,7 +406,7 @@ const nearbyKind = { food: "餐飲", stay: "住宿", activity: "活動" } as con
     border-bottom: 1px solid var(--line);
     color: var(--muted);
   }
-  .acc-missing .t {
+  .acc-missing .section-title {
     font-size: 18px;
     font-weight: 700;
   }

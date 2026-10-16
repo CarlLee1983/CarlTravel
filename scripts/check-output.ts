@@ -125,17 +125,13 @@ export async function checkOutput(
     throw new Error("Pagefind spot-ids.json differs from content/spots");
   const fixture = await loadSpots(fixtures);
   // e2e fixture 另含固定種子的產生景點，其名稱同樣不得出現在正式輸出
-  const generatedNames = describeSpots({
-    seed: FIXTURE_SEED,
-    count: FIXTURE_COUNT,
-  }).map(({ spot }) => spot.name);
+  const generated = describeSpots({ seed: FIXTURE_SEED, count: FIXTURE_COUNT });
+  const generatedNames = generated.map(({ spot }) => spot.name);
   const fixtureIds = [
     ...fixture
       .filter((spot) => !formalIds.includes(spot.id))
       .map((spot) => spot.id),
-    ...describeSpots({ seed: FIXTURE_SEED, count: FIXTURE_COUNT }).map(
-      ({ id }) => id,
-    ),
+    ...generated.map(({ id }) => id),
   ];
   const fixtureNames = [
     ...fixture
