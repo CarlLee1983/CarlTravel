@@ -50,7 +50,7 @@
   - 無 JavaScript：用 `/page/N/` 翻完全部景點、帶參數進站時顯示未篩選第 1 頁與說明、搜尋篩選控制項缺席並以一行說明、`<details>` 摺疊列可手動展開、404 表單可送出並落在列表頁說明。
 - `pnpm check:output`：正式輸出的頁面、sitemap 白名單、縮圖、Pagefind 與 `spot-ids.json` 涵蓋、檔案數 ≤ 18,000，以及列表 JSON 邊界（原始 ≤ 1.5 MB、brotli ≤ 400 KB、筆數與 id 對得上、不含 fixture 或草稿）。
 - `pnpm check:scale`（PR CI 的 `scale` 工作）：6,000 筆虛構景點建置到暫存目錄，重用同一組檔案數與列表 JSON 檢查。
-- 手動計時：`scripts/scale/perf.mjs`，在 6,000 筆輸出上以 390px、4 倍 CPU 降速、Slow 4G、無快取量測 FCP、帶條件進站到出結果、Pagefind 傳輸；不進 CI，結果記在[驗收文件](acceptance.md)。
+- 手動計時：`scripts/scale/perf.mjs`，在 6,000 筆輸出上以 390px、4 倍 CPU 降速、Slow 4G、無快取量測 FCP、帶篩選條件進站到出結果（≤ 4 s；帶文字查詢進站只記錄秒數）、Pagefind 傳輸；不進 CI，結果記在[驗收文件](acceptance.md)。
 - VoiceOver 手動清單：[VoiceOver 手動清單](voiceover-checklist.md)，由 Carl 在 macOS Safari 實際走過；自動化測不到實際播報內容。
 - `pnpm verify`：完整整合關卡，最後重新建置正式內容並檢查輸出。沒有直接部署討論原型或 fixture 的步驟。
 
