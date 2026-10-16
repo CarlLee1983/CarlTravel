@@ -1,6 +1,10 @@
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 
+async function openFilters(page: import("@playwright/test").Page) {
+  await page.locator("#filter-options > summary").click();
+}
+
 test("built search index includes only the allowed spot text", async ({
   page,
 }) => {
@@ -82,6 +86,7 @@ test("search and four combined filters preserve list details, order, and keyboar
     .getByRole("region", { name: /景點列表/ })
     .getByRole("heading", { level: 3 });
   await expect(search).toBeEnabled();
+  await openFilters(page);
   await expect(
     page.getByLabel("縣市", { exact: true }).locator("option"),
   ).toHaveText(["全部縣市", "臺北市", "新北市"]);
@@ -123,10 +128,18 @@ test("search and four combined filters preserve list details, order, and keyboar
   await expect(page.getByLabel("年齡帶", { exact: true })).toHaveValue("");
   await expect(cards).toHaveText(["範例親子公園", "範例探索館"]);
   await search.focus();
+  await page.keyboard.press("Tab");
+  await expect(
+    page.getByRole("button", { name: "搜尋", exact: true }),
+  ).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(page.locator("#filter-options > summary")).toBeFocused();
   for (const label of ["縣市", "類型", "環境", "年齡帶"]) {
     await page.keyboard.press("Tab");
     await expect(page.getByLabel(label, { exact: true })).toBeFocused();
   }
+  await page.keyboard.press("Tab");
+  await expect(page.getByRole("button", { name: "清除條件" })).toBeFocused();
   await page.getByLabel("縣市", { exact: true }).selectOption("臺北市");
   await expect(cards).toHaveText(["範例親子公園"]);
 });
@@ -155,7 +168,10 @@ test("clearing an in-flight search prevents its late result from replacing the c
     "data-state",
     "loading",
   );
+  await expect(page.locator(".spots")).toHaveAttribute("aria-busy", "true");
+  await expect(page.getByRole("status")).toHaveText("搜尋中…");
   await page.getByRole("button", { name: "清除條件" }).click();
+  await openFilters(page);
   await page.getByLabel("縣市", { exact: true }).selectOption("臺北市");
   const completed = page.waitForResponse(
     (response) =>
@@ -166,6 +182,7 @@ test("clearing an in-flight search prevents its late result from replacing the c
   // The old request must finish before checking it did not overwrite the cleared state.
   await page.waitForLoadState("networkidle");
   await expect(page.getByRole("status")).toHaveText("找到 1 個景點。");
+  await expect(page.locator(".spots")).toHaveAttribute("aria-busy", "false");
   await expect(
     page
       .getByRole("region", { name: /景點列表/ })
@@ -188,6 +205,7 @@ test("search failure preserves browsing and clearing restores normal filtering",
       .getByRole("heading", { level: 3 }),
   ).toHaveText(["範例親子公園", "範例探索館"]);
   await page.getByRole("button", { name: "清除條件" }).click();
+  await openFilters(page);
   await page.getByLabel("年齡帶", { exact: true }).selectOption("年齡未標示");
   await expect(page.getByRole("status")).toHaveText("找到 1 個景點。");
   await expect(
@@ -222,6 +240,7 @@ for (const width of [360, 390, 430, 1366, 1920]) {
   }) => {
     await page.setViewportSize({ width, height: 900 });
     await page.goto("/");
+    await openFilters(page);
     await page.getByLabel("類型", { exact: true }).selectOption("博物館");
     await expect(page.getByRole("status")).toHaveText("找到 1 個景點。");
     expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
@@ -249,6 +268,7 @@ test("empty-results recovery resets query and filters together", async ({
   page,
 }) => {
   await page.goto("/");
+  await openFilters(page);
   await page.getByLabel("縣市", { exact: true }).selectOption("新北市");
   await page.getByLabel("類型", { exact: true }).selectOption("公園");
   const recovery = page.getByRole("button", { name: "重新瀏覽全部景點" });

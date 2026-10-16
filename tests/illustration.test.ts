@@ -9,6 +9,8 @@ import { workspace, devServer } from "./helpers/workspace.ts";
 import { loadSpots } from "../src/content/load.ts";
 import { crc32, deflateSync } from "node:zlib";
 import { normalizeIllustration } from "../src/content/illustration.ts";
+import { renderThumbnail } from "../src/content/thumbnail.ts";
+import sharp from "sharp";
 import { checkOutput } from "../scripts/check-output.ts";
 
 // A synthetic single pixel, never a real research asset.
@@ -23,6 +25,47 @@ export const metadata = {
   height: 1,
   sha256: createHash("sha256").update(png).digest("hex"),
 };
+
+test("opaque landscape thumbnails have no letterbox bands", async () => {
+  const source = await sharp({
+    create: {
+      width: 900,
+      height: 600,
+      channels: 4,
+      background: { r: 70, g: 110, b: 150, alpha: 1 },
+    },
+  })
+    .png()
+    .toBuffer();
+  const { data, info } = await sharp(await renderThumbnail(source))
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  for (const y of [0, info.height - 1]) {
+    for (let x = 0; x < info.width; x++)
+      assert.equal(
+        data[(y * info.width + x) * info.channels + 3],
+        255,
+        "opaque artwork must fill top and bottom rows",
+      );
+  }
+  assert.equal(info.width / info.height, 3 / 2);
+  const transparent = await sharp({
+    create: {
+      width: 900,
+      height: 600,
+      channels: 4,
+      background: { r: 0, g: 0, b: 0, alpha: 0 },
+    },
+  })
+    .png()
+    .toBuffer();
+  const alpha = await sharp(await renderThumbnail(transparent))
+    .ensureAlpha()
+    .raw()
+    .toBuffer();
+  assert.equal(alpha[3], 0, "source transparency must be preserved");
+});
 
 test("illustrations require declared, matching regular PNG attachments", async () => {
   const { root, cleanup } = await workspace();
@@ -93,10 +136,37 @@ test(
       assert.equal(response.status, 200);
       assert.equal(response.headers.get("content-type"), "image/png");
       assert.deepEqual(Buffer.from(await response.arrayBuffer()), png);
+      const thumbnailBytes = await renderThumbnail(png);
+      const thumbnailResponse = await fetch(
+        server.base + "/spot-thumbnails/illustrated-draft.webp?width=9999",
+      );
+      assert.equal(thumbnailResponse.status, 200);
+      assert.equal(thumbnailResponse.headers.get("content-type"), "image/webp");
+      assert.deepEqual(
+        Buffer.from(await thumbnailResponse.arrayBuffer()),
+        thumbnailBytes,
+      );
+      const thumbnailMeta = await sharp(thumbnailBytes).metadata();
+      assert.equal(thumbnailMeta.width, 336);
+      assert.equal(thumbnailMeta.height, 224);
+      assert.equal(thumbnailMeta.hasAlpha, false);
+      assert.equal(thumbnailMeta.hasProfile, false);
+      assert.equal(thumbnailMeta.exif, undefined);
+      const home = await server.waitFor(
+        "/",
+        (html, status) =>
+          status === 200 &&
+          html.includes("/spot-thumbnails/illustrated-draft.webp"),
+      );
+      assert.doesNotMatch(home, /AI 情境插畫|非景點實照/);
+      assert.match(home, /loading="lazy"/);
+      assert.match(home, /decoding="async"/);
+      assert.match(home, /width="336" height="224"/);
       for (const url of [
         "/drafts/spots/illustrated-draft/illustration.png",
         `/@fs/${join(draftDir, "illustration.png")}`,
         "/spot-illustrations/unknown.png",
+        "/spot-thumbnails/unknown.webp",
       ])
         assert.ok((await fetch(server.base + url)).status >= 400);
       await server.stop();
@@ -105,6 +175,15 @@ test(
         readFile(join(root, "dist/spot-illustrations/illustrated-draft.png")),
         /ENOENT/,
       );
+      await assert.rejects(
+        readFile(join(root, "dist/spot-thumbnails/illustrated-draft.webp")),
+        /ENOENT/,
+      );
+      const unillustratedHome = await readFile(
+        join(root, "dist/index.html"),
+        "utf8",
+      );
+      assert.ok(!unillustratedHome.includes('class="spot-thumbnail"'));
       await checkOutput(
         join(root, "dist"),
         join(root, "content/spots"),
@@ -122,6 +201,30 @@ test(
         join(root, "content/spots"),
         join(root, "tests/fixtures/spots"),
       );
+      const thumbnailPath = join(
+        root,
+        "dist/spot-thumbnails/approved-park.webp",
+      );
+      assert.deepEqual(await readFile(thumbnailPath), thumbnailBytes);
+      const verifyOutput = () =>
+        checkOutput(
+          join(root, "dist"),
+          join(root, "content/spots"),
+          join(root, "tests/fixtures/spots"),
+        );
+      await rm(thumbnailPath);
+      await assert.rejects(verifyOutput(), /ENOENT/);
+      await writeFile(
+        thumbnailPath,
+        Buffer.concat([thumbnailBytes, Buffer.from("private bytes")]),
+      );
+      await assert.rejects(verifyOutput(), /縮圖不符合/);
+      await writeFile(thumbnailPath, thumbnailBytes);
+      const orphanThumbnail = join(root, "dist/spot-thumbnails/orphan.webp");
+      await writeFile(orphanThumbnail, thumbnailBytes);
+      await assert.rejects(verifyOutput(), /圖片資產/);
+      await rm(orphanThumbnail);
+      await verifyOutput();
       await writeFile(join(root, "dist/spot-illustrations/orphan.png"), png);
       await assert.rejects(
         checkOutput(

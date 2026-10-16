@@ -4,8 +4,18 @@ import { outingIllustrationAlt } from "../site.ts";
 import { loadPageSpots } from "../content/preview.ts";
 import { ageBands, ageBandRanges } from "../content/search.ts";
 import { ageLabel } from "../content/schema.ts";
+import { isStale } from "../content/presentation.ts";
+import {
+  thumbnailUrl,
+  thumbnailWidth,
+  thumbnailHeight,
+  thumbnailVersion,
+} from "../content/thumbnail.ts";
 const spots = await loadPageSpots(__CARLTRAVEL_DRAFT_PREVIEW__);
 const usedAges = new Set(spots.flatMap((spot) => ageBands(spot.ageRange)));
+const hasKnownAges = spots.some((spot) => spot.ageRange.status === "known");
+const buildDate = new Date().toISOString().slice(0, 10);
+const checklistLabels = { yes: "有", no: "沒有", unknown: "未知" };
 const filters = [
   {
     name: "county",
@@ -33,75 +43,85 @@ const filters = [
       (label) => usedAges.has(label),
     ),
   },
-];
+].filter((filter) => filter.name !== "age" || hasKnownAges);
 ---
 
 <Layout title="找一處，一起出發">
   <section class="cover" aria-label="台灣親子出遊筆記">
-    <h1 class="outing-title">找一處，<br />一起出發。</h1>
     <div class="cover-intro">
-      <figure class="outing-art">
-        <img
-          src="/illustrations/family-outing.png"
-          width="1536"
-          height="1024"
-          alt={outingIllustrationAlt}
-          fetchpriority="high"
-        />
-      </figure>
-      <p>整理台灣親子景點，讓出遊前的準備更清楚。</p>
-      <a class="primary-action" href="#browse"
-        >瀏覽景點 <span aria-hidden="true">↗</span></a
-      >
+      <h1 class="outing-title">找一處，一起出發。</h1>
+      <p>從地區與出遊條件，找適合一起探索的景點。</p>
     </div>
+    <figure class="outing-art">
+      <img
+        src="/illustrations/family-outing.png"
+        width="1536"
+        height="1024"
+        alt={outingIllustrationAlt}
+      />
+    </figure>
   </section>
   <div class="browse-layout" id="browse" tabindex="-1">
-    <div class="browse-rail">
-      <aside aria-labelledby="browse-heading" class="browse-tools">
-        <h2 id="browse-heading">搜尋與篩選</h2>
-        <form id="spot-search" role="search" aria-label="景點搜尋與篩選">
-          <fieldset disabled>
-            <legend class="sr-only">搜尋與出遊條件</legend>
-            <label for="query">搜尋景點</label>
-            <input
-              id="query"
-              name="query"
-              type="search"
-              placeholder="景點名稱或內容"
-              autocomplete="off"
-            />
-            {
-              filters.map((filter) => (
-                <div class="filter">
-                  <label for={`filter-${filter.name}`}>{filter.label}</label>
-                  <select id={`filter-${filter.name}`} name={filter.name}>
-                    <option value="">{filter.all}</option>
-                    {filter.values.map((value) => (
-                      <option value={value}>{value}</option>
-                    ))}
-                  </select>
-                </div>
-              ))
-            }
-            <div class="search-actions">
-              <button type="submit">搜尋</button>
-              <button type="reset">清除條件</button>
+    <aside aria-labelledby="browse-heading" class="browse-tools">
+      <h2 id="browse-heading" class="sr-only">搜尋與篩選</h2>
+      <form id="spot-search" role="search" aria-label="景點搜尋與篩選">
+        <fieldset disabled>
+          <legend class="sr-only">搜尋與出遊條件</legend>
+          <div class="search-row">
+            <div class="search-input">
+              <label for="query">搜尋景點</label>
+              <input
+                id="query"
+                name="query"
+                type="search"
+                placeholder="景點名稱或內容"
+                autocomplete="off"
+                enterkeyhint="search"
+              />
             </div>
-          </fieldset>
-        </form>
-        <p id="search-help">
-          搜尋與篩選需要 JavaScript；仍可從下方瀏覽全部景點。
-        </p>
-      </aside>
-    </div>
+            <button type="submit">搜尋</button>
+          </div>
+          <div class="filter-toolbar">
+            <details id="filter-options">
+              <summary>篩選條件<span id="filter-count"></span></summary>
+              <div class="filter-fields">
+                {
+                  filters.map((filter) => (
+                    <div class="filter">
+                      <label for={`filter-${filter.name}`}>
+                        {filter.label}
+                      </label>
+                      <select id={`filter-${filter.name}`} name={filter.name}>
+                        <option value="">{filter.all}</option>
+                        {filter.values.map((value) => (
+                          <option value={value}>{value}</option>
+                        ))}
+                      </select>
+                    </div>
+                  ))
+                }
+              </div>
+            </details>
+            <button class="clear-filters" type="reset">清除條件</button>
+          </div>
+          <div id="active-filters" aria-label="已選條件" hidden></div>
+        </fieldset>
+      </form>
+      <p id="search-help">
+        搜尋與篩選需要 JavaScript；仍可從下方瀏覽全部景點。
+      </p>
+    </aside>
     <section aria-labelledby="spots-heading" class="results">
       <div class="results-heading">
         <h2 id="spots-heading">
-          景點列表 <span id="result-count" class="meta">{spots.length}</span>
+          景點列表 <span id="result-count">{spots.length}</span>
         </h2>
         <p class="meta">依縣市北到南 · 同縣市依名稱</p>
       </div>
       <p id="search-status" role="status" aria-live="polite" aria-atomic="true">
+      </p>
+      <p class="checklist-help">
+        親子條件依官方資料整理；未知不代表沒有，使用限制請看出處。
       </p>
       <div id="no-results" class="empty" hidden>
         <h3>換個條件，再找找。</h3>
@@ -128,7 +148,22 @@ const filters = [
                 data-age={ageBands(spot.ageRange).join("|")}
               >
                 <article>
-                  <div>
+                  <div class="spot-overview">
+                    {spot.illustration && (
+                      <figure class="spot-thumbnail">
+                        <img
+                          src={`${thumbnailUrl(spot.id)}?v=${thumbnailVersion}-${spot.illustration.sha256}`}
+                          alt={spot.illustration.alt}
+                          width={thumbnailWidth}
+                          height={thumbnailHeight}
+                          loading="lazy"
+                          decoding="async"
+                        />
+                      </figure>
+                    )}
+                    <p class="meta">
+                      {spot.county} · {spot.district} / {spot.kind}
+                    </p>
                     <h3>
                       <a href={`/spots/${spot.id}/`}>
                         {spot.name}
@@ -138,14 +173,49 @@ const filters = [
                     {spot.preview && (
                       <p class="preview-label">{spot.preview} · 尚未發布</p>
                     )}
-                    <p class="meta">
-                      {spot.county} · {spot.district} / {spot.kind}
-                    </p>
+                    <p class="spot-summary">{spot.summary}</p>
+                    <div class="spot-details">
+                      <p>{spot.setting}</p>
+                      <p class="meta">{ageLabel(spot.ageRange)}</p>
+                    </div>
                   </div>
-                  <p>{spot.summary}</p>
-                  <div class="spot-details">
-                    <p>{spot.setting}</p>
-                    <p class="meta">{ageLabel(spot.ageRange)}</p>
+                  <div class="spot-comparison">
+                    <dl class="spot-checklist" aria-label="親子條件">
+                      <div>
+                        <dt>推車友善</dt>
+                        <dd data-status={spot.familyChecklist.stroller.status}>
+                          {
+                            checklistLabels[
+                              spot.familyChecklist.stroller.status
+                            ]
+                          }
+                        </dd>
+                      </div>
+                      <div>
+                        <dt>雨天備案</dt>
+                        <dd data-status={spot.familyChecklist.rainyDay.status}>
+                          {
+                            checklistLabels[
+                              spot.familyChecklist.rainyDay.status
+                            ]
+                          }
+                        </dd>
+                      </div>
+                    </dl>
+                    <p class="checklist-date">
+                      親子條件查證{" "}
+                      <time datetime={spot.familyChecklist.checkedAt}>
+                        {spot.familyChecklist.checkedAt}
+                      </time>
+                      {isStale(spot.familyChecklist.checkedAt, buildDate) &&
+                        " · 已逾一年，請再確認"}
+                    </p>
+                    <a
+                      class="checklist-source"
+                      href={`/spots/${spot.id}/#checklist`}
+                    >
+                      查看親子條件與出處<span aria-hidden="true"> ↗</span>
+                    </a>
                   </div>
                 </article>
               </li>
@@ -177,91 +247,58 @@ const filters = [
     padding-bottom: 0;
   }
   .cover {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+    display: flex;
+    justify-content: space-between;
     align-items: center;
     gap: 32px;
-    min-height: 430px;
-    margin: 0 calc(-1 * var(--gutter));
-    padding: 40px max(var(--gutter), calc((100% - 1360px) / 2 + var(--gutter)))
-      48px;
-    background: var(--cover);
-    color: var(--ground);
+    max-width: 1360px;
+    margin: 0 auto;
+    padding: 32px 0 24px;
   }
   .outing-title {
+    margin: 0 0 12px;
+    font-size: clamp(28px, 3.5vw, 48px);
+    line-height: 1.25;
+  }
+  .cover-intro p {
     margin: 0;
-    font-size: clamp(48px, 7vw, 104px);
-    line-height: 1.18;
+    font-size: 18px;
   }
   .outing-art {
-    margin: 0 0 20px;
-    width: 100%;
+    margin: 0;
+    width: 200px;
+    flex: none;
   }
   .outing-art img {
     display: block;
     width: 100%;
     height: auto;
-    max-height: 340px;
-    object-fit: contain;
-  }
-  .cover-intro > p {
-    font-size: 18px;
-    line-height: 1.7;
-    max-width: 22em;
-    margin: 0 0 20px;
-  }
-  .primary-action {
-    display: inline-flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 36px;
-    min-height: 48px;
-    padding: 12px 20px;
-    background: var(--ground);
-    color: var(--paper);
-    border-radius: 999px;
-    text-decoration: none;
-  }
-  .primary-action:focus-visible {
-    outline-color: var(--ground);
-  }
-  button:focus-visible {
-    outline-color: var(--ink);
   }
   .browse-layout {
     max-width: 1360px;
     margin-inline: auto;
-    display: grid;
-    grid-template-columns: minmax(280px, 0.72fr) minmax(0, 2fr);
-    gap: clamp(32px, 4vw, 64px);
-    padding-block: 80px;
+    padding-bottom: 56px;
     scroll-margin-top: 24px;
-  }
-  .browse-rail {
-    min-width: 0;
   }
   .browse-tools {
     padding: 24px;
-    border: 1px solid var(--line);
-    border-radius: 20px;
-  }
-  .browse-tools h2 {
-    margin: 0 0 24px;
-    font-size: 24px;
+    background: var(--paper-deep);
+    border-radius: 16px;
   }
   fieldset {
     border: 0;
     padding: 0;
     margin: 0;
     min-width: 0;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+  }
+  .search-row {
+    display: flex;
+    align-items: end;
     gap: 12px;
   }
-  fieldset > label,
-  fieldset > input,
-  .search-actions {
-    grid-column: 1 / -1;
+  .search-input {
+    flex: 1;
+    min-width: 0;
   }
   label {
     display: block;
@@ -269,12 +306,10 @@ const filters = [
     margin-bottom: 6px;
     font-weight: 500;
   }
-  fieldset > label {
-    margin-bottom: -8px;
-  }
   input,
   select,
-  button {
+  button,
+  summary {
     font: inherit;
     font-size: 16px;
   }
@@ -284,29 +319,29 @@ const filters = [
     min-width: 0;
     min-height: 48px;
     border: 1px solid #7b98a8;
-    border-radius: 10px;
-    padding: 10px;
+    border-radius: 8px;
+    padding: 10px 12px;
     background: var(--paper);
     color: var(--ink);
   }
-  .search-actions {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-    margin-top: 8px;
-  }
   button {
-    min-height: 48px;
-    padding: 10px 20px;
+    min-height: 44px;
+    padding: 10px 16px;
     border: 0;
-    border-radius: 999px;
+    border-radius: 8px;
     background: transparent;
     color: var(--ink);
     text-decoration: underline;
     text-underline-offset: 4px;
     cursor: pointer;
+    touch-action: manipulation;
+    user-select: none;
+  }
+  button:focus-visible {
+    outline-color: var(--ink);
   }
   button[type="submit"] {
+    min-height: 48px;
     background: var(--ground);
     color: var(--paper);
     text-decoration: none;
@@ -314,10 +349,52 @@ const filters = [
   button:disabled {
     cursor: default;
   }
+  .filter-toolbar {
+    position: relative;
+    margin-top: 12px;
+  }
+  summary {
+    cursor: pointer;
+    width: fit-content;
+    min-height: 44px;
+    padding: 8px 4px;
+    touch-action: manipulation;
+  }
+  #filter-count {
+    margin-left: 8px;
+    font-variant-numeric: tabular-nums;
+  }
+  .clear-filters {
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+  .filter-fields {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    padding: 12px 0 4px;
+  }
+  #active-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  #active-filters :global(button) {
+    background: var(--paper);
+    border-radius: 8px;
+    text-decoration: none;
+    text-align: left;
+    overflow-wrap: anywhere;
+  }
+  #active-filters :global(button span) {
+    margin-left: 12px;
+  }
   #search-help {
+    margin: 12px 0 0;
     font-size: 14px;
     color: var(--muted);
-    margin-top: 20px;
   }
   .sr-only {
     position: absolute;
@@ -333,51 +410,47 @@ const filters = [
     display: none !important;
   }
   .results {
-    min-width: 0;
-    margin-top: 0;
+    margin-top: 32px;
   }
   .results-heading {
     display: flex;
-    gap: 16px;
     align-items: baseline;
     justify-content: space-between;
     flex-wrap: wrap;
+    gap: 8px 24px;
   }
   .results-heading h2 {
     margin: 0;
-    font-size: 36px;
+    font-size: 28px;
   }
   .results-heading p {
     margin: 0;
     font-size: 14px;
   }
-  .results-heading span {
-    font-size: 16px;
-    margin-left: 12px;
-    display: inline-grid;
-    place-items: center;
-    min-width: 36px;
-    min-height: 36px;
-    padding: 4px 10px;
-    border-radius: 50%;
-    background: var(--paper-deep);
-  }
-  #search-status {
-    margin: 16px 0 24px;
-    min-height: 28px;
-    font-size: 15px;
+  #result-count {
+    font-family: var(--font-body);
+    font-size: 18px;
+    font-weight: 500;
+    margin-left: 8px;
     color: var(--muted);
   }
+  #search-status {
+    margin: 8px 0;
+    min-height: 26px;
+    font-size: 16px;
+  }
   #search-status[data-state="loading"] {
-    font-weight: 600;
     color: var(--ground);
   }
   #search-status[data-state="error"] {
     padding: 12px 16px;
-    background: var(--surface);
-    border-left: 3px solid var(--ground);
-    border-radius: 0 8px 8px 0;
-    color: var(--ink);
+    background: var(--paper-deep);
+    border-radius: 8px;
+  }
+  .checklist-help {
+    margin: 0 0 20px;
+    font-size: 14px;
+    color: var(--muted);
   }
   .spots {
     list-style: none;
@@ -385,36 +458,54 @@ const filters = [
     padding: 0;
   }
   .spots li {
-    padding: 28px;
-    border-radius: 20px 20px 20px 6px;
+    padding: 24px;
+    border-radius: 12px;
     background: var(--paper-deep);
   }
   .spots li + li {
-    margin-top: 16px;
-  }
-  .spots li:nth-child(even) {
-    background: var(--surface);
+    margin-top: 12px;
   }
   .spots article {
     display: grid;
-    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
-    gap: 24px;
+    grid-template-columns: minmax(0, 1.5fr) minmax(260px, 1fr);
+    gap: 32px;
     align-items: start;
   }
+  .spot-overview {
+    display: flow-root;
+    min-width: 0;
+  }
+  .spot-thumbnail {
+    float: left;
+    width: 144px;
+    margin: 0 20px 8px 0;
+  }
+  .spot-thumbnail img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+    border-radius: 8px;
+  }
   .spots p {
-    font-size: 16px;
     margin: 0;
+    font-size: 16px;
+  }
+  .spots .meta {
+    font-size: 14px;
   }
   .spots h3 {
+    margin: 8px 0 12px;
     font-size: 24px;
-    margin: 0 0 12px;
+    line-height: 1.4;
   }
   .spots h3 a {
-    text-decoration: none;
     display: flex;
     align-items: start;
     justify-content: space-between;
     gap: 16px;
+    text-decoration: none;
   }
   .spot-arrow::after {
     content: "↗";
@@ -422,47 +513,72 @@ const filters = [
   .spot-arrow {
     font-size: 20px;
     font-weight: 500;
-  }
-  .spots h3 a:hover {
-    text-decoration: underline;
+    transition: transform 180ms var(--ease-out);
   }
   .spot-details {
-    grid-column: 1 / -1;
     display: flex;
     gap: 16px;
     flex-wrap: wrap;
-    padding-top: 16px;
-    border-top: 1px solid var(--line);
+    margin-top: 12px;
+  }
+  .spot-checklist {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 0 0 10px;
+  }
+  .spot-checklist dt {
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .spot-checklist dd {
+    margin: 4px 0 0;
+    font-weight: 600;
+    font-size: 18px;
+  }
+  .spot-checklist [data-status="unknown"] {
+    font-weight: 400;
+    color: var(--muted);
+  }
+  .spots .checklist-date {
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .checklist-source {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    font-size: 14px;
   }
   .empty {
     background: var(--paper-deep);
-    border-radius: 20px;
-    padding: clamp(24px, 4vw, 56px);
+    border-radius: 12px;
+    padding: 24px;
   }
   .empty h3 {
     margin: 0 0 16px;
+  }
+  .empty p {
+    margin: 0;
   }
   .empty a,
   .empty button {
     display: inline-flex;
     align-items: center;
     min-height: 44px;
-    margin-top: 20px;
-  }
-  .empty p {
-    margin: 0;
+    margin-top: 16px;
   }
   .reading-note {
     display: grid;
     grid-template-columns: 1fr 2fr;
-    gap: clamp(32px, 4vw, 64px);
+    gap: 48px;
     background: var(--surface);
     margin: 0 calc(-1 * var(--gutter));
-    padding: 64px max(var(--gutter), calc((100% - 1360px) / 2 + var(--gutter)));
+    padding: 48px max(var(--gutter), calc((100% - 1360px) / 2 + var(--gutter)));
   }
   .reading-note h2 {
     margin: 0 0 24px;
-    font-size: 36px;
+    font-size: 32px;
   }
   .information-types {
     margin: 0;
@@ -471,8 +587,7 @@ const filters = [
     display: grid;
     grid-template-columns: 1fr 2fr;
     gap: 24px;
-    padding-block: 24px;
-    border-bottom: 1px solid #bfb3d4;
+    padding-block: 20px;
   }
   .information-types dt {
     font-size: 24px;
@@ -483,92 +598,99 @@ const filters = [
     margin: 0;
     align-self: center;
   }
-  @media (hover: hover) {
-    .primary-action:hover,
+  @media (hover: hover) and (pointer: fine) {
     button[type="submit"]:hover {
       background: var(--ink);
-      text-decoration: none;
     }
-    button[type="reset"]:hover {
-      background: var(--paper-deep);
+    button[type="reset"]:hover,
+    #active-filters :global(button:hover) {
+      background: var(--cover);
     }
     input:hover,
     select:hover {
       border-color: var(--ground);
     }
-    .spots li:hover .spot-arrow {
+    .spots h3 a:hover {
+      text-decoration: underline;
+    }
+    .spots h3 a:hover .spot-arrow {
       transform: translate(2px, -2px);
     }
   }
-  .spot-arrow {
-    transition: transform 180ms var(--ease-out);
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .spot-arrow {
-      transition: none;
+  @media (max-width: 700px) {
+    .cover {
+      padding-block: 24px 20px;
     }
-    .spots li:hover .spot-arrow {
-      transform: none;
+    .outing-title {
+      font-size: 28px;
     }
-  }
-  @media (max-width: 900px) {
-    .browse-layout {
-      max-width: 1360px;
-      margin-inline: auto;
-      grid-template-columns: 1fr;
-      gap: 48px;
-      padding-block: 48px;
+    .cover-intro p {
+      font-size: 16px;
     }
-    fieldset {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
-    .reading-note {
-      grid-template-columns: 1fr;
-      gap: 32px;
-    }
-    .reading-note h2 br {
+    .outing-art {
       display: none;
     }
-  }
-  @media (max-width: 600px) {
     .browse-tools {
-      padding: 20px;
+      padding: 16px;
     }
-    fieldset {
+    .filter-fields {
       grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .results {
+      margin-top: 24px;
+    }
+    .results-heading h2 {
+      font-size: 24px;
     }
     .spots li {
-      padding: 24px 20px;
+      padding: 20px;
     }
     .spots article {
       grid-template-columns: 1fr;
-      gap: 16px;
+      gap: 20px;
+    }
+    .spot-thumbnail {
+      float: right;
+      width: 88px;
+      margin: 0 0 12px 16px;
+    }
+    .spot-summary {
+      clear: both;
+    }
+    .spots h3 {
+      font-size: 22px;
+    }
+    .spot-comparison {
+      background: var(--paper);
+      padding: 12px 16px;
+      border-radius: 8px;
+    }
+    .checklist-help {
+      margin-bottom: 16px;
+    }
+    .reading-note {
+      grid-template-columns: 1fr;
+      gap: 24px;
+      padding-block: 32px;
+    }
+    .reading-note h2 {
+      font-size: 24px;
+    }
+    .reading-note h2 br {
+      display: none;
     }
     .information-types > div {
       grid-template-columns: 1fr;
       gap: 8px;
     }
-    .reading-note {
-      padding-block: 40px;
-    }
-    .reading-note h2 {
-      font-size: 24px;
-    }
   }
-  @media (max-width: 700px) {
-    .cover {
-      grid-template-columns: 1fr;
-      gap: 16px;
-      padding-block: 32px;
+  @media (prefers-reduced-motion: reduce) {
+    .spot-arrow {
+      transition: none;
     }
-    .outing-title {
-      font-size: 40px;
-    }
-    .outing-art {
-      margin-bottom: 16px;
-    }
-    .outing-art img {
-      max-height: 260px;
+    .spots h3 a:hover .spot-arrow {
+      transform: none;
     }
   }
 </style>
