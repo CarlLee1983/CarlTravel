@@ -1,0 +1,91 @@
+name: 三隻小豬觀光農場
+address: 嘉義縣民雄鄉民新路369號
+county: 嘉義縣
+district: 民雄鄉
+kind: 農場
+setting: 室內外皆有
+summary: 在草地與動物區觀察水豚及狐獴。
+illustration:
+  kind: ai-generated
+  alt: 砂土地上的狐獴與草地休息的水豚水彩示意
+  sha256: 8b017654c39fb736e554ade2c99435679b53911df9dc9eced7ce307db57fe749
+  width: 1536
+  height: 1024
+ageRange:
+  status: unknown
+officialRefs:
+  - id: farm
+    title: 農場介紹與聯絡資訊
+    url: https://threepigsfarm.com/
+    organization: 三隻小豬觀光農場
+    kind: page
+  - id: host
+    title: 業者託管園區資訊頁
+    url: https://www.shop1688.com.tw/aom20200926021/index.html
+    organization: 三隻小豬觀光農場
+    kind: page
+  - id: fb
+    title: 園方社群營業資訊
+    url: https://www.facebook.com/threepigs369/
+    organization: 三隻小豬觀光農場
+    kind: page
+sources: []
+authorNotes: []
+facilities:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 參觀空間
+      value: 園方介紹有大草原、兒童遊戲區、花園、DIY教室和動物景觀餐廳。
+      ref: farm
+withKids:
+  checkedAt: 2026-10-16
+  facts:
+    - text: 園方介紹的動物包含水豚、狐獴、駱馬與梅花鹿。
+      ref: farm
+  activities:
+    - 選水豚或狐獴，觀察牠休息時身體的姿勢。
+agentTips:
+  - 公休日說法不同，出發前先電話確認；戲水與動物互動也先問當日開放安排。
+nearby: []
+transport:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 地址
+      value: 嘉義縣民雄鄉民新路369號；聯絡05-2261008。
+      ref: farm
+    - status: ok
+      label: 自行開車
+      value: 民雄交流道下往新港方向，園方估約200公尺可抵農場。
+      ref: farm
+    - status: ok
+      label: 停車
+      value: 業者託管頁列免費停車場，車位與當日使用範圍請向園方確認。
+      ref: host
+hoursAndFees:
+  checkedAt: 2026-10-16
+  facts:
+    - status: conflict
+      label: 開放時間與公休
+      claims:
+        - value: 主站及園方Facebook列09:00–18:00，週三公休；社群時段約兩個月前更新。
+          ref: fb
+        - value: 業者託管頁列平日09:00–18:00、週末09:00–19:00（最晚18:00入園），週二公休。
+          ref: host
+      contact: 兩個園方資訊面時段不同，先洽05-2261008確認當週公休及閉園時間。
+    - status: unpublished
+      label: 可確認適用現況的完整票價與優惠條件
+familyChecklist:
+  checkedAt: 2026-10-16
+  stroller:
+    status: unknown
+  nursingRoom:
+    status: unknown
+  familyToilet:
+    status: unknown
+  rainyDay:
+    status: unknown
+  accessibility:
+    status: unknown
+  notes: 推車動線、哺乳空間、親子廁所、無障礙通行及雨天動物區開放尚未取得可確認的官方資料。

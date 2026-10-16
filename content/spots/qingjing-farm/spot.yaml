@@ -1,0 +1,118 @@
+name: 清境農場
+address: 南投縣仁愛鄉仁和路（青青草原南端入口）
+county: 南投縣
+district: 仁愛鄉
+kind: 農場
+setting: 戶外
+summary: 在青青草原與觀山牧區觀察羊群。
+illustration:
+  kind: ai-generated
+  alt: 雲霧山坡上分散放牧的綿羊水彩示意
+  sha256: f5a797009a65a6fff6a1036a50cdec7aa8f812ef766d6e077e881679a1966713
+  width: 1536
+  height: 1024
+ageRange:
+  status: unknown
+officialRefs:
+  - id: tickets
+    title: 草原票價與營業資訊
+    url: https://www.qingjing-farm.com.tw/grassland/index.php?index_id=24
+    organization: 國軍退除役官兵輔導委員會清境農場
+    kind: page
+  - id: grass
+    title: 草原參觀範圍
+    url: https://www.qingjing-farm.com.tw/grassland/index.php?index_id=27
+    organization: 國軍退除役官兵輔導委員會清境農場
+    kind: page
+  - id: access
+    title: 無障礙旅遊指引
+    url: https://www.qingjing-farm.com.tw/location/index.php?index_id=29
+    organization: 國軍退除役官兵輔導委員會清境農場
+    kind: page
+  - id: notice
+    title: 草原端入口平日管制公告
+    url: https://www.qingjing-farm.com.tw/news/ins.php?index_id=781
+    organization: 國軍退除役官兵輔導委員會清境農場
+    kind: page
+  - id: traffic
+    title: 清境交通導覽
+    url: https://www.qingjing-farm.com.tw/location/
+    organization: 國軍退除役官兵輔導委員會清境農場
+    kind: page
+sources: []
+authorNotes: []
+facilities:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 步道
+      value: 官方列青青草原及觀山牧區鋪設無障礙通道，銜接南票亭等區域。
+      ref: access
+    - status: ok
+      label: 草坡與動物互動規範
+      value: 草坡陡且可能濕滑，幼童須由家長照顧；餵馬羊僅使用園方飼料，勿於草坡奔跑滑行。
+      ref: tickets
+withKids:
+  checkedAt: 2026-10-16
+  facts:
+    - text: 青青草原在草坡放牧綿羊，與觀山牧區共用當日入園票。
+      ref: grass
+  activities:
+    - 在步道旁觀察羊群休息、吃草時的動作，不追趕羊隻。
+agentTips:
+  - 先決定南端或其他當日開放的售票口，再安排停車與公車下車點。
+  - 草原海拔較高，依園方提醒準備保暖衣物；參觀中依孩子狀況縮短停留。
+nearby: []
+transport:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 參觀入口
+      value: 本篇以青青草原及觀山牧區為主；從仁和路草原南端售票入口進入。仁和路170號是農場本部，並非本篇導航入口。
+      ref: notice
+    - status: ok
+      label: 入口管制
+      value: 2026年10月1日起，高空步道草原端入口平日不開放，可改從草原南端入口購票；假日恢復通行。
+      ref: notice
+    - status: ok
+      label: 公車轉乘
+      value: 可從埔里轉運站搭南投客運往翠峰、松崗或清境農場方向班車；出發前向客運確認草原下車站與班次。
+      ref: traffic
+hoursAndFees:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 開放時間
+      value: 每日08:00–17:00。
+      ref: tickets
+    - status: ok
+      label: 門票
+      value: 全票270元；符合條件的學生、公教、原住民及團體等優待票210元；兒童與長者等半票130元。
+      ref: tickets
+    - status: ok
+      label: 兒童票條件
+      value: 6至12歲且未滿150公分適用半票；未滿13歲但較高者出示附照片健保卡。未滿6歲且未滿115公分收20元保險行政費，較高者須出示附照片健保卡。
+      ref: tickets
+    - status: ok
+      label: 身心障礙票
+      value: 身心障礙者與一名陪伴者出示手冊，各收20元保險行政費；其他優惠資格見園方票價頁。
+      ref: tickets
+    - status: ok
+      label: 同日參觀範圍
+      value: 當日票可遊覽青青草原、觀山牧區及壽山園，重入園須在入口蓋手背章。
+      ref: grass
+familyChecklist:
+  checkedAt: 2026-10-16
+  stroller:
+    status: unknown
+  nursingRoom:
+    status: unknown
+  familyToilet:
+    status: unknown
+  rainyDay:
+    status: unknown
+  accessibility:
+    status: yes
+    ref: access
+    note: 有官方無障礙步道；須留意草坡及當日入口管制，行前確認實際路線。
+  notes: 國民賓館的住宿推車租借不等同草原日遊服務。草原哺乳空間、親子廁所與推車完整動線請先詢問049-2802222。

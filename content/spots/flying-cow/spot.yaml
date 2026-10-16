@@ -1,0 +1,133 @@
+name: 飛牛牧場
+address: 苗栗縣通霄鎮南和里166號
+county: 苗栗縣
+district: 通霄鎮
+kind: 農場
+setting: 室內外皆有
+summary: 從乳牛、綿羊與蝴蝶認識牧場生態。
+illustration:
+  kind: ai-generated
+  alt: 乳牛與綿羊在草地吃草、前景蝴蝶停留的水彩示意
+  sha256: d11a4e9902eb9d6999078b9c5461c7c8d466c249f1e272828c1a6f1af2e0c31e
+  width: 1536
+  height: 1024
+ageRange:
+  status: unknown
+officialRefs:
+  - id: tickets
+    title: 門票與停車費
+    url: https://www.flyingcow.com.tw/information/index.php?index_id=1
+    organization: 飛牛牧場
+    kind: page
+  - id: traffic
+    title: 交通指引
+    url: https://www.flyingcow.com.tw/information/index.php?index_id=4
+    organization: 飛牛牧場
+    kind: page
+  - id: map
+    title: 園區分區導覽
+    url: https://www.flyingcow.com.tw/information/index.php?index_id=6
+    organization: 飛牛牧場
+    kind: page
+  - id: notice
+    title: 自然步道施工公告
+    url: https://www.flyingcow.com.tw/
+    organization: 飛牛牧場
+    kind: page
+  - id: moa
+    title: 食農場域與無障礙資訊
+    url: https://fae.moa.gov.tw/theme_data.php?id=124&theme=field
+    organization: 農業部
+    kind: page
+  - id: ezgo
+    title: 農業易遊網場域資訊
+    url: https://ezgo.ardswc.gov.tw/zh-tw/farm/149/
+    organization: 農業部農村發展及水土保持署
+    kind: page
+sources: []
+authorNotes: []
+facilities:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 園區空間
+      value: 導覽列有童玩區、草原活動區、餐廳與DIY教室。
+      ref: map
+    - status: ok
+      label: 自然步道管制
+      value: 園方公告2026年8月15日至12月31日配合溪流修繕，入口設施工圍門，暫不開放通行。
+      ref: notice
+    - status: ok
+      label: 育嬰室
+      value: 農業部場域頁列育嬰室，哺乳用途、位置與開放時間仍須向服務中心確認。
+      ref: moa
+withKids:
+  checkedAt: 2026-10-16
+  facts:
+    - text: 導覽分出乳牛、黑山羊、綿羊、兔與蝴蝶等生態區。
+      ref: map
+  activities:
+    - 選一種動物觀察牠吃東西時嘴巴的動作。
+agentTips:
+  - 自然步道施工期間依圍門及現場指示安排路線。
+  - 公車下車後仍有約2公里路程，帶幼兒可先評估轉乘計程車。
+nearby: []
+transport:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 地址
+      value: 苗栗縣通霄鎮南和里166號。
+      ref: traffic
+    - status: ok
+      label: 臺鐵轉乘
+      value: 通霄站可轉計程車，園方估約15分鐘；離園可請服務中心協助叫車。
+      ref: traffic
+    - status: ok
+      label: 公車接步行
+      value: 通霄車站外和平路搭往福興或大坑尾方向班車，崎下站下車後尚須步行約2公里；班次先向苗栗客運確認。
+      ref: traffic
+    - status: ok
+      label: 停車場地維護費
+      value: 小客車每部50元，20人座以上大客車每部100元。
+      ref: tickets
+hoursAndFees:
+  checkedAt: 2026-10-16
+  facts:
+    - status: conflict
+      label: 開放時間
+      claims:
+        - value: 園方門票頁列08:00–19:00。
+          ref: tickets
+        - value: 食農場域頁列每日07:00–19:00。
+          ref: moa
+        - value: 農業易遊網列每日07:00–22:00。
+          ref: ezgo
+      contact: 三處時段不同，出發前洽飛牛牧場037-782999確認一日遊入園時間。
+    - status: ok
+      label: 一日遊門票
+      value: 全票280元；40人以上團體每人260元。國小學童220元；3歲至幼稚園及65歲以上160元。
+      ref: tickets
+    - status: ok
+      label: 幼兒免票條件
+      value: 園方同頁列「3歲以下」免費，與幼童票的3歲起算文字重疊；滿3歲請先向園方確認。
+      ref: tickets
+    - status: ok
+      label: 身心障礙優惠
+      value: 出示本人手冊，本人與一位陪同者各140元；門票可換一杯乳製品。
+      ref: tickets
+familyChecklist:
+  checkedAt: 2026-10-16
+  stroller:
+    status: unknown
+  nursingRoom:
+    status: unknown
+  familyToilet:
+    status: unknown
+  rainyDay:
+    status: unknown
+  accessibility:
+    status: yes
+    ref: moa
+    note: 場域頁列無障礙步道、停車場及廁所；不代表所有生態區皆可無障礙通行。
+  notes: 哺乳空間、推車完整動線、親子廁所及雨天動物活動安排尚未核實。

@@ -1,0 +1,100 @@
+name: 琉球海洋驛站
+address: 屏東縣琉球鄉中山路5-10號
+county: 屏東縣
+district: 琉球鄉
+kind: 博物館
+setting: 室內
+summary: 在海龜主題展示認識海洋保育與安全。
+illustration:
+  kind: ai-generated
+  alt: 一隻海龜從海草與淺色沙地上方游過的水彩保育教育示意
+  sha256: a80dac90ecb68ba44bae712d9a2bc5fc15521685a338f5d6684eb190cd82cc75
+  width: 1536
+  height: 1024
+ageRange:
+  status: unknown
+officialRefs:
+  - id: station
+    title: 琉球海洋驛站現行導覽及參觀說明
+    url: https://ocean.taiwan.gov.tw/OceanStation/Web/web_port?attractionId=9
+    organization: 海洋委員會海巡署南部分署
+    kind: page
+  - id: tourism
+    title: 琉球海洋驛站景點與服務設施
+    url: https://www.dbnsa.gov.tw/attraction/AttractionPage?a=261
+    organization: 交通部觀光署大鵬灣國家風景區管理處
+    kind: page
+sources: []
+authorNotes: []
+facilities:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 海龜主題教育
+      value: 館舍由原安檢所改建，以海龜為主題，推廣海洋保育教育及海域遊憩安全，提供旅遊諮詢與驛站導覽。
+      ref: tourism
+    - status: ok
+      label: 旅客服務
+      value: 官方服務項目列飲水機、沖洗設備、置物櫃與無障礙廁所。
+      ref: tourism
+    - status: ok
+      label: 參觀規範
+      value: 須依會場動線維持秩序、保護展品，禁止危險活動與喧嘩奔跑；館內禁菸、檳榔及飲酒。
+      ref: station
+withKids:
+  checkedAt: 2026-10-16
+  facts:
+    - text: 展館用海龜主題傳遞保護海洋生物與海洋環境的重要性，也提供海域遊憩安全教育。
+      ref: tourism
+  activities:
+    - 請孩子從展覽找一種海龜面對的威脅，再提出一項這趟旅行能實行的海洋友善行動。
+agentTips:
+  - 有導覽需求先湊足人數並提早申請；一般小家庭可先致電確認當天自行參觀方式。
+nearby: []
+transport:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 地址與現場聯絡
+      value: 位於中山路5-10號，官方旅遊資訊列現場電話08-8611315。
+      ref: tourism
+    - status: ok
+      label: 停車
+      value: 官方服務項目列有停車場。
+      ref: tourism
+    - status: unpublished
+      label: 停車費率、車位數與現行到站大眾運輸
+hoursAndFees:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 一般開放
+      value: 館方系統列週二至週日09:00–17:00、週一休館；專案參訪可依活動行程調整。
+      ref: station
+    - status: ok
+      label: 國定假日
+      value: 大鵬灣官方旅遊頁另明列國定假日休館；連假出發前請向08-8611315確認。
+      ref: tourism
+    - status: ok
+      label: 門票
+      value: 館方介紹列驛站所有設施免費開放。
+      ref: station
+    - status: ok
+      label: 導覽預約
+      value: 預約導覽須滿10人，至少7日前完成申請，可電話或線上辦理；預約專線07-5517418轉805261。
+      ref: station
+familyChecklist:
+  checkedAt: 2026-10-16
+  stroller:
+    status: unknown
+  nursingRoom:
+    status: unknown
+  familyToilet:
+    status: unknown
+  rainyDay:
+    status: unknown
+  accessibility:
+    status: yes
+    ref: tourism
+    note: 已確認無障礙廁所；其他入館坡道、推車或輪椅動線仍須另確認。
+  notes: 海龜為展示與保育教育主題，不表示館內保證能看到活海龜；哺乳、親子廁所及推車通行尚未確認。

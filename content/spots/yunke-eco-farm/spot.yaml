@@ -1,0 +1,89 @@
+name: 雲科生態休閒農場
+address: 雲林縣斗六市大學路二段273巷67號
+county: 雲林縣
+district: 斗六市
+kind: 農場
+setting: 戶外
+summary: 採團體預約的果樹與生態體驗農場。
+illustration:
+  kind: ai-generated
+  alt: 文旦與桑椹枝葉、遠景柑橘樹的水彩示意
+  sha256: e3a3767a5209df7c9eaeb316bbc3ef4c95e2df3d221ffcbe502ce7f31fef9634
+  width: 1536
+  height: 1024
+ageRange:
+  status: unknown
+officialRefs:
+  - id: farm
+    title: 農場服務與聯絡方式
+    url: https://www.winfarm.com/
+    organization: 雲科生態休閒農場
+    kind: page
+  - id: tour
+    title: 慢遊雲林的團體參訪資訊
+    url: https://tour.yunlin.gov.tw/main/modules/MySpace/index.php?xmlid=1036818
+    organization: 雲林縣政府
+    kind: page
+  - id: ezgo
+    title: 農業易遊網農場資訊
+    url: https://ezgo.ardswc.gov.tw/zh-tw/farm/220/
+    organization: 農業部農村發展及水土保持署
+    kind: page
+sources: []
+authorNotes: []
+facilities:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 團體服務
+      value: 園方提供採果、導覽及烤肉、營隊、會議等場地使用；具體方案先預約確認。
+      ref: farm
+withKids:
+  checkedAt: 2026-10-16
+  facts:
+    - text: 農業易遊網介紹農場種植文旦、桑椹與多種柑橘，團體可安排動植物解說及DIY。
+      ref: ezgo
+  activities:
+    - 依當日開放作物，比較葉片、果實的顏色與形狀；採摘前先等工作人員指示。
+agentTips:
+  - 先湊足團體並取得農場確認，再安排交通；詢問當季可做的採果和生態活動。
+nearby: []
+transport:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 地址
+      value: 雲林縣斗六市大學路二段273巷67號。
+      ref: tour
+    - status: ok
+      label: 預約聯絡
+      value: 05-5338447，亦可洽0918-218971。
+      ref: farm
+hoursAndFees:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 參訪限制
+      value: 縣府旅遊頁列09:00–17:00，只接受20人以上團體預約，不提供散客服務。
+      ref: tour
+    - status: ok
+      label: 基本參觀
+      value: 縣府旅遊頁標示免費參觀；仍須符合團體預約條件。
+      ref: tour
+    - status: ok
+      label: 團體體驗費
+      value: 農業易遊網列團體活動費用須洽農場，採果、餐飲及DIY依預約方案確認。
+      ref: ezgo
+familyChecklist:
+  checkedAt: 2026-10-16
+  stroller:
+    status: unknown
+  nursingRoom:
+    status: unknown
+  familyToilet:
+    status: unknown
+  rainyDay:
+    status: unknown
+  accessibility:
+    status: unknown
+  notes: 五項親子設施與動線未核實；預約團體時一併詢問，勿直接帶散客前往。

@@ -1,0 +1,148 @@
+name: 九九峰動物樂園
+address: 南投縣草屯鎮富頂路一段726巷99號
+county: 南投縣
+district: 草屯鎮
+kind: 動物園／水族館
+setting: 戶外
+summary: 走進天網鳥園，觀察鳥類與草食動物。
+illustration:
+  kind: ai-generated
+  alt: 親子遠望鶴鳥與枝上兩隻鸚鵡的水彩自然觀察示意
+  sha256: 43f3bf148c260c6a79779dc9a49db2f1b1f188da323dfef744016fdf5399c8f5
+  width: 1536
+  height: 1024
+ageRange:
+  status: unknown
+officialRefs:
+  - id: ticket
+    title: 九九峰票價與開放時間
+    url: https://www.jojozoopark.com/ticket/
+    organization: 九九峰動物樂園
+    kind: page
+  - id: traffic
+    title: 九九峰交通與停車
+    url: https://www.jojozoopark.com/traffic/
+    organization: 九九峰動物樂園
+    kind: page
+  - id: qa
+    title: 九九峰常見問題
+    url: https://www.jojozoopark.com/qa/
+    organization: 九九峰動物樂園
+    kind: page
+  - id: service
+    title: 九九峰遊客服務
+    url: https://www.jojozoopark.com/service/
+    organization: 九九峰動物樂園
+    kind: page
+  - id: animals
+    title: 九九峰動物介紹
+    url: https://www.jojozoopark.com/animal/
+    organization: 九九峰動物樂園
+    kind: page
+  - id: capybara
+    title: 2026年8月水豚互動暫停公告
+    url: https://www.jojozoopark.com/2026/08/23/capybara-interaction-pause/
+    organization: 九九峰動物樂園
+    kind: page
+  - id: deer
+    title: 2026年8月鹿苑整修公告
+    url: https://www.jojozoopark.com/2026/08/23/deer-garden-renovation/
+    organization: 九九峰動物樂園
+    kind: page
+  - id: family
+    title: 九九峰親子行程說明
+    url: https://www.jojozoopark.com/nantou-travel/
+    organization: 九九峰動物樂園
+    kind: page
+sources: []
+authorNotes: []
+facilities:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 動物餵食規定
+      value: 禁止自備食物餵動物；園方飼料桶只供指定對象，使用方式依工作人員指引，不能用來餵鳥。
+      ref: qa
+    - status: ok
+      label: 租借與育嬰
+      value: 入口遊客服務中心提供嬰兒車、輪椅租借及育嬰室；園內沒有接駁工具。
+      ref: qa
+    - status: conflict
+      label: 水豚互動與餵食
+      claims:
+        - value: 一般服務介紹仍把水豚列為柵欄外餵食對象。
+          ref: service
+        - value: 2026年8月23日公告因待產育幼暫停互動與餵食，恢復日期另行通知。
+          ref: capybara
+      contact: 截至本次查證未查得恢復公告，不能保證現場狀態；如以水豚互動為主，出發前洽049-2565107。
+    - status: ok
+      label: 鹿苑開放狀態待確認
+      value: 8月23日整修公告原估2026年9月重開，但未列確切日期。本次查證未找到完工公告，不能由預估月份判定已開放，也不據此斷言仍停用；請先洽園方。
+      ref: deer
+withKids:
+  checkedAt: 2026-10-16
+  facts:
+    - text: 動物展示分區包含天網鳥園與草食動物，動物介紹列有熊鷹、蒼鷹及多種鸚鵡。
+      ref: animals
+    - text: 大鳥窩天網安排生態解說，內容包含鶴類及天鵝習性。
+      ref: service
+  activities:
+    - 選兩種鳥比較喙與腳的形狀，記下牠們站立或移動時的差別。
+agentTips:
+  - 先看當日互動表，再決定鳥園與其他動物區的停留順序。
+nearby: []
+transport:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 開車
+      value: 可由國道六號舊正或東草屯交流道轉往富頂路一段，再經富坪橋抵達；依出發方向核對官網路線。
+      ref: traffic
+    - status: ok
+      label: 停車
+      value: 園區設收費停車場與身障車位，QA列每車100元。
+      ref: qa
+    - status: ok
+      label: 大眾運輸
+      value: 高鐵臺中站可搭台灣好行北港溪線6653C至園區。官網列每日去、回各兩班，出發前向南投客運確認班次。
+      ref: traffic
+hoursAndFees:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 開放時間
+      value: 官網列全年開放，09:00–18:00，17:00停止入園。
+      ref: ticket
+    - status: ok
+      label: 常態票價
+      value: 成人560元、學生360元、博愛票280元。30人以上團體需預約，團體成人票460元；優惠身分須攜證件查驗。
+      ref: ticket
+    - status: ok
+      label: 幼兒免票
+      value: 未滿3歲或身高未滿100公分幼兒，由持票成人陪同可免票，須準備年齡證明。
+      ref: ticket
+    - status: ok
+      label: 另付費項目
+      value: 幼童騎馬、綜合飼料桶及遊樂設施需加價，依現場公告核對。
+      ref: qa
+familyChecklist:
+  checkedAt: 2026-10-16
+  stroller:
+    status: yes
+    ref: ticket
+    note: 主要動線有緩坡柏油路與木棧道，服務中心提供推車租借。
+  nursingRoom:
+    status: yes
+    ref: service
+    note: 遊客服務頁明列哺乳室。
+  familyToilet:
+    status: unknown
+  rainyDay:
+    status: yes
+    ref: family
+    note: 官方建議小雨時縮短動線，強風或大雨依公告調整；園區不等於全程室內雨備。
+  accessibility:
+    status: yes
+    ref: service
+    note: 官方列緩坡及無障礙動線；施工區通行方式另向服務中心確認。
+  notes: 鹿苑與水豚互動資訊須先確認，別把一般動物介紹當作當日互動場次。

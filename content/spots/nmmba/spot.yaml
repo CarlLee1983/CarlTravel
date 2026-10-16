@@ -1,0 +1,141 @@
+name: 國立海洋生物博物館
+address: 屏東縣車城鄉後灣村後灣路2號
+county: 屏東縣
+district: 車城鄉
+kind: 動物園／水族館
+setting: 室內外皆有
+summary: 從臺灣溪流到珊瑚礁與極地的水域展示。
+illustration:
+  kind: ai-generated
+  alt: 花園鰻從沙底探出、旁有珊瑚礁的水彩海洋生態示意
+  sha256: c8f3fcdd5903c318ed6589b956effb796a85353e1876f416b791abad6a31dc9c
+  width: 1536
+  height: 1024
+ageRange:
+  status: unknown
+officialRefs:
+  - id: service
+    title: 服務及票價
+    url: https://www.nmmba.gov.tw/cp.aspx?CategorySN=95&Create=1&n=A6476B49BA86BBD50
+    organization: 國立海洋生物博物館
+    kind: page
+  - id: operator
+    title: 經營團隊服務票價
+    url: https://www.aquarium.com.tw/info.asp?ID=119
+    organization: 海景世界企業股份有限公司
+    kind: page
+  - id: english
+    title: 英文營業資訊
+    url: https://www.nmmba.gov.tw/En/cp.aspx?n=0239E2D50FEF52AA&s=C9F689206ECC0D26
+    organization: 國立海洋生物博物館
+    kind: page
+  - id: access
+    title: 無障礙服務
+    url: https://www.nmmba.gov.tw/cp.aspx?n=4A2DB40EB35F337E
+    organization: 國立海洋生物博物館
+    kind: page
+  - id: transport
+    title: 大眾運輸
+    url: https://www.nmmba.gov.tw/cp.aspx?n=54B7C12FC7AF091B&s=CD99CFE1CA7DEE26
+    organization: 國立海洋生物博物館
+    kind: page
+  - id: children
+    title: 兒童陽台施工公告
+    url: https://www.nmmba.gov.tw/News_Content.aspx?n=8929A8F90C63BDDF&s=605B526586788867
+    organization: 國立海洋生物博物館
+    kind: page
+  - id: whale
+    title: 鯨魚廣場施工公告
+    url: https://www.nmmba.gov.tw/News_Content.aspx?n=8929A8F90C63BDDF&s=2DA136068D42D334
+    organization: 國立海洋生物博物館
+    kind: page
+sources: []
+authorNotes: []
+facilities:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 服務台
+      value: 提供輪椅、嬰兒推車與臨時寄物；哺集乳室位於大廳二樓及世界水域館服務台後方。
+      ref: service
+    - status: ok
+      label: 近期施工
+      value: 臺灣水域館兒童陽台遊憩設施公告於2026年10月13日至30日整修封閉。
+      ref: children
+    - status: ok
+      label: 預告施工
+      value: 鯨魚廣場預告於2026年11月1日至20日檢查維護並封閉，並非本次查證日已封閉。
+      ref: whale
+    - status: ok
+      label: 參觀規範
+      value: 展場禁用閃光燈、拍打玻璃及餵魚；極地企鵝區溫度較低，館方提醒攜帶禦寒衣物。
+      ref: service
+withKids:
+  checkedAt: 2026-10-16
+  facts:
+    - text: 臺灣水域館以從高山溪流走向海洋的順序呈現水域環境。
+      ref: access
+    - text: 珊瑚王國館有珊瑚礁、海底隧道與花園鰻主題；世界水域館包含巨藻森林及企鵝展示。
+      ref: access
+  activities:
+    - 挑選溪流、珊瑚礁與極地各一個展區，比較水中景觀與動物移動方式。
+agentTips:
+  - 先圈選孩子想看的兩個展館，將休息時間排在轉館之前。
+nearby: []
+transport:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 鐵路與高鐵轉乘
+      value: 可由枋寮站搭往墾丁客運，至南保力站後轉往埔墘路口站搭墾丁街車入館；高鐵左營站可接墾丁快線後轉車。班次與轉乘步行位置出發前核對。
+      ref: transport
+    - status: ok
+      label: 停車收費
+      value: 館方服務頁列小客車50元、機車20元、大客車100元；現場公告若調整須再確認。
+      ref: service
+hoursAndFees:
+  checkedAt: 2026-10-16
+  facts:
+    - status: conflict
+      label: 營業時間與休館日
+      claims:
+        - value: 中文服務頁及經營團隊時間圖列一般09:00–17:00、週二休館；國定假日、連假及寒暑假例外，最後售票為閉館前一小時。
+          ref: service
+        - value: 英文頁仍列一般月份09:00–17:30，未列週二休館；7、8月及春節另有延長時段。
+          ref: english
+      contact: 官方語言版本不同，請先洽08-882-5678核對預定日期；中文首頁與經營團隊目前同樣提示週二休館。
+    - status: ok
+      label: 門票
+      value: 全票450元、優待票250元、65歲以上博愛票225元；20人以上同機關團體票350元，宜提前三天預約。優待與免費資格均需證件。
+      ref: service
+    - status: conflict
+      label: 幼兒免費資格文字
+      claims:
+        - value: 館方中文服務頁以身高115公分以下「及」未滿6歲表述，並須付費家長或師長同行。
+          ref: service
+        - value: 經營團隊票價圖以身高115公分以下「或」未滿6歲表述，並須付費家長或師長同行。
+          ref: operator
+      contact: 年齡與身高若只符合一項，請先向08-882-5678確認並攜證件；不自行推定適用資格。
+    - status: ok
+      label: 身障免費
+      value: 持身心障礙證明者及一位必要陪同者可免費，購票時備證件。
+      ref: service
+familyChecklist:
+  checkedAt: 2026-10-16
+  stroller:
+    status: yes
+    ref: service
+    note: 服務台提供嬰兒推車。
+  nursingRoom:
+    status: yes
+    ref: service
+    note: 大廳二樓及世界水域館設有哺集乳室。
+  familyToilet:
+    status: unknown
+  rainyDay:
+    status: unknown
+  accessibility:
+    status: yes
+    ref: access
+    note: 三座展示館列有無障礙電梯，另有無障礙廁所及停車位；可先向服務台諮詢參觀動線。
+  notes: 兒童陽台與鯨魚廣場有施工時程；室內展示與館間移動分別規劃，避免把戶外區域當全天候備案。

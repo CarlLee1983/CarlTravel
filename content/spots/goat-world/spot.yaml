@@ -1,0 +1,108 @@
+name: 羊世界牧場
+address: 桃園市中壢區三芝路169號
+county: 桃園市
+district: 中壢區
+kind: 農場
+setting: 室內外皆有
+summary: 看山羊與小動物，認識牧場的食農教育。
+illustration:
+  kind: ai-generated
+  alt: 山羊與羊駝站在草地上，呈現耳朵、毛色和身形差異的水彩動物意象。
+  sha256: 3bc2141045ac0042e46eb42825bc71ac9016d1591db6e5d73a0cb74783c6709b
+  width: 1536
+  height: 1024
+ageRange:
+  status: unknown
+officialRefs:
+  - id: farm
+    title: 羊世界參觀與票價
+    url: https://goat-world.com.tw/愛在羊世界/
+    organization: 羊世界牧場
+    kind: page
+  - id: access
+    title: 羊世界時間與交通
+    url: https://goat-world.com.tw/elementor-695/
+    organization: 羊世界牧場
+    kind: page
+  - id: agriculture
+    title: 農業部羊世界場域資訊
+    url: https://fae.moa.gov.tw/theme_data.php?id=522&theme=field
+    organization: 農業部
+    kind: page
+  - id: tourism
+    title: 桃園羊世界景點資訊
+    url: https://travel.tycg.gov.tw/zh-tw/travel/attraction/968
+    organization: 桃園市政府觀光旅遊局
+    kind: page
+sources: []
+authorNotes: []
+facilities:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 育嬰與廁所
+      value: 食農平臺列有育嬰室、廁所與會議空間，未列育嬰室內部設備。
+      ref: agriculture
+    - status: ok
+      label: 無障礙設施
+      value: 食農平臺列有無障礙廁所及步道；可通行範圍與現況可先洽詢。
+      ref: agriculture
+withKids:
+  checkedAt: 2026-10-16
+  facts:
+    - text: 農場除山羊外，也介紹兔子、羊駝及孔雀等動物，並提供草與飼料供依規則餵食。
+      ref: farm
+    - text: 牧場以羊乳及羊肉等畜產為食農教育主題，規劃導覽與體驗。
+      ref: agriculture
+  activities:
+    - 看山羊吃草時，留意牠嘴巴與下顎的動作，向解說員提問。
+    - 比較羊駝和山羊耳朵、毛色與身形的差異。
+agentTips:
+  - 動物餵食與DIY內容先向牧場確認，依工作人員指示操作。
+  - 下雨時先問步道路況與可用教室，不只依照有室內空間就認定全部行程照常。
+nearby: []
+transport:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 機場捷運
+      value: 園方列A20興南站下車後步行約16分鐘可到牧場，實際路況依現場為準。
+      ref: access
+    - status: ok
+      label: 開車
+      value: 國道1號中壢新屋交流道下，經民族路、環西路轉民權路，再依三芝路招牌進入。
+      ref: access
+    - status: ok
+      label: 停車
+      value: 園內備有停車場，收費規則需另向牧場確認。
+      ref: tourism
+hoursAndFees:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 牧場時間
+      value: 園方列週一至週日09:00–17:00；餐廳有不同營業時段，週三休息，不能當作牧場休園日。
+      ref: access
+    - status: ok
+      label: 入場門票
+      value: 每人100元，官網免票文字為幼稚園以下免費；資格細節可先洽03-426-6987。
+      ref: farm
+    - status: ok
+      label: 外食與餵食規定
+      value: 攜帶外食每人加收100元清潔費；餵食動物只能使用牧場提供的飼料或草。
+      ref: farm
+familyChecklist:
+  checkedAt: 2026-10-16
+  stroller:
+    status: unknown
+  nursingRoom:
+    status: unknown
+  familyToilet:
+    status: unknown
+  rainyDay:
+    status: unknown
+  accessibility:
+    status: yes
+    ref: agriculture
+    note: 官方列有無障礙廁所與步道，不保證每個遊具或動物區皆可通行。
+  notes: 育嬰室是否提供獨立哺乳空間、推車路線、親子廁間與雨天安排尚待牧場確認。

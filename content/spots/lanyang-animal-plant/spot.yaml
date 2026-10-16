@@ -1,0 +1,98 @@
+name: 蘭陽動植物王國
+address: 宜蘭縣壯圍鄉紅葉路62-13號
+county: 宜蘭縣
+district: 壯圍鄉
+kind: 農場
+setting: 室內外皆有
+summary: 在戶外與溫室觀察動物和鹿角蕨。
+illustration:
+  kind: ai-generated
+  alt: 鹿角蕨葉片前方與林蔭間休息的水豚水彩示意
+  sha256: 9fa12b5921fadfa22d77de8ff4d0d725cfc8e507bafab23de3a28c2a6493fe07
+  width: 1536
+  height: 1024
+ageRange:
+  status: unknown
+officialRefs:
+  - id: park
+    title: 園方公開介紹與聯絡資訊
+    url: https://www.facebook.com/YilanAnimalKingdom/about
+    organization: 蘭陽動植物王國
+    kind: page
+  - id: yilan
+    title: 宜蘭勁好玩的園區介紹
+    url: https://travel.yilan.gov.tw/zh-tw/attraction/656/
+    organization: 宜蘭縣政府工商旅遊處
+    kind: page
+sources: []
+authorNotes: []
+facilities:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 參觀空間
+      value: 園區有戶外動物區及室內溫室。
+      ref: park
+    - status: ok
+      label: 服務設施
+      value: 宜蘭勁好玩列有公廁、服務台及導覽解說，並介紹設有空調的休憩餐飲空間。
+      ref: yilan
+withKids:
+  checkedAt: 2026-10-16
+  facts:
+    - text: 園方介紹有水豚、袋鼠、羊駝和狐獴等動物，並提供生態解說及自然手作活動。
+      ref: park
+    - text: 溫室可見鹿角蕨與其他觀葉植物。
+      ref: yilan
+  activities:
+    - 先選一種動物，觀察牠休息和移動時的姿勢。
+    - 找找鹿角蕨與其他植物的葉片外形有何差別。
+agentTips:
+  - 想看動物飛行展示或參加手作，先向園方確認當日場次和是否需要預約。
+  - 餵食與接觸動物前先詢問工作人員，讓孩子先觀察再決定是否參與。
+nearby: []
+transport:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 地址
+      value: 宜蘭縣壯圍鄉紅葉路62-13號。
+      ref: yilan
+    - status: ok
+      label: 停車
+      value: 園區附設停車場，不收停車費。
+      ref: yilan
+    - status: ok
+      label: 大眾運輸
+      value: 宜蘭勁好玩指引可從宜蘭轉運站搭壯圍沙丘線，在壯圍旅遊服務園區站下車，步行約15分鐘。
+      ref: yilan
+hoursAndFees:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 開放時間
+      value: 宜蘭勁好玩列週一至週五10:00–17:00，週六、日09:30–17:00；行前再向園方確認臨時異動。
+      ref: yilan
+    - status: unpublished
+      label: 現行門票與優待條件
+    - status: unpublished
+      label: 動物活動場次與手作費用
+    - status: ok
+      label: 園方聯絡電話
+      value: 0958-507905。
+      ref: park
+familyChecklist:
+  checkedAt: 2026-10-16
+  stroller:
+    status: unknown
+  nursingRoom:
+    status: unknown
+  familyToilet:
+    status: unknown
+  rainyDay:
+    status: yes
+    ref: park
+    note: 有室內溫室可參觀；戶外動物區仍需另備雨具。
+  accessibility:
+    status: unknown
+  notes: 推車動線、哺乳空間、親子廁所及無障礙通行細節，請先致電園方確認。

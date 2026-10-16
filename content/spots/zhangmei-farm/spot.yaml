@@ -1,0 +1,93 @@
+name: 張美阿嬤農場
+address: 宜蘭縣三星鄉行健溪一路二段161號
+county: 宜蘭縣
+district: 三星鄉
+kind: 農場
+setting: 戶外
+summary: 看水豚、梅花鹿，也能預約農產手作。
+illustration:
+  kind: ai-generated
+  alt: 捲毛黑鼻羊在前景休息，右側水豚伏在草地上的水彩動物意象。
+  sha256: 995c9c193a92cbff4da8c0a149ca12d309512c78c1bdeffb222423fb725ce76b
+  width: 1536
+  height: 1024
+ageRange:
+  status: unknown
+officialRefs:
+  - id: home
+    title: 張美阿嬤農場票價與介紹
+    url: https://zhangmeifarm.com.tw/
+    organization: 張美阿嬤農場
+    kind: page
+  - id: contact
+    title: 張美阿嬤農場交通聯絡
+    url: https://zhangmeifarm.com.tw/聯絡我們
+    organization: 張美阿嬤農場
+    kind: page
+  - id: activities
+    title: 張美阿嬤農場體驗項目
+    url: https://zhangmeifarm.com.tw/服務項目
+    organization: 張美阿嬤農場
+    kind: page
+sources: []
+authorNotes: []
+facilities:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 手作體驗
+      value: 規劃蔥油餅、芋圓、愛玉或麻糬等農產手作，實際項目依當日安排。
+      ref: activities
+withKids:
+  checkedAt: 2026-10-16
+  facts:
+    - text: 農場介紹水豚、梅花鹿及瓦萊黑鼻羊等動物互動內容。
+      ref: activities
+    - text: 手作課程使用三星在地農產品，從材料加工成可食用成品。
+      ref: activities
+  activities:
+    - 依工作人員指示站在觀察位置，比較鹿與羊的耳朵和毛色。
+    - 做手作前先辨認材料，完成後說說外形有什麼改變。
+agentTips:
+  - 先選單純動物區或含DIY的套票，確認孩子的收費資格與當天手作內容。
+  - 餵食方式、可用草料與動物休息安排依工作人員說明，不自行帶食物接近動物。
+nearby: []
+transport:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 公車
+      value: 園方列1794至富興站後步行約3分鐘；另可搭1792至田心仔，步行約1.2公里。班次與步行環境出發前另確認。
+      ref: contact
+    - status: ok
+      label: 導航與洽詢
+      value: 以行健溪一路二段161號為目的地，避免導向其他園區；活動及交通可洽0935-514-462。
+      ref: home
+hoursAndFees:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 營業時間
+      value: 官網列09:00–17:00，出發前可確認當日開放與課程安排。
+      ref: contact
+    - status: ok
+      label: 動物區入園票
+      value: 成人250元、敬老200元、兒童50元；兒童及優惠資格購票前向園方確認。
+      ref: home
+    - status: ok
+      label: DIY套票
+      value: 成人350元、優待300元、兒童50元；包含入園及當日安排的一項手作，內容與適用資格先確認。
+      ref: activities
+familyChecklist:
+  checkedAt: 2026-10-16
+  stroller:
+    status: unknown
+  nursingRoom:
+    status: unknown
+  familyToilet:
+    status: unknown
+  rainyDay:
+    status: unknown
+  accessibility:
+    status: unknown
+  notes: 推車、哺乳空間、親子及無障礙廁所、雨天體驗調整尚未取得明確官方說明，先向農場詢問。

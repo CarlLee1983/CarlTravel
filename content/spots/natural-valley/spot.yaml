@@ -1,0 +1,93 @@
+name: 自然谷環境信託基地
+address: 新竹縣芎林鄉華龍村鹿寮坑3鄰207號（三合院聯絡點，活動集合依通知）
+county: 新竹縣
+district: 芎林鄉
+kind: 其他
+setting: 室內外皆有
+summary: 以簡報與周邊導覽認識信託森林保育。
+illustration:
+  kind: ai-generated
+  alt: 自動監測相機與畫有葉片的筆記本，遠處疊映森林的保育教育水彩意象。
+  sha256: d59f7f87d42541dee0b3f1cb7125aee418f6c4cbeba0b29f75317190e703b3fa
+  width: 1536
+  height: 1024
+ageRange:
+  status: unknown
+officialRefs:
+  - id: guide
+    title: 鹿寮坑里山公益導覽資訊
+    url: https://teia.tw/archives/natural_event_info/activity3
+    organization: 自然保育與環境資訊基金會自然谷團隊
+    kind: page
+  - id: trust
+    title: 自然谷環境教育與保育介紹
+    url: https://tnf.org.tw/event/tour2026naturalvalley
+    organization: 自然保育與環境資訊基金會
+    kind: page
+  - id: biodiversity
+    title: 自然谷動植物調查成果
+    url: https://tnf.org.tw/archives/49693
+    organization: 自然保育與環境資訊基金會
+    kind: page
+sources: []
+authorNotes: []
+facilities:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 活動飲水
+      value: 公益導覽注意事項列提供飲水，參與者需帶自己的杯子。
+      ref: guide
+withKids:
+  checkedAt: 2026-10-16
+  facts:
+    - text: 團隊透過室內簡報說明環境公益信託，介紹森林如何受到長期守護。
+      ref: guide
+    - text: 森林保育工作包含用自動相機監測野生動物，並與鹿寮坑社區合作。
+      ref: trust
+    - text: 團隊曾以相機與錄音設備累積自然谷的動物監測資料，並公布第二次生態調查成果。
+      ref: biodiversity
+  activities:
+    - 看簡報時挑一種動物，問解說員如何在不打擾牠的情況下留下紀錄。
+    - 參加戶外場次時，沿當期開放路線比較不同植物的葉片。
+agentTips:
+  - 先看當期戶外場域，確認是周邊步道、農場或果園，再決定是否報名。
+  - 不把旅遊資料上的定位地址當自由進入森林的入口；依行前通知到集合點。
+nearby: []
+transport:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 聯絡與集合
+      value: 官網聯絡點為鹿寮坑207號三合院；各期戶外場域會改變，先完成報名，再依行前通知確認交通和集合處，電話03-593-6619。
+      ref: guide
+    - status: ok
+      label: 大眾運輸預約
+      value: 園方列可從高鐵新竹站或竹東車站預約幸福巴士進入芎林，須確認該期集合處能否抵達及回程安排。
+      ref: guide
+hoursAndFees:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 森林進入限制
+      value: 核心保育森林不開放非工作人員進入。公益活動以室內介紹和季節場域導覽認識基地，不能直接前往森林參觀。
+      ref: guide
+    - status: ok
+      label: 活動報名
+      value: 每月規劃一梯次公益導覽，散客或家庭事前報名；公司行號及5人以上團體需另洽。各期場域與內容依通知調整。
+      ref: guide
+    - status: unpublished
+      label: 現行活動費用與一般參訪時段
+familyChecklist:
+  checkedAt: 2026-10-16
+  stroller:
+    status: unknown
+  nursingRoom:
+    status: unknown
+  familyToilet:
+    status: unknown
+  rainyDay:
+    status: unknown
+  accessibility:
+    status: unknown
+  notes: 各期參訪場域不同，推車動線、廁所、哺乳與雨天安排需在報名前向團隊確認。

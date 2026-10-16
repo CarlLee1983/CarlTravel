@@ -1,0 +1,100 @@
+name: 斑比山丘休閒農場
+address: 宜蘭縣冬山鄉下湖路285號
+county: 宜蘭縣
+district: 冬山鄉
+kind: 農場
+setting: 戶外
+summary: 梅花鹿與水豚互動區，推車輪椅需寄放。
+illustration:
+  kind: ai-generated
+  alt: 梅花鹿站在樹蔭下，左側水豚在草地休息的水彩動物意象。
+  sha256: b60740a524263cc5913bf71773bc9d1bf8cd9d2e332ae762f7245ef18bbb28ef
+  width: 1536
+  height: 1024
+ageRange:
+  status: unknown
+officialRefs:
+  - id: park
+    title: 斑比山丘票價交通與入園規則
+    url: https://www.bambiland.com.tw/
+    organization: 斑比山丘休閒農場
+    kind: page
+  - id: map
+    title: 斑比山丘園區導覽
+    url: https://www.bambiland.com.tw/map.html
+    organization: 斑比山丘休閒農場
+    kind: page
+sources: []
+authorNotes: []
+facilities:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 推車與輪椅寄放
+      value: 推車和輪椅不能進入動物互動區，園內提供寄放處。
+      ref: park
+    - status: ok
+      label: 行李
+      value: 園內設有退幣式行李寄物櫃。
+      ref: park
+withKids:
+  checkedAt: 2026-10-16
+  facts:
+    - text: 園方介紹戶外的梅花鹿與水豚互動區，餵食須使用園區提供或販售的飼料。
+      ref: park
+  activities:
+    - 依工作人員指示站定，比較梅花鹿與水豚的身形和吃東西時的動作。
+    - 觀察動物休息時與走動時的姿勢，留出牠們移動的空間。
+agentTips:
+  - 帶推車或輪椅的家庭先確認互動區限制能否配合，再決定參觀方式。
+  - 雨天先確認現場狀況，選符合園方規則的雨具，別把有開園當成全程有遮雨。
+nearby: []
+transport:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 羅東轉乘
+      value: 羅東轉運站可轉281公車，在橫圳路口下車，再步行約750公尺至園區；出發前確認班次。
+      ref: park
+    - status: ok
+      label: 園區位置
+      value: 導覽頁列冬山鄉下湖路285號，入口依現場指示。
+      ref: map
+hoursAndFees:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 開園時間
+      value: 平日10:00–17:00，週末及國定假日09:00–17:00，每日最晚16:30入園。
+      ref: park
+    - status: ok
+      label: 一般及優待門票
+      value: 全票200元含1份飼料；65歲以上、持身心障礙手冊者及其陪同者可憑證購50元優待票，優待票不含飼料。
+      ref: park
+    - status: ok
+      label: 幼兒免票
+      value: 官網免票條件寫0至5歲以下孩童，且每名孩子至少由1名成人陪同；歲數邊界請向園方確認。
+      ref: park
+    - status: ok
+      label: 購票方式
+      value: 可現場購票，無須事先預約；線上票需到櫃檯換票。
+      ref: park
+familyChecklist:
+  checkedAt: 2026-10-16
+  stroller:
+    status: no
+    ref: park
+    note: 限動物互動區不允許推車，園方提供寄放並建議用嬰兒背帶。
+  nursingRoom:
+    status: unknown
+  familyToilet:
+    status: unknown
+  rainyDay:
+    status: yes
+    ref: park
+    note: 園方說雨天仍開放互動，場域在戶外；需自備雨具，互動區禁止輕便雨衣及鞋套。
+  accessibility:
+    status: no
+    ref: park
+    note: 動物互動區不允許輪椅；其餘空間的通行條件須另洽園方。
+  notes: 哺乳及親子廁所尚未確認；需要協助可先透過斑比山丘官方粉絲專頁詢問。

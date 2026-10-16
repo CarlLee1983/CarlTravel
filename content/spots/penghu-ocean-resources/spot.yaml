@@ -1,0 +1,135 @@
+name: 澎湖海洋資源館
+address: 澎湖縣馬公市中華路230號
+county: 澎湖縣
+district: 馬公市
+kind: 博物館
+setting: 室內
+summary: 從海洋生態與漁業展示認識澎湖。
+illustration:
+  kind: ai-generated
+  alt: 木製漁船、漁網與繩索搭配潮間帶海藻的水彩漁業文化意象
+  sha256: 61a788f4fb5fe26e01eecd0f85b645bc9fb975749216ffaa77a5c219e2507710
+  width: 1536
+  height: 1024
+ageRange:
+  status: unknown
+officialRefs:
+  - id: visit
+    title: 入館與導覽須知
+    url: https://www.penghu.gov.tw/phorh/ch/home.jsp?id=13
+    organization: 澎湖縣政府文化局
+    kind: page
+  - id: prices
+    title: 收費標準
+    url: https://www.penghu.gov.tw/phorh/ch/home.jsp?id=12
+    organization: 澎湖縣政府文化局
+    kind: page
+  - id: home
+    title: 館方首頁現行參觀資訊
+    url: https://www.penghu.gov.tw/phorh/ch/index.jsp
+    organization: 澎湖縣政府文化局
+    kind: page
+  - id: space
+    title: 空間導覽與平面圖
+    url: https://www.penghu.gov.tw/phorh/ch/home.jsp?id=17
+    organization: 澎湖縣政府文化局
+    kind: page
+  - id: traffic
+    title: 交通資訊
+    url: https://www.penghu.gov.tw/phorh/ch/home.jsp?id=20
+    organization: 澎湖縣政府文化局
+    kind: page
+  - id: winter
+    title: 2026冬季館舍限期免票公告
+    url: https://www.penghu.gov.tw/phorh/ch/home.jsp?id=14&act=view&dataserno=11510150007&mserno=201507210001
+    organization: 澎湖縣政府文化局
+    kind: page
+  - id: county
+    title: 主題館及展示館彙整
+    url: https://www.penghu.gov.tw/ch/home.jsp?id=10028
+    organization: 澎湖縣政府
+    kind: page
+sources: []
+authorNotes: []
+facilities:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: A館與B館
+      value: A館介紹珊瑚礁、潮間帶、演化、海藻與保育；B館展示漁具、漁村生活、漁船演進及漁業資源。館方以海洋文化與生態展示為主。
+      ref: space
+    - status: ok
+      label: 參觀規範
+      value: 館方禁止飲食、抽菸、嚼檳榔及攝影拍照；工作需要攝影須發函獲准。
+      ref: visit
+withKids:
+  checkedAt: 2026-10-16
+  facts:
+    - text: A館從潮間帶、生物演化到保育，B館呈現漁村生活與漁具，展示海洋生態和居民生活。
+      ref: space
+  activities:
+    - 選一種海洋生物展示，再到B館找一項漁具，討論人如何使用海洋資源與維持保育。
+agentTips:
+  - 把上午或下午其中一段留給參觀，避開12:00–14:00休息時間；與孩子口頭記下觀察內容再離館整理。
+nearby: []
+transport:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 位置與公車
+      value: 位於文化局園區中華路230號；館方列湖西、白沙、西嶼方向公車可於文化局站下車。
+      ref: traffic
+    - status: ok
+      label: 停車位置
+      value: 館方A、B館平面圖標示兩館前方停車場。
+      ref: space
+    - status: unpublished
+      label: 停車收費與實際開放車位
+hoursAndFees:
+  checkedAt: 2026-10-16
+  facts:
+    - status: conflict
+      label: 每週休館日
+      claims:
+        - value: 館方首頁與入館須知列週四至週一09:00–12:00、14:00–17:00；週二、週三及國定假日休館。
+          ref: home
+        - value: 縣府展示館彙整列週三至週日09:00–12:00、14:00–17:00；週一、週二及國定假日休館。
+          ref: county
+      contact: 星期一或三尤其請先致電06-9210405轉6403確認，勿只依縣府彙整頁排程。
+    - status: ok
+      label: 限期免票方案
+      value: 2026年10月15日公告，文化局所屬館舍於2026年10月16日至2027年1月13日免票，博物館護照暫停販售。這是活動期間方案。
+      ref: winter
+    - status: ok
+      label: 一般收費標準
+      value: 一般全票30元、10人以上團體20元、持有效學籍學生證半票15元。
+      ref: prices
+    - status: conflict
+      label: 6歲兒童一般資格邊界
+      claims:
+        - value: 收費頁半票對象包含6–12歲兒童，同頁免費又列六歲以下兒童且須家長陪同。
+          ref: prices
+        - value: 入館須知免費明列6歲（含）以下兒童。
+          ref: visit
+      contact: 限期免票結束後，剛滿6歲資格請先向06-9210405轉6403確認，不以年齡推定半票。
+    - status: ok
+      label: 其他一般免費資格
+      value: 65歲以上本國或外籍長者、身障者及監護人或必要陪伴者1人、設籍本縣或首次戶籍登記本縣者等可憑證免費，完整資格依收費頁。
+      ref: prices
+    - status: ok
+      label: 入館與團體導覽
+      value: 下午16:30停止售票；團體請提前一週申請並電話確認，每組30人、同時不超過60人。
+      ref: visit
+familyChecklist:
+  checkedAt: 2026-10-16
+  stroller:
+    status: unknown
+  nursingRoom:
+    status: unknown
+  familyToilet:
+    status: unknown
+  rainyDay:
+    status: unknown
+  accessibility:
+    status: unknown
+  notes: 平面圖僅標化妝室，未確認親子照護設備或無障礙動線；A、B館之間是否全程遮雨也未明。

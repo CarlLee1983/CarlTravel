@@ -1,0 +1,68 @@
+name: 埔心牧場
+address: 桃園市楊梅區高榮里幼獅路一段439號
+county: 桃園市
+district: 楊梅區
+kind: 農場
+setting: 戶外
+summary: 2026年2月起公告休園，重開日期未確認。
+illustration:
+  kind: ai-generated
+  alt: 無字的合起筆記本與綠色草穗，在暖米色紙面上的靜物水彩意象。
+  sha256: c4865f9692688221e0a1b8e2efbec6ccc89664b20a465e86e58c25fa2187c51b
+  width: 1536
+  height: 1024
+ageRange:
+  status: unknown
+officialRefs:
+  - id: closure
+    title: 埔心牧場休園重整公告
+    url: https://www.pushin-ranch.com/news-detail/170/
+    organization: 埔心牧場
+    kind: page
+  - id: home
+    title: 埔心牧場官網
+    url: https://www.pushin-ranch.com/
+    organization: 埔心牧場
+    kind: page
+sources: []
+authorNotes: []
+agentTips:
+  - 目前先確認重開公告與可參訪範圍，再決定是否排入行程。
+nearby: []
+transport:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 出發前聯絡
+      value: 官網列03-464-4132分機123或125；先確認是否恢復營運，再安排交通，請勿依舊遊園資訊直接前往。
+      ref: home
+hoursAndFees:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 休園重整
+      value: 園方於2026年2月11日公告，自2月23日春節假期結束後休園重整。
+      ref: closure
+    - status: conflict
+      label: 官網營運資訊落差
+      claims:
+        - value: 具日期的公告說明2026年2月23日起休園。
+          ref: closure
+        - value: 首頁版面仍顯示今日營業09:00–17:00及既有活動介紹。
+          ref: home
+      contact: 尚未查得明確重開公告，請向03-464-4132確認；頁首時段不能當成已恢復營業的證據。
+    - status: unpublished
+      label: 重新開放日期與重開後票價
+familyChecklist:
+  checkedAt: 2026-10-16
+  stroller:
+    status: unknown
+  nursingRoom:
+    status: unknown
+  familyToilet:
+    status: unknown
+  rainyDay:
+    status: unknown
+  accessibility:
+    status: unknown
+  notes: 重新開放後的親子設施、租借服務與通行條件均待確認；先確認營運狀態，再詢問所需服務。

@@ -1,0 +1,103 @@
+name: 五股濕地生態園區
+address: 新北市五股區成蘆橋下P18號橋墩旁（五股濕地教育中心集合點）
+county: 新北市
+district: 五股區
+kind: 公園
+setting: 戶外
+summary: 沿遊憩步道看水鳥與河口濕地植物。
+illustration:
+  kind: ai-generated
+  alt: 蘆葦與水筆仔圍繞淺水泥灘，遠處水鳥覓食的濕地水彩意象。
+  sha256: d8e00384dab76b2c7036bdf2a4aa04e894f1547393ebac93cb0bd83c1e675b4c
+  width: 1536
+  height: 1024
+ageRange:
+  status: unknown
+officialRefs:
+  - id: habitat
+    title: 五股濕地分區與生態介紹
+    url: https://www.hrcm.ntpc.gov.tw/Topic/TypeDetail/濕地介紹/五股濕地?GrandParentUserKey=濕地樂活
+    organization: 新北市政府高灘地工程管理處
+    kind: page
+  - id: center
+    title: 荒野自然中心資訊
+    url: https://www.sow.org.tw/Nature_Center
+    organization: 荒野保護協會
+    kind: page
+  - id: guide
+    title: 五股濕地2026年10月導覽公告
+    url: https://www.sow.org.tw/civicrm/event/info?id=14396&reset=1
+    organization: 荒野保護協會
+    kind: page
+sources: []
+authorNotes: []
+facilities:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 教育中心廁所與飲水
+      value: 自然中心資訊列2間廁所，沒有飲水機，飲水需自行攜帶；未說明廁所是否為親子或無障礙規格。
+      ref: center
+withKids:
+  checkedAt: 2026-10-16
+  facts:
+    - text: 濕地包含水塘、泥灘及不同高度的草地，是野生動物棲息的環境。
+      ref: habitat
+    - text: 此地可見蘆葦、水筆仔等濕地植物，並有鳥類與昆蟲的監測紀錄。
+      ref: habitat
+  activities:
+    - 站在開放步道上，比較泥灘和水池旁植物的差異。
+    - 用望遠鏡找水鳥，記下牠停在水中、草邊還是泥灘。
+agentTips:
+  - 先確認參加的導覽是否還有名額，日常散步與導覽報名分開安排。
+  - 帶飲水、防曬及雨具，沿開放步道觀察，避免為靠近動物走入蘆葦叢或水域。
+nearby: []
+transport:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 集合點
+      value: 以成蘆橋下P18號橋墩旁的教育中心為找路基準；此處是導覽集合點，不代表濕地全區入口。
+      ref: guide
+    - status: ok
+      label: 捷運步行
+      value: 從蘆洲站1號出口沿三民路往成蘆橋，經蘆堤二號陸橋越堤，循斜坡至橋下教育中心。
+      ref: guide
+    - status: ok
+      label: 停車
+      value: 官方導覽交通指引列有五股濕地停車場，收費與現場車位另行確認。
+      ref: guide
+    - status: conflict
+      label: 教育中心行政區標示
+      claims:
+        - value: 本期導覽公告將成蘆橋下教育中心列在五股區。
+          ref: guide
+        - value: 自然中心總覽將同名場域位置列在蘆洲區。
+          ref: center
+      contact: 找路請以成蘆橋下P18號橋墩為準，或致電荒野台北分會02-2307-1317分機17確認。
+hoursAndFees:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 可進入範圍
+      value: 一般民眾可進入遊憩分區；核心分區禁止進入，一般保護分區不建議自行進入。請留在現場開放動線。
+      ref: habitat
+    - status: unpublished
+      label: 日常開放時段及一般門票資訊
+    - status: ok
+      label: 導覽參加
+      value: 荒野另辦需報名的生態導覽；2026年10月公告的單場活動免費，不能當作每日固定服務，場次與名額須向主辦確認。
+      ref: guide
+familyChecklist:
+  checkedAt: 2026-10-16
+  stroller:
+    status: unknown
+  nursingRoom:
+    status: unknown
+  familyToilet:
+    status: unknown
+  rainyDay:
+    status: unknown
+  accessibility:
+    status: unknown
+  notes: 推車路線、哺乳空間、親子及無障礙廁所尚未確認；有特定需求可先洽荒野台北分會。

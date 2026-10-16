@@ -1,0 +1,137 @@
+name: 六福村主題遊樂園
+address: 新竹縣關西鎮仁安里拱子溝60號
+county: 新竹縣
+district: 關西鎮
+kind: 動物園／水族館
+setting: 室內外皆有
+summary: 在主題樂園的非洲部落觀察草食動物與猛獸。
+illustration:
+  kind: ai-generated
+  alt: 白犀牛站在綠草與水岸旁，遠方為柔和山林的水彩情境插畫
+  sha256: 5332ef6f62b9fff109bd4a46f17cf08d6aa3a6b99001b290fcd8136bb06c4ba7
+  width: 1536
+  height: 1024
+ageRange:
+  status: unknown
+officialRefs:
+  - id: traffic
+    title: 六福村交通指南
+    url: https://leofoovillage.com.tw/Infos/TrafficGuide/
+    organization: 六福村主題遊樂園
+    kind: page
+  - id: tickets
+    title: 六福村票價資訊
+    url: https://leofoovillage.com.tw/Infos/Tickets/
+    organization: 六福村主題遊樂園
+    kind: page
+  - id: hours
+    title: 六福村營業時間
+    url: https://leofoovillage.com.tw/Infos/BussinessHours/
+    organization: 六福村主題遊樂園
+    kind: page
+  - id: services
+    title: 六福村遊客服務
+    url: https://leofoovillage.com.tw/Infos/TouristServices/
+    organization: 六福村主題遊樂園
+    kind: page
+  - id: map
+    title: 六福村園區導覽
+    url: https://leofoovillage.com.tw/Infos/Map/
+    organization: 六福村主題遊樂園
+    kind: page
+  - id: animals
+    title: 六福村動物展示區
+    url: https://leofoovillage.com.tw/Zoo/9b5777c5-b424-44cd-807d-58d2db17c577
+    organization: 六福村主題遊樂園
+    kind: page
+  - id: inspection
+    title: 2026年六福村督導考核改善公告
+    url: https://admin.taiwan.net.tw/News/News?a=36&id=36339&p=2
+    organization: 交通部觀光署
+    kind: page
+sources: []
+authorNotes: []
+facilities:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 嬰兒車與輪椅
+      value: 售票口右側遊客服務中心提供租借；嬰兒車不能平躺，官方限制為6至48個月、身高100公分以下及體重15公斤以下。
+      ref: services
+    - status: ok
+      label: 動物展示區規範
+      value: 動物展示區公告禁止餵食；另購體驗須依園方當次規範參加。
+      ref: animals
+    - status: ok
+      label: 設施停用公告
+      value: 觀光署2026年9月公告指出蘇丹王大冒險與飛毯已停止使用。園內各設施開放情況另依最新維護及現場公告。
+      ref: inspection
+withKids:
+  checkedAt: 2026-10-16
+  facts:
+    - text: 非洲部落的動物展示包含猴類、羊駝、狐獴與臺灣黑熊。
+      ref: animals
+    - text: 蒸氣火車行經草食動物區，官方列舉河馬、野牛與白犀牛；猛獸巴士則行經猛獸區。
+      ref: animals
+  activities:
+    - 乘車時選兩種動物，比較牠們進食與移動的方式。
+    - 在觀察位置找動物的耳朵、尾巴與身體花紋，描述看到的差異。
+agentTips:
+  - 把動物區排在較早時段，離開前再核對其他主題區的個別關閉時間。
+  - 先量好孩子身高，再查欲搭乘設施的限制，避免只按票種判斷能否搭乘。
+nearby: []
+transport:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 自行開車
+      value: 中文交通指南建議由國道三號高原交流道下，依沿途指標前往園區。
+      ref: traffic
+    - status: ok
+      label: 停車
+      value: 園區提供小客車與遊覽車停車空間；汽車每次200元、機車每次100元，離場前繳費。
+      ref: traffic
+    - status: ok
+      label: 大眾運輸
+      value: 可由中壢搭亞通客運5653線，或搭5350線前往；高鐵新竹站可轉觀光2號，該線限週六、週日及國定假日行駛，班次出發前重查。
+      ref: traffic
+hoursAndFees:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 園區時間（2026年10月）
+      value: 月份時刻表列平日09:30–17:00，週五延長至19:30；假日09:00–19:30，17:00後只開放美國大西部。其他月份另查官網。
+      ref: hours
+    - status: ok
+      label: 動物區時間（2026年10月）
+      value: 非洲部落平日09:30–16:00、假日09:00–16:30；蒸氣火車與猴園平日09:45起、猛獸巴士平日10:00起，假日均09:30起，結束時間同為平日16:00、假日16:30。仍可能依天候與保養調整。
+      ref: hours
+    - status: ok
+      label: 主題樂園牌價
+      value: 成人票1400元、學生票1200元、學童票1000元、幼童票800元、博愛票700元。票種另有年齡、身高與證件條件，購票前核對官方表格；水樂園及雙園票另計。
+      ref: tickets
+    - status: ok
+      label: 幼兒免票與額外付費
+      value: 有家長陪同的未滿3歲或身高100公分以下幼兒可免票，幼兒園團體不適用。一般門票涵蓋四大園區與動物園，特殊體驗、動物餵食及部分遊戲需另外付費。
+      ref: tickets
+familyChecklist:
+  checkedAt: 2026-10-16
+  stroller:
+    status: yes
+    ref: services
+    note: 有嬰兒車租借；車型與使用條件另有限制。
+  nursingRoom:
+    status: yes
+    ref: map
+    note: 園區導覽列有哺乳室，入園時可先確認所在位置。
+  familyToilet:
+    status: yes
+    ref: services
+    note: 遊客服務頁列有親子廁所。
+  rainyDay:
+    status: unknown
+  accessibility:
+    status: yes
+    ref: services
+    note: 官方列有輪椅坡道、無障礙廁所與專用停車區；特定設施搭乘需求須向工作人員確認。
+  notes: 動物區及遊樂設施會受天候、維護與個別搭乘限制影響，不能用園區閉園時間推定每項設施都仍開放。

@@ -1,0 +1,127 @@
+name: 初鹿牧場
+address: 臺東縣卑南鄉明峰村牧場1號
+county: 臺東縣
+district: 卑南鄉
+kind: 農場
+setting: 室內外皆有
+summary: 在坡地牧場觀察乳牛與山羊。
+illustration:
+  kind: ai-generated
+  alt: 迷你馬站在牧草地，山羊與乳牛分立遠處的水彩示意
+  sha256: e29a8c230e50277318b92a0c3cce6236ae1fcff1b1187bf8d4425c1526c8a11d
+  width: 1536
+  height: 1024
+ageRange:
+  status: unknown
+officialRefs:
+  - id: tickets
+    title: 牧場票價資訊
+    url: https://home.chuluranch.com.tw/ticket.php
+    organization: 初鹿牧場
+    kind: page
+  - id: qa
+    title: 動物與入園常見問題
+    url: https://home.chuluranch.com.tw/qa-ranch.php
+    organization: 初鹿牧場
+    kind: page
+  - id: work
+    title: 動線施工公告
+    url: https://home.chuluranch.com.tw/news-cont.php?id=62
+    organization: 初鹿牧場
+    kind: page
+  - id: traffic
+    title: 牧場交通指引
+    url: https://home.chuluranch.com.tw/traffic.php
+    organization: 初鹿牧場
+    kind: page
+  - id: town
+    title: 卑南鄉景點介紹
+    url: https://www.beinan.gov.tw/portfolio-item/初鹿牧場/
+    organization: 卑南鄉公所
+    kind: page
+  - id: tour
+    title: 無障礙旅遊指引
+    url: https://www.taiwan.net.tw/m1.aspx?id=8227&sNo=0001016
+    organization: 交通部觀光署
+    kind: page
+sources: []
+authorNotes: []
+facilities:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 施工與動線
+      value: 園方2026年3月23日公告新門市及動物互動區施工，局部圍籬與動線會調整；公告稱圍籬外餵食、餐飲及門市持續服務。
+      ref: work
+withKids:
+  checkedAt: 2026-10-16
+  facts:
+    - text: 園方FAQ列放牧觀賞區有退休乳牛、迷你馬與努比亞山羊。
+      ref: qa
+  activities:
+    - 沿現場允許的動線觀察乳牛與山羊吃草的方式。
+agentTips:
+  - 行前確認施工進度與可參觀區域，依現場圍籬及引導行走。
+  - 接觸動物前詢問工作人員，只使用牧場提供的餵食材料。
+nearby: []
+transport:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 地址
+      value: 臺東縣卑南鄉明峰村牧場1號。
+      ref: traffic
+    - status: ok
+      label: 公共運輸
+      value: 觀光署指引可搭台灣好行8168A縱谷鹿野線至初鹿牧場站；無障礙乘車須預約。
+      ref: tour
+    - status: ok
+      label: 停車費
+      value: 汽車50元，機車30元。
+      ref: tickets
+    - status: conflict
+      label: 台9線轉入里程
+      claims:
+        - value: 園方交通頁列台9線362公里處轉文泰路。
+          ref: traffic
+        - value: 卑南鄉公所列台9線366公里處轉文泰路。
+          ref: town
+      contact: 里程標示不一致，請以牧場1號及現場指標確認，或洽089-571002。
+hoursAndFees:
+  checkedAt: 2026-10-16
+  facts:
+    - status: ok
+      label: 營業與體驗
+      value: 08:00–17:00；各項體驗至16:30，門票不抵消費。
+      ref: tickets
+    - status: ok
+      label: 全票與兒童優惠
+      value: 平日全票100元、兒童優惠80元；國定假日、例假日及7–8月分別為200與180元。票價圖兒童資格寫「7歲以上未滿12歲(含)」，12歲是否適用語意不明，請洽089-571002確認。
+      ref: tickets
+    - status: ok
+      label: 長者、縣民與免票
+      value: 65歲以上、身障陪同一位及臺東縣民票平日50元／假日100元；6歲以下與身障本人依證件免票。
+      ref: tickets
+    - status: conflict
+      label: 寒假計價口徑
+      claims:
+        - value: 園方票價圖將7–8月列入假日票適用欄。
+          ref: tickets
+        - value: 鄉公所文字將寒暑假都列入假日票適用期間。
+          ref: town
+      contact: 寒假適用價格未一致，購票前洽089-571002確認。
+familyChecklist:
+  checkedAt: 2026-10-16
+  stroller:
+    status: unknown
+  nursingRoom:
+    status: unknown
+  familyToilet:
+    status: unknown
+  rainyDay:
+    status: unknown
+  accessibility:
+    status: yes
+    ref: tour
+    note: 觀光署列無障礙廁所、停車位及輪椅借用；施工期間先確認可走路線。
+  notes: 推車完整路線、哺乳室、親子廁所及雨天活動尚未核實，洽089-571002。
