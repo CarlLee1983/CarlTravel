@@ -19,6 +19,7 @@
     "format:check": "prettier --check .",
     "check": "astro check",
     "check:content": "node scripts/site.mjs check-content",
+    "check:scale": "node --experimental-strip-types scripts/scale/check-scale.ts",
     "check:output": "node --experimental-strip-types scripts/check-output.ts",
     "test": "node --experimental-strip-types --test tests/*.test.ts",
     "test:e2e": "pnpm build:fixture && playwright test",

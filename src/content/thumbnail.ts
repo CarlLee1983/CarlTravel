@@ -1,9 +1,12 @@
 import sharp from "sharp";
 
-export const thumbnailWidth = 336;
-export const thumbnailHeight = 224;
-export const thumbnailVersion = "landscape-v2";
-export const thumbnailUrl = (id: string) => `/spot-thumbnails/${id}.webp`;
+export {
+  thumbnailWidth,
+  thumbnailHeight,
+  thumbnailVersion,
+  thumbnailUrl,
+} from "./list-card.ts";
+import { thumbnailWidth, thumbnailHeight } from "./list-card.ts";
 
 // Call only with pixels returned by readIllustration; never accept paths or URLs.
 // Match the landscape illustrations; cover avoids padded bands for other ratios.

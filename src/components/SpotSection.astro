@@ -1,0 +1,92 @@
+---
+import { isStale } from "../content/presentation.ts";
+import type { SectionTag } from "../content/spot-page.ts";
+interface Props {
+  id: string;
+  title: string;
+  gist: string;
+  tag?: SectionTag;
+  checkedAt?: string;
+  buildDate: string;
+  open?: boolean;
+}
+const {
+  id,
+  title,
+  gist,
+  tag,
+  checkedAt,
+  buildDate,
+  open = false,
+} = Astro.props;
+const tagText = {
+  official: "官方資訊",
+  author: "原作者心得",
+  agent: "Agent 建議",
+} as const;
+---
+
+<details id={id} open={open}>
+  <summary>
+    <span class="section-title">{title}</span>
+    {gist && <span class="g">{gist}</span>}
+  </summary>
+  <div class="body">
+    {
+      tag && (
+        <p class={`info-label ${tag}`}>
+          {tagText[tag]}
+          {checkedAt && (
+            <>
+              {" "}
+              · 查證 <time datetime={checkedAt}>{checkedAt}</time>
+            </>
+          )}
+        </p>
+      )
+    }
+    {
+      checkedAt && isStale(checkedAt, buildDate) && (
+        <p class="stale-note">查證已逾一年，請再確認</p>
+      )
+    }
+    <slot />
+  </div>
+</details>
+<style>
+  details {
+    border-bottom: 1px solid var(--line);
+    scroll-margin-top: 8px;
+  }
+  summary {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 12px;
+    min-height: 56px;
+    padding: 8px 4px;
+    cursor: pointer;
+  }
+  .section-title {
+    font-size: 18px;
+    font-weight: 700;
+  }
+  .g {
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .body {
+    padding: 0 4px 20px;
+  }
+  .info-label {
+    margin: 0;
+    padding: 2px 10px;
+    font-size: 14px;
+  }
+  .stale-note {
+    padding: 8px 12px;
+    background: var(--surface);
+    border-left: 3px solid var(--ground);
+    font-size: 15px;
+  }
+</style>

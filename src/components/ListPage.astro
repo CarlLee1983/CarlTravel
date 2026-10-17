@@ -1,0 +1,715 @@
+---
+// 景點列表頁：`/`（第 1 頁，含首頁介紹）與 `/page/N/`（第 2 頁以後，只有搜尋、範圍文字、列表與分頁器）共用。
+// 靜態頁只能是無條件的分頁；有條件時由 src/browser/search.ts 依列表 JSON 在瀏覽器端渲染，見 docs/adr/0003。
+import { outingIllustrationAlt } from "../site.ts";
+import { loadPageSpots } from "../content/preview.ts";
+import SpotCard from "./SpotCard.astro";
+import { buildList } from "../content/list-build.ts";
+import { cardView } from "../content/list-card.ts";
+import {
+  ageNoteText,
+  optionLabel,
+  paginatorHtml,
+  rangeText,
+  resultsButtonText,
+} from "../content/list-html.ts";
+import { listEntries } from "../content/list-pages.ts";
+import { filterKeys, filterOptions, queryList } from "../content/list-query.ts";
+import { staticPath } from "../content/list-url.ts";
+interface Props {
+  page: number;
+}
+const { page } = Astro.props;
+const spots = await loadPageSpots(__CARLTRAVEL_DRAFT_PREVIEW__);
+// 卡片與瀏覽器端渲染吃同一份列表資料，經 encode／decode 取得同樣的 ListEntry。
+const entries = listEntries(spots);
+const result = queryList(entries, { page: String(page) });
+const previews = new Map(spots.map((spot) => [spot.id, spot.preview]));
+const listUrl = spots.length > 0 ? (await buildList()).url : "";
+const intro = page === 1;
+// 帶文字查詢進站時，主程式還在下載就先起跑 Pagefind 與列表 JSON：索引要經過好幾個相依請求，
+// 等主程式才開始會超過 4 秒（見 docs/acceptance.md）。主程式的 import() 與 fetch() 會接上已發出的請求。
+const earlyStart = `if (new URLSearchParams(location.search).get("query")?.trim()) {
+  import("/pagefind/pagefind.js").then((pagefind) => pagefind.init()).catch(() => {});
+  for (const href of ["/pagefind/spot-ids.json", ${JSON.stringify(listUrl)}]) {
+    const link = document.createElement("link");
+    link.rel = "preload";
+    link.as = "fetch";
+    link.crossOrigin = "anonymous";
+    link.href = href;
+    document.head.append(link);
+  }
+}`;
+// 選項與可見性由查詢模組決定，瀏覽器端依條件與文字命中重算同一份；
+// 這裡輸出無條件時的初始狀態，避免載入列表資料前版面跳動
+const filterLabels = {
+  county: ["縣市", "全部縣市"],
+  district: ["行政區", "全部行政區"],
+  kind: ["類型", "全部類型"],
+  setting: ["環境", "全部環境"],
+  age: ["年齡帶", "全部年齡"],
+} as const;
+const initialOptions = filterOptions(entries, {});
+const filters = filterKeys.map((name) => ({
+  name,
+  label: filterLabels[name][0],
+  all: filterLabels[name][1],
+  visible: initialOptions[name].visible,
+  options: initialOptions[name].options,
+}));
+---
+
+{
+  intro && (
+    <section class="cover" aria-label="台灣親子出遊筆記">
+      <div class="cover-intro">
+        <h1 class="outing-title">找一處，一起出發。</h1>
+        <p>從地區與出遊條件，找適合一起探索的景點。</p>
+      </div>
+      <figure class="outing-art">
+        {/* 700px 以下插畫以 display:none 隱藏，display:none 的 img 仍會下載；
+             手機寬度改指向 1x1 的 data URI，瀏覽器就不會請求 2.7 MB 的 PNG */}
+        <picture>
+          <source
+            media="(max-width: 700px)"
+            srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
+          />
+          <img
+            src="/illustrations/family-outing.png"
+            width="1536"
+            height="1024"
+            alt={outingIllustrationAlt}
+          />
+        </picture>
+      </figure>
+    </section>
+  )
+}
+<div class="browse-layout" id="browse" tabindex="-1">
+  {!intro && <h1 class="sr-only">景點列表 第 {page} 頁</h1>}
+  {
+    spots.length > 0 && (
+      <aside aria-labelledby="browse-heading" class="browse-tools">
+        <h2 id="browse-heading" class="sr-only">
+          搜尋與篩選
+        </h2>
+        <form id="spot-search" role="search" aria-label="景點搜尋與篩選">
+          <fieldset disabled>
+            <legend class="sr-only">搜尋與出遊條件</legend>
+            <div class="search-row">
+              <div class="search-input">
+                <label for="query">搜尋景點</label>
+                <input
+                  id="query"
+                  name="query"
+                  type="search"
+                  placeholder="景點名稱或內容"
+                  autocomplete="off"
+                  enterkeyhint="search"
+                />
+              </div>
+              <button type="submit">搜尋</button>
+            </div>
+            <div class="filter-toolbar">
+              <details id="filter-options">
+                <summary>
+                  篩選條件
+                  <span id="filter-count" />
+                </summary>
+                <div class="filter-fields">
+                  {filters.map((filter) => (
+                    <div class="filter" hidden={!filter.visible}>
+                      <label for={`filter-${filter.name}`}>
+                        {filter.label}
+                      </label>
+                      <select id={`filter-${filter.name}`} name={filter.name}>
+                        <option value="">{filter.all}</option>
+                        {filter.options.map((option) => (
+                          <option
+                            value={option.value}
+                            disabled={option.disabled}
+                          >
+                            {optionLabel(option.value, option.count)}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  ))}
+                </div>
+                <button class="show-results" id="show-results" type="button">
+                  {resultsButtonText(result.range.total)}
+                </button>
+              </details>
+              <button class="clear-filters" type="reset">
+                清除條件
+              </button>
+            </div>
+            <div id="active-filters" aria-label="已選條件" hidden />
+          </fieldset>
+        </form>
+        <p class="search-help">搜尋與篩選需要 JavaScript</p>
+      </aside>
+    )
+  }
+  <section
+    aria-labelledby="spots-heading"
+    class="results"
+    data-list-url={listUrl}
+    data-static-page={page}
+    data-total-pages={result.totalPages}
+  >
+    <div class="results-heading">
+      <h2 id="spots-heading">景點列表</h2>
+      <p class="meta" id="order-note">依縣市北到南 · 同縣市依名稱</p>
+    </div>
+    {
+      spots.length > 0 && (
+        <p
+          id="range-text"
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
+          tabindex="-1"
+          data-state="ready"
+        >
+          {rangeText(result.range)}
+        </p>
+      )
+    }
+    {
+      spots.length > 0 && (
+        <p id="age-note" hidden>
+          <a href="/">{ageNoteText(0)}</a>
+        </p>
+      )
+    }
+    {
+      intro && (
+        <p class="checklist-help">
+          親子條件依官方資料整理；未知不代表沒有，使用限制請看出處。
+        </p>
+      )
+    }
+    <div id="no-results" class="empty" hidden>
+      <h3>換個條件，再找找。</h3>
+      <p>沒有符合條件的景點，請調整搜尋文字或清除條件。</p>
+      <ul id="recovery" class="recovery"></ul>
+      <a id="clear-all" href="/">清除條件</a>
+    </div>
+    {
+      spots.length === 0 ? (
+        <div class="empty">
+          <h3>下一次出發，從這裡開始。</h3>
+          <p>目前尚無公開景點，待內容完成查證與審閱後陸續加入。</p>
+          <a href="/about/">
+            了解景點如何整理 <span aria-hidden="true">↗</span>
+          </a>
+        </div>
+      ) : (
+        <>
+          <a
+            class="skip-pager"
+            href="#paginator"
+            hidden={result.totalPages < 2}
+          >
+            跳到分頁
+          </a>
+          <ul class="spots" aria-busy="false">
+            {result.rows.map((entry) => (
+              <SpotCard
+                card={cardView(entry)}
+                preview={previews.get(entry.id)}
+              />
+            ))}
+          </ul>
+          <nav
+            id="paginator"
+            class="paginator"
+            aria-label="分頁"
+            tabindex="-1"
+            hidden={result.totalPages < 2}
+            set:html={paginatorHtml(page, result.totalPages, staticPath)}
+          />
+        </>
+      )
+    }
+  </section>
+</div>
+{
+  intro && (
+    <section class="reading-note" aria-labelledby="reading-heading">
+      <div>
+        <h2 id="reading-heading">
+          出發之前，
+          <br />
+          讀得清楚。
+        </h2>
+        <p>Agent 研究查證、整理草稿，經 Carl 審閱後公開。</p>
+        <a href="/about/">認識本站的整理方式</a>
+      </div>
+      <dl class="information-types">
+        <div>
+          <dt>官方資訊</dt>
+          <dd>事實附官方出處與查證日期。</dd>
+        </div>
+        <div>
+          <dt>原作者心得</dt>
+          <dd>轉述造訪觀點，連回完整原文。</dd>
+        </div>
+        <div>
+          <dt>Agent 建議</dt>
+          <dd>提供規劃參考，與事實分開。</dd>
+        </div>
+      </dl>
+    </section>
+  )
+}
+{intro && listUrl && <script is:inline set:html={earlyStart} />}
+<script>
+  import "../browser/search.ts";
+</script>
+<style>
+  :global(main:has(.cover)) {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  .cover {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 32px;
+    max-width: 1360px;
+    margin: 0 auto;
+    padding: 32px 0 24px;
+  }
+  .outing-title {
+    margin: 0 0 12px;
+    font-size: clamp(28px, 3.5vw, 48px);
+    line-height: 1.25;
+  }
+  .cover-intro p {
+    margin: 0;
+    font-size: 18px;
+  }
+  .outing-art {
+    margin: 0;
+    width: 200px;
+    flex: none;
+  }
+  .outing-art picture {
+    display: block;
+  }
+  .outing-art img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .browse-layout {
+    max-width: 1360px;
+    margin-inline: auto;
+    padding-bottom: 56px;
+    scroll-margin-top: 24px;
+  }
+  .browse-tools {
+    padding: 24px;
+    background: var(--paper-deep);
+    border-radius: 16px;
+  }
+  fieldset {
+    border: 0;
+    padding: 0;
+    margin: 0;
+    min-width: 0;
+  }
+  .search-row {
+    display: flex;
+    align-items: end;
+    gap: 12px;
+  }
+  .search-input {
+    flex: 1;
+    min-width: 0;
+  }
+  label {
+    display: block;
+    font-size: 16px;
+    margin-bottom: 6px;
+    font-weight: 500;
+  }
+  input,
+  select,
+  button,
+  summary {
+    font: inherit;
+    font-size: 16px;
+  }
+  input,
+  select {
+    width: 100%;
+    min-width: 0;
+    min-height: 48px;
+    border: 1px solid #7b98a8;
+    border-radius: 8px;
+    padding: 10px 12px;
+    background: var(--paper);
+    color: var(--ink);
+  }
+  button {
+    min-height: 44px;
+    padding: 10px 16px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--ink);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    cursor: pointer;
+    touch-action: manipulation;
+    user-select: none;
+  }
+  button:focus-visible {
+    outline-color: var(--ink);
+  }
+  button[type="submit"] {
+    min-height: 48px;
+    background: var(--ground);
+    color: var(--paper);
+    text-decoration: none;
+  }
+  button:disabled {
+    cursor: default;
+  }
+  .filter-toolbar {
+    position: relative;
+    margin-top: 12px;
+  }
+  summary {
+    cursor: pointer;
+    width: fit-content;
+    min-height: 44px;
+    padding: 8px 4px;
+    touch-action: manipulation;
+  }
+  #filter-count {
+    margin-left: 8px;
+    font-variant-numeric: tabular-nums;
+  }
+  .clear-filters {
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+  .filter-fields {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    padding: 12px 0 4px;
+  }
+  #active-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .search-help {
+    margin: 12px 0 0;
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  [hidden] {
+    display: none !important;
+  }
+  .results {
+    margin-top: 32px;
+    scroll-margin-top: 16px;
+  }
+  /* 沒有 JavaScript 時搜尋與篩選不能用，連控制項都不輸出（fieldset 另保持 disabled 作後備） */
+  @media (scripting: none) {
+    #spot-search {
+      display: none;
+    }
+  }
+  @media (scripting: enabled) {
+    .search-help {
+      display: none;
+    }
+  }
+  .skip-pager {
+    position: absolute;
+    left: -9999px;
+    padding: 10px 14px;
+    background: var(--paper);
+    border-radius: 8px;
+  }
+  .skip-pager:focus {
+    position: static;
+    display: inline-block;
+    margin-bottom: 12px;
+  }
+  .results-heading {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px 24px;
+  }
+  .results-heading h2 {
+    margin: 0;
+    font-size: 28px;
+  }
+  .results-heading p {
+    margin: 0;
+    font-size: 14px;
+  }
+  #range-text {
+    margin: 8px 0;
+    min-height: 26px;
+    font-size: 16px;
+    font-variant-numeric: tabular-nums;
+  }
+  #range-text[data-state="loading"] {
+    color: var(--ground);
+  }
+  #range-text[data-state="error"] {
+    padding: 12px 16px;
+    background: var(--paper-deep);
+    border-radius: 8px;
+  }
+  .checklist-help {
+    margin: 0 0 20px;
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .empty {
+    background: var(--paper-deep);
+    border-radius: 12px;
+    padding: 24px;
+  }
+  .empty h3 {
+    margin: 0 0 16px;
+  }
+  .empty p {
+    margin: 0;
+  }
+  #age-note {
+    margin: 0 0 12px;
+    font-size: 15px;
+  }
+  #age-note a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+  .show-results {
+    margin-top: 12px;
+    min-height: 48px;
+    background: var(--ground);
+    color: var(--paper);
+    text-decoration: none;
+  }
+  .empty a,
+  .empty button {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    margin-top: 16px;
+  }
+  .reading-note {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 48px;
+    background: var(--surface);
+    margin: 0 calc(-1 * var(--gutter));
+    padding: 48px max(var(--gutter), calc((100% - 1360px) / 2 + var(--gutter)));
+  }
+  .reading-note h2 {
+    margin: 0 0 24px;
+    font-size: 32px;
+  }
+  .information-types {
+    margin: 0;
+  }
+  .information-types > div {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 24px;
+    padding-block: 20px;
+  }
+  .information-types dt {
+    font-size: 24px;
+    font-family: var(--font-display);
+    font-weight: 700;
+  }
+  .information-types dd {
+    margin: 0;
+    align-self: center;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    button[type="submit"]:hover,
+    .show-results:hover {
+      background: var(--ink);
+    }
+    button[type="reset"]:hover {
+      background: var(--cover);
+    }
+    input:hover,
+    select:hover {
+      border-color: var(--ground);
+    }
+  }
+  @media (max-width: 700px) {
+    .cover {
+      padding-block: 24px 20px;
+    }
+    .outing-title {
+      font-size: 28px;
+    }
+    .cover-intro p {
+      font-size: 16px;
+    }
+    .outing-art {
+      display: none;
+    }
+    .browse-tools {
+      padding: 16px;
+    }
+    .filter-fields {
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .show-results {
+      width: 100%;
+    }
+    .results {
+      margin-top: 24px;
+    }
+    .results-heading h2 {
+      font-size: 24px;
+    }
+    .checklist-help {
+      margin-bottom: 16px;
+    }
+    .reading-note {
+      grid-template-columns: 1fr;
+      gap: 24px;
+      padding-block: 32px;
+    }
+    .reading-note h2 {
+      font-size: 24px;
+    }
+    .reading-note h2 br {
+      display: none;
+    }
+    .information-types > div {
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+  }
+</style>
+<style is:global>
+  /* 已選條件標籤由 search.ts 動態建立，分頁器則是字串渲染，所以用全域樣式 */
+  #active-filters button {
+    min-height: 44px;
+    padding: 8px 14px;
+    border: 1px solid #7b98a8;
+    border-radius: 999px;
+    background: var(--paper);
+    font-size: 15px;
+    text-decoration: none;
+    text-align: left;
+    overflow-wrap: anywhere;
+  }
+  #active-filters button span {
+    margin-left: 12px;
+  }
+  .recovery {
+    display: grid;
+    gap: 4px;
+    margin: 16px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .recovery li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 16px;
+  }
+  .recovery a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+  .paginator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 24px;
+  }
+  .paginator a,
+  .paginator .page-step {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 8px 14px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 16px;
+    font-variant-numeric: tabular-nums;
+  }
+  .paginator a {
+    background: var(--paper-deep);
+    color: var(--ink);
+  }
+  .paginator a[aria-current="page"] {
+    background: var(--ground);
+    color: var(--paper);
+  }
+  .paginator .page-hole {
+    visibility: hidden;
+  }
+  .paginator .page-status {
+    min-width: 72px;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+  }
+  .paginator .page-numbers {
+    display: none;
+    align-items: center;
+    gap: 4px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .paginator .page-gap {
+    padding: 0 4px;
+  }
+  @media (min-width: 701px) {
+    .paginator .page-status {
+      display: none;
+    }
+    .paginator .page-numbers {
+      display: flex;
+    }
+  }
+  @media (hover: hover) and (pointer: fine) {
+    #active-filters button:hover,
+    .paginator a:hover {
+      background: var(--cover);
+    }
+  }
+</style>

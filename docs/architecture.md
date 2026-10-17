@@ -2,7 +2,7 @@
 
 正式資料是 `content/spots/<id>/spot.yaml`；本機草稿是 `drafts/spots/<id>/spot.yaml`。兩者可選擇同層的 `illustration.png`，由 YAML 雜湊與尺寸綁定。內容使用 `src/content/schema.ts` 與 `loadSpots`，由位置識別草稿，沒有持久化的 draft 欄位。頁面才使用 `loadPageSpots` 在一般開發時覆蓋同 id；插畫路由也選同一個草稿或正式根目錄。Astro 的實際 dev 指令啟用預覽，獨立正式建置不讀草稿。快取更新與驗證見[開發文件](development.md)。
 
-公開頁面渲染已驗證內容。sitemap 與 Pagefind 持續使用單一正式／fixture 根目錄；研究工具不呼叫公開建置，也不把私人資料複製到 src、content 或 public。公開資產、直接檔案請求與格式化工具的私人路徑保護沿用第 05 票。完整私人 sitemap／Pagefind 外洩檢查已由第 07 票整合。
+公開頁面渲染已驗證內容。sitemap、Pagefind 與列表 JSON（`/spot-list/<雜湊>.json`）持續只使用單一正式／fixture 根目錄；研究工具不呼叫公開建置，也不把私人資料複製到 src、content 或 public。公開資產、直接檔案請求與格式化工具的私人路徑保護沿用第 05 票。完整私人 sitemap／Pagefind 外洩檢查已由第 07 票整合。
 
 旅遊來源的 `research/<來源 id>/` 保存原文、Carl 備註、讀取證據、拆分與勾選、官方查詢及送審清單；純官方資料的 `research/official/<景點 id>/` 保存備註、勾選、官方查詢及送審清單，不建立旅遊原文。這些資料只由本機研究／發布關卡讀取，不進 Git、公開資產或 CI artifact。`source.md` 的固定標題與讀取歷程是不可讀例外的依據；沒有額外 JSON/YAML 研究 schema。旅遊來源 id 同時保留於公開 sources 參照；純官方資料的 sources 與 authorNotes 為空，官方事實使用 officialRefs。
 

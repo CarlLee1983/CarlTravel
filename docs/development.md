@@ -4,7 +4,7 @@
 
 ```sh
 pnpm install --frozen-lockfile
-pnpm exec playwright install chromium
+pnpm exec playwright install chromium webkit
 pnpm dev:fixture
 ```
 
@@ -21,8 +21,9 @@ pnpm dev:fixture
 | `pnpm format` / `pnpm format:check`           | 格式化／檢查應用程式與測試；不改既有規劃文件                             |
 | `pnpm check`                                  | Astro 與 TypeScript 檢查                                                 |
 | `pnpm check:content`                          | 載入並驗證正式 YAML                                                      |
-| `pnpm test`                                   | Node 內容載入接受／拒絕測試                                              |
-| `pnpm test:e2e`                               | 建置 fixture，以 Playwright 測導航、出處、日期、鍵盤、axe 與五種螢幕寬度 |
+| `pnpm test`                                   | Node 單元測試（內容、列表查詢與標記、輸出檢查、發布流程等）               |
+| `pnpm test:e2e`                               | 建置 fixture，以 Playwright 測使用者流程、axe（多條路由 × 5 種寬度）與無 JavaScript 案例；Chromium 全跑，WebKit 只跑 `@smoke`，範圍見[公開介面](public-interface.md#驗證入口與範圍) |
+| `pnpm check:scale`                            | 產生 6,000 筆虛構景點並建置到暫存目錄，檢查輸出檔案數與列表 JSON 大小；結束即刪除，不碰 `dist/`  |
 | `pnpm verify`                                 | 共用整合關卡；最後重建並檢查正式輸出                                     |
 
 ## 內容載入責任
@@ -36,6 +37,44 @@ pnpm dev:fixture
 `src/content/mode.ts` 統一選擇根目錄及輸出位置：正式讀 `content/spots/`、輸出 `dist/`；fixture 讀 `tests/fixtures/spots/`、輸出 `dist-fixture/`。兩者共用 schema、載入與頁面，沒有複製內容到正式目錄的步驟。
 
 `pnpm` 公開指令經 `scripts/site.mjs` 清除繼承的 fixture 環境變數；只有明確的 fixture 指令才啟用它。因此 `CARLTRAVEL_FIXTURE=1 pnpm build` 仍建置正式內容。直接呼叫 Astro 是內部開發入口，不能替代正式建置指令。fixture 頁面有醒目標示與 noindex。測試 server 不重用其他行程；不要把 `dist-fixture/` 當部署輸入。
+
+## 規模產生器與 e2e fixture
+
+`scripts/scale/generate-spots.ts` 以固定種子產生虛構景點。同一組種子與筆數，每次都產生逐位元組相同的 `spot.yaml` 與插畫，且通過現有 schema 與行政區驗證。輸出只寫到暫存目錄；指定的 `--out` 若在專案目錄內會直接拒絕，所以不會進 Git，也不會碰 `content/`。
+
+```sh
+node --experimental-strip-types scripts/scale/generate-spots.ts [--seed 20261017] [--count 60] [--out <專案外的目錄>]
+```
+
+沒給 `--out` 時建立 `carltravel-spots-*` 暫存目錄，stdout 只印出該路徑。產生的 id 為 `fx-00001` 起，名稱都帶「（虛構）」。每第 20 筆是完整形態並附共用的 1536×1024 插畫，每第 7 筆是已知年齡但無插畫的公開資料頁形態，其餘年齡未標示且親子條件全為未知。前四筆固定為臺中市與高雄市各兩個行政區，所以任何筆數都涵蓋兩層縣市與行政區。
+
+`pnpm build:fixture` 與 `pnpm dev:fixture` 由 `scripts/site.mjs` 先呼叫 `scripts/scale/fixture-root.ts`，把手寫的 `tests/fixtures/spots`（2 筆）與固定種子（`FIXTURE_SEED`）產生的 `FIXTURE_COUNT`（60）筆組成暫存內容根目錄，經 `CARLTRAVEL_FIXTURE_ROOT` 交給 `src/content/mode.ts`，結束時刪除。該變數只在 fixture 模式有效，`scripts/site.mjs` 也會清掉繼承而來的值。e2e 因此看到 62 筆景點；`e2e/fixture.ts` 的 `TOTAL_SPOTS` 與 `OUTDOOR_SPOTS` 由 `FIXTURE_COUNT` 與 `describeSpots` 推導，不必手動同步（手寫 2 筆的數量是該檔內的常數）。
+
+產生景點的名稱同樣納入 `pnpm check:output` 的洩漏檢查，與手寫 fixture 一視同仁。WebKit project 只執行標題含 `@smoke` 的案例（瀏覽與景點頁、文字搜尋、篩選還原與移除），其餘案例只在 Chromium 執行。
+
+## 手動驗收
+
+兩項不進 CI 的手動驗收：6,000 筆的計時預算用 `scripts/scale/perf.mjs`（見下一節與[驗收文件](acceptance.md)的量測紀錄）；螢幕閱讀器行為用 [VoiceOver 手動清單](voiceover-checklist.md)，由人在 macOS Safari 逐項走過。
+
+加壓找競態時，用 `E2E_PORT=<空閒埠> pnpm exec playwright test --repeat-each=3 --workers=10`（`pnpm build:fixture` 後）。
+
+## 列表 JSON 與規模檢查
+
+建置會輸出單一檔案 `/spot-list/<內容雜湊前 16 碼>.json`（`src/pages/spot-list/[hash].json.ts`），內容是 `{ fields, rows }`：`fields` 為欄位名稱，`rows` 的每列是同順序的位置陣列。欄位依序為 id、name、county、district、kind、setting、summary、illustration（`[雜湊前 16 碼, alt]` 或 null）、age（`[min, max 或 null]`，未知為 null）、family（五項親子條件壓成 5 位數字字串，順序為推車、哺乳室、親子廁所、雨天備案、無障礙，0 未知、1 有、2 無）、checkedAt（親子條件查證日期）、status（營運狀態，目前一律 null）。編碼與解碼都在 `src/content/list.ts`，瀏覽器端用同一個 `decodeList`；頁面以 `src/content/list-build.ts` 的 `buildList()` 取得網址，雜湊由內容決定，不需要另存清單檔。
+
+`pnpm check:output` 另外檢查：輸出檔案總數 ≤ 18,000；列表 JSON 原始 ≤ 1.5 MB、brotli 後 ≤ 400 KB；JSON 筆數等於正式景點數，且不含 fixture 名稱或 fixture／草稿 id。上限與檢查函式集中在 `scripts/output-budget.ts`，發布流程的隔離檢查與 `check:scale` 都重用它。
+
+`pnpm check:scale`（PR CI 的 `scale` 工作）用固定種子產生 6,000 筆，經 `CARLTRAVEL_FIXTURE_ROOT` 與 `astro build --outDir` 建置到暫存目錄，對輸出跑檔案數與列表 JSON 檢查，印出實際數字後刪除暫存目錄。加 `--keep` 會保留（目錄內有 `spots/` 與 `dist/`），供下面的量測腳本使用：
+
+```sh
+node --experimental-strip-types scripts/scale/check-scale.ts --keep
+node scripts/scale/perf.mjs <暫存目錄>/dist 3 / "/?county=臺南市" /spots/fx-00001/
+node scripts/scale/perf.mjs <暫存目錄>/dist 3 "/?query=公園"   # 第一次文字搜尋
+```
+
+帶 `query` 的網址會多印 `pagefindBytes`／`pagefindRequests`：`/pagefind/` 底下（含 `spot-ids.json`）的傳輸量與請求數，預算 ≤ 300 KB。Pagefind 在 Web Worker 裡載入索引，頁面的 CDP 量不到，所以由量測用的靜態伺服器累計壓縮後的回應本文。
+
+`scripts/scale/perf.mjs` 只在手動執行，不進 CI。條件固定為 390px 視窗、4 倍 CPU 降速、Slow 4G、無快取，靜態伺服器以 brotli 回應文字檔；輸出每個路徑的 FCP、LCP、TBT、傳輸量等中位數與逐次樣本。建置秒數用 `time pnpm check:scale`（暖快取指第二次執行）。結果附在 PR，不寫進 CI 門檻。
 
 第 05 票讓一般開發預覽讀取 `drafts/spots/`；`research/` 不由網站載入，兩者持續由 Git 排除。正式及 fixture 建置、fixture 開發仍不載入草稿。CI 與部署關卡依後續票加入同一條 verify；目前不宣稱可上線，不執行部署。
 
@@ -51,7 +90,7 @@ Astro 提供靜態頁面與型別檢查；`yaml` 解析單檔內容，`zod` 共�
 
 ## 第 03 票：公開介面與授權
 
-首頁採 D 組合版面，景點頁提供依內容生成的章節目錄；關於頁與 404 共用站內導覽、授權及免責入口。第 03 票先保留搜尋篩選版面，第 04 票已補上實際行為。路由、響應式布局與驗證邊界見[公開介面與無障礙驗證](public-interface.md)。
+首頁採 D 組合版面，景點頁提供「出發前確認」卡與摺疊章節；關於頁與 404 共用站內導覽、授權及免責入口。第 03 票先保留搜尋篩選版面，第 04 票已補上實際行為。路由、響應式布局與驗證邊界見[公開介面與無障礙驗證](public-interface.md)。
 
 `src/site.ts` 保存母規格指定的正式 origin；Astro 設定與 sitemap／輸出檢查共用。`/sitemap.xml` 僅從正式內容載入器建立首頁、關於頁與正式景點的絕對網址，不掃描頁面目錄。fixture sitemap 為空；正式輸出關卡要求三種基本頁面（首頁、關於頁、404）存在，並比對 sitemap 的完整網址集合，拒絕缺漏、重複、錯誤網域及非正式路徑。來源集合沒有變更，也沒有新增套件或部署設定。
 
@@ -64,6 +103,8 @@ Astro 提供靜態頁面與型別檢查；`yaml` 解析單檔內容，`zod` 共�
 完整搜尋操作：`pnpm build:fixture && pnpm preview:fixture`，首頁輸入「範例」或景點名稱，搭配縣市、類型、環境、年齡帶縮小結果，使用「清除條件」還原。搜尋按 Enter 或按鈕立即執行，輸入時也會短暫延遲後搜尋；選單可透過原生鍵盤操作。一般 `pnpm dev:fixture` 不產生索引，只提供即時頁面與條件篩選，完整搜尋需重新建置並預覽。
 
 新增固定版本 `pagefind@1.5.2` 作為建置依賴，提供靜態全文索引、中文斷詞與瀏覽器搜尋，不新增伺服器服務。建置 hook、欄位白名單、失敗及無 JavaScript 行為見[公開介面](public-interface.md#搜尋索引與模式)。Astro 設定將資產輸出為外部檔，避免此版本將搜尋程式內嵌時留下尚未完成的 Vite 動態載入引用，並讓瀏覽器可快取搜尋程式。
+
+`scripts/search-index.ts` 依賴 Pagefind 未公開的片段格式（gunzip 後以 `pagefind_dcd` 前綴辨識的片段內容，用來建立命中 id 到景點 id 的對照表）；這不是文件化的 API，升級 Pagefind 時要重新確認該格式，格式不符時建置索引會丟錯。
 
 `pnpm verify` 自動在正式／fixture 建置後各產生該模式索引；最後的正式輸出檢查要求索引模組存在，並比對 Pagefind 的頁數與正式景點數，避免空正式站殘留 fixture 索引。這個筆數檢查不取代後續發布票對私人草稿、同 id 修訂及每個搜尋網址的隔離驗證。現有 YAML 資料契約不變，篩選值由同一批景點推導；沒有另存需要維護的景點資料。
 

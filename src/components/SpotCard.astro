@@ -1,0 +1,116 @@
+---
+// 列表卡片（已知才列）。標記由 list-html.ts 的 cardItemHtml 產生，瀏覽器端依列表 JSON
+// 渲染時用同一個函式，兩邊的卡片因此完全相同。內容全由 cardView 產生。
+import type { CardView } from "../content/list-card.ts";
+import { cardItemHtml } from "../content/list-html.ts";
+interface Props {
+  card: CardView;
+  preview?: string;
+}
+const { card, preview } = Astro.props;
+---
+
+<Fragment set:html={cardItemHtml(card, preview)} />
+
+<style is:global>
+  /* 全域樣式：卡片由字串渲染（含瀏覽器端產生的），沒有 Astro 的 scope 屬性 */
+  .spots {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .spots > li {
+    position: relative;
+    padding: 24px;
+    border-radius: 12px;
+    background: var(--paper-deep);
+  }
+  .spots > li + li {
+    margin-top: 12px;
+  }
+  .spots > li:has(.spot-card h3 a:focus-visible) {
+    outline: 3px solid var(--ink);
+    outline-offset: 2px;
+  }
+  .spot-card {
+    display: grid;
+    gap: 8px;
+  }
+  .spot-card p,
+  .spot-card h3 {
+    margin: 0;
+  }
+  .spot-card h3 {
+    font-size: 22px;
+    line-height: 1.4;
+    text-wrap: pretty;
+  }
+  .spot-card h3 a {
+    text-decoration: none;
+  }
+  .spot-card h3 a::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+  }
+  .spot-card h3 a:focus-visible {
+    outline: none;
+  }
+  .spot-card .card-meta,
+  .spot-card .card-note {
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .spot-card .card-status {
+    width: fit-content;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #8a3b12;
+    background: #fbe9dd;
+  }
+  .spot-card .card-body {
+    display: flex;
+    gap: 12px;
+    align-items: start;
+  }
+  .spot-card .card-body img {
+    flex: none;
+    width: 72px;
+    height: 48px;
+    object-fit: cover;
+    border-radius: 6px;
+  }
+  .spot-card .card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 4px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .spot-card .card-tags li {
+    padding: 4px 10px;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    background: var(--paper);
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .spot-card .card-tags li[data-negative] {
+    border-color: #7b98a8;
+    background: transparent;
+  }
+  @media (max-width: 700px) {
+    .spots > li {
+      padding: 20px;
+    }
+  }
+  @media (min-width: 701px) {
+    .spot-card h3 {
+      font-size: 24px;
+    }
+  }
+</style>

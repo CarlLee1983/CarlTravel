@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
+import { range } from "./fixture.ts";
 
 const license = "https://creativecommons.org/licenses/by-nc/4.0/";
 
@@ -20,74 +21,46 @@ test("readers can find the content license and disclaimer from every page", asyn
     );
     const footer = page.getByRole("contentinfo");
     await expect(
-      footer.getByRole("link", { name: /CC BY-NC 4.0/ }),
+      footer.getByRole("link", { name: "內容授權" }),
     ).toHaveAttribute("href", "/about/#license");
-    await footer.getByRole("link", { name: "完整免責聲明" }).click();
+    await footer.getByRole("link", { name: "使用前確認" }).click();
     await expect(page).toHaveURL(/\/about\/#disclaimer$/);
     await expect(
-      page.getByRole("heading", { name: "使用資訊前，請再確認" }),
+      page.getByRole("heading", { name: "使用前確認" }),
     ).toBeInViewport();
-    await expect(page.getByText(/未知不代表沒有/)).toBeVisible();
+    await expect(
+      page.locator("section:has(#disclaimer)").getByText(/未知不代表沒有/),
+    ).toBeVisible();
     await expect(
       page.getByRole("link", { name: "CC BY-NC 4.0 授權條款" }),
     ).toHaveAttribute("href", license);
     await page
       .getByRole("navigation", { name: "站內導覽" })
-      .getByRole("link", { name: "景點索引" })
+      .getByRole("link", { name: "景點列表" })
       .click();
     await expect(page).toHaveURL(/\/$/);
   }
 });
 
-test("spot contents links match existing sections and work with the keyboard on mobile", async ({
+test("spot section rows replace the contents list and work with the keyboard on mobile", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 360, height: 800 });
-  for (const [route, labels] of [
-    [
-      "/spots/example-park/",
-      [
-        "親子清單",
-        "開放時間與費用",
-        "交通與停車",
-        "來源與官方出處",
-        "免責聲明",
-      ],
-    ],
-    [
-      "/spots/example-museum/",
-      [
-        "親子清單",
-        "開放時間與費用",
-        "交通與停車",
-        "設施",
-        "跟孩子一起看",
-        "原作者心得",
-        "Agent 建議",
-        "周邊安排",
-        "來源與官方出處",
-        "免責聲明",
-      ],
-    ],
-  ] as const) {
-    await page.goto(route);
-    const contents = page.getByRole("navigation", { name: "景點章節目錄" });
-    await expect(contents.getByRole("link")).toHaveText([...labels]);
-    for (const link of await contents.getByRole("link").all()) {
-      const href = await link.getAttribute("href");
-      expect(href).toMatch(/^#/);
-      await expect(page.locator(href!)).toHaveCount(1);
-    }
-    await contents.getByRole("link").first().focus();
-    for (let i = 1; i < labels.length; i++) await page.keyboard.press("Tab");
-    await expect(contents.getByRole("link").last()).toBeFocused();
-    await expect(contents.getByRole("link").last()).toBeInViewport();
-    await page.keyboard.press("Enter");
-    await expect(page.locator("#spot-disclaimer")).toBeInViewport();
-    await expect(page.locator("#spot-disclaimer")).toBeFocused();
-    await page.getByRole("link", { name: "閱讀完整免責聲明" }).click();
-    await expect(page).toHaveURL(/\/about\/#disclaimer$/);
-  }
+  await page.goto("/spots/example-park/");
+  await expect(
+    page.getByRole("navigation", { name: "景點章節目錄" }),
+  ).toHaveCount(0);
+  const hours = page.locator("#hours");
+  await hours.locator("summary").focus();
+  await page.keyboard.press("Enter");
+  await expect(hours).toHaveAttribute("open", "");
+  await page.keyboard.press("Enter");
+  await expect(hours).not.toHaveAttribute("open", "");
+  await page.goto("/spots/example-park/#spot-disclaimer");
+  await expect(page.locator("#spot-disclaimer")).toBeInViewport();
+  await expect(page.locator("#spot-disclaimer")).toBeFocused();
+  await page.getByRole("link", { name: "查看使用前確認" }).click();
+  await expect(page).toHaveURL(/\/about\/#disclaimer$/);
 });
 
 test("compact home shows search before the list at desktop and mobile widths", async ({
@@ -103,7 +76,7 @@ test("compact home shows search before the list at desktop and mobile widths", a
     ).toBeVisible();
     if (width === 390) {
       const firstCard = (await results
-        .locator("li[data-spot-url]")
+        .locator(".spots > li")
         .first()
         .boundingBox())!;
       expect(firstCard.y).toBeLessThan(900);
@@ -114,7 +87,7 @@ test("compact home shows search before the list at desktop and mobile widths", a
     );
     await browsing.locator("#filter-options > summary").click();
     await expect(browsing.getByRole("combobox")).toHaveCount(4);
-    await expect(results.getByRole("heading", { level: 3 })).toHaveText([
+    await expect(results.getByRole("heading", { level: 3 })).toContainText([
       "範例親子公園",
       "範例探索館",
     ]);
@@ -148,15 +121,18 @@ for (const width of [390, 1024, 1200, 1366]) {
     await expect(search).toBeInViewport();
     await search.fill("範例");
     await search.press("Enter");
-    await expect(page.getByRole("status")).toHaveText("找到 2 個景點。");
+    await expect(page.getByRole("status")).toHaveText(range(1, 2, 2));
     expect(await page.evaluate(() => document.getAnimations().length)).toBe(0);
   });
 }
 
 for (const route of [
   "/",
+  "/page/2/",
+  "/?setting=%E6%88%B6%E5%A4%96&page=2",
   "/spots/example-park/",
   "/spots/example-museum/",
+  "/spots/fx-00001/",
   "/about/",
   "/does-not-exist/",
 ]) {
@@ -166,6 +142,12 @@ for (const route of [
     }) => {
       await page.setViewportSize({ width, height: 900 });
       await page.goto(route);
+      // 帶條件的網址要等前端渲染完成再檢查
+      if (route.includes("?"))
+        await expect(page.getByRole("status")).toHaveAttribute(
+          "data-state",
+          "ready",
+        );
       expect(
         await page.evaluate(
           () => document.documentElement.scrollWidth <= window.innerWidth,
@@ -194,4 +176,120 @@ test("fixture sitemap is valid XML and exposes no test pages", async ({
       };
     }),
   ).toEqual({ errors: 0, urls: 0 });
+});
+
+test("@smoke header marks the list as the current location on spot pages and always links to the list start", async ({
+  page,
+}) => {
+  const list = page
+    .getByRole("navigation", { name: "站內導覽" })
+    .getByRole("link", { name: "景點列表" });
+  await page.goto("/spots/example-park/");
+  await expect(list).toHaveAttribute("href", "/");
+  await expect(list).toHaveAttribute("aria-current", "true");
+  await page.goto("/");
+  await expect(list).toHaveAttribute("aria-current", "page");
+  await page.goto("/page/2/");
+  await expect(list).toHaveAttribute("href", "/");
+  await expect(list).toHaveAttribute("aria-current", "page");
+  await page.goto("/about/");
+  await expect(list).not.toHaveAttribute("aria-current", /.*/);
+});
+
+test("footer signature is plain text and footer links are at least 44px tall", async ({
+  page,
+}) => {
+  for (const route of [
+    "/",
+    "/spots/example-park/",
+    "/about/",
+    "/does-not-exist/",
+  ]) {
+    await page.setViewportSize({ width: 360, height: 800 });
+    await page.goto(route);
+    const footer = page.getByRole("contentinfo");
+    const links = footer.getByRole("link");
+    await expect(links).toHaveText(["使用前確認", "內容授權"]);
+    for (const link of await links.all()) {
+      expect((await link.boundingBox())!.height).toBeGreaterThanOrEqual(44);
+    }
+    await expect(footer.getByText("台灣親子出遊筆記")).toBeVisible();
+    await expect(footer.locator('[aria-label="CarlTravel 首頁"]')).toHaveCount(
+      0,
+    );
+    await expect(footer.locator("p a")).toHaveCount(0);
+  }
+});
+
+test("retired names do not appear anywhere on the site", async ({ page }) => {
+  for (const route of [
+    "/",
+    "/spots/example-park/",
+    "/spots/example-museum/",
+    "/about/",
+    "/does-not-exist/",
+  ]) {
+    await page.goto(route);
+    const text = await page.locator("body").innerText();
+    expect(text).not.toContain("完整免責聲明");
+    expect(text).not.toContain("景點索引");
+  }
+});
+
+test("about page explains the five unknown terms", async ({ page }) => {
+  await page.goto("/about/");
+  const section = page.getByRole("region", { name: "看到「未知」時" });
+  await expect(
+    section.getByRole("heading", { level: 2, name: "看到「未知」時" }),
+  ).toBeVisible();
+  for (const term of [
+    "未知",
+    "年齡未標示",
+    "尚未整理",
+    "官方未公布",
+    "官方資訊有衝突",
+  ]) {
+    await expect(
+      section.getByRole("term").filter({ hasText: term }),
+    ).toHaveCount(1);
+  }
+  await expect(section.getByText("未知不代表沒有")).toBeVisible();
+});
+
+test("@smoke 404 search form sends the keyword to the list", async ({
+  page,
+}) => {
+  await page.goto("/does-not-exist/");
+  await expect(
+    page.getByRole("link", { name: "回到景點列表" }),
+  ).toHaveAttribute("href", "/");
+  await expect(
+    page.getByRole("link", { name: "認識 CarlTravel" }),
+  ).toBeVisible();
+  const search = page.getByRole("searchbox", { name: "搜尋景點" });
+  await expect(search).toHaveValue("");
+  await search.fill("範例");
+  await search.press("Enter");
+  await expect(page).toHaveURL(/\/\?query=%E7%AF%84%E4%BE%8B$/);
+  await expect(page.getByRole("status")).toHaveText(range(1, 2, 2));
+});
+
+test("without JavaScript a 404 search lands on the list with the explanation", async ({
+  browser,
+}) => {
+  const context = await browser.newContext({ javaScriptEnabled: false });
+  try {
+    const page = await context.newPage();
+    await page.goto("/does-not-exist/");
+    await page.getByRole("searchbox", { name: "搜尋景點" }).fill("範例");
+    await page.getByRole("button", { name: "搜尋" }).click();
+    await expect(page).toHaveURL(/\/\?query=/);
+    await expect(page.getByRole("heading", { name: /景點列表/ })).toBeVisible();
+    await expect(page.getByText("搜尋與篩選需要 JavaScript")).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: "範例探索館", exact: true }),
+    ).toBeVisible();
+  } finally {
+    await context.close();
+  }
 });

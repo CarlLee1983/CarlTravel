@@ -11,13 +11,31 @@ import {
   readIllustration,
 } from "../src/content/illustration.ts";
 
+import {
+  FIXTURE_COUNT,
+  FIXTURE_SEED,
+  describeSpots,
+} from "./scale/generate-spots.ts";
 import { renderThumbnail, thumbnailUrl } from "../src/content/thumbnail.ts";
+import {
+  budget as defaultBudget,
+  checkFileCount,
+  checkListSize,
+  findListJson,
+  readListEntries,
+  type Budget,
+} from "./output-budget.ts";
 
 export async function checkOutput(
   output = "dist",
   content = "content/spots",
   fixtures = "tests/fixtures/spots",
+  limits: Partial<Budget> = {},
 ) {
+  const { maxFiles, listBrotliBytes, listRawBytes } = {
+    ...defaultBudget,
+    ...limits,
+  };
   const formal = await loadSpots(content);
   const formalIds = formal.map((spot) => spot.id).sort();
   const images = new Map(
@@ -96,10 +114,38 @@ export async function checkOutput(
       "Formal search index page count differs from content/spots",
     );
   await readFile(join(output, "pagefind", "pagefind.js"));
+  // 命中 id → 景點 id 對照表：列表搜尋靠它免去逐筆載入片段，必須恰好涵蓋正式景點
+  const spotIds: Record<string, string> = JSON.parse(
+    await readFile(join(output, "pagefind", "spot-ids.json"), "utf8"),
+  );
+  if (
+    JSON.stringify(Object.values(spotIds).sort()) !==
+    JSON.stringify([...formalIds].sort())
+  )
+    throw new Error("Pagefind spot-ids.json differs from content/spots");
   const fixture = await loadSpots(fixtures);
-  const fixtureNames = fixture
-    .filter((spot) => !formalIds.includes(spot.id))
-    .map((spot) => spot.name);
+  // e2e fixture 另含固定種子的產生景點，其名稱同樣不得出現在正式輸出
+  const generated = describeSpots({ seed: FIXTURE_SEED, count: FIXTURE_COUNT });
+  const generatedNames = generated.map(({ spot }) => spot.name);
+  const fixtureIds = [
+    ...fixture
+      .filter((spot) => !formalIds.includes(spot.id))
+      .map((spot) => spot.id),
+    ...generated.map(({ id }) => id),
+  ];
+  const fixtureNames = [
+    ...fixture
+      .filter((spot) => !formalIds.includes(spot.id))
+      .map((spot) => spot.name),
+    ...generatedNames,
+  ];
+  await checkFileCount(output, maxFiles);
+  const listFile = await findListJson(output);
+  await checkListSize(listFile, { listBrotliBytes, listRawBytes });
+  await readListEntries(listFile, formalIds, [
+    ...fixtureNames,
+    ...fixtureIds.filter((id) => !formalIds.includes(id)),
+  ]);
   async function checkHtml(dir: string): Promise<void> {
     for (const entry of await readdir(dir, { withFileTypes: true })) {
       const path = join(dir, entry.name);

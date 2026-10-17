@@ -9,10 +9,24 @@ import { notFoundIllustrationAlt } from "../site.ts";
       <p class="eyebrow">404 · 頁面不存在</p>
       <h1 id="not-found-title">這條路，<br />還沒有筆記。</h1>
       <p class="description">
-        網址可能有誤，或頁面已不存在。可以回到景點索引，繼續找下一處想去的地方。
+        網址可能有誤，或頁面已不存在。可以直接搜尋，或回到景點列表繼續找下一處想去的地方。
       </p>
+      <form class="search" action="/" method="get" role="search">
+        <label for="not-found-query">搜尋景點</label>
+        <div class="search-row">
+          <input
+            id="not-found-query"
+            name="query"
+            type="search"
+            placeholder="景點名稱或內容"
+            autocomplete="off"
+            enterkeyhint="search"
+          />
+          <button type="submit">搜尋</button>
+        </div>
+      </form>
       <nav class="next-steps" aria-label="接下來可以前往">
-        <a class="home-link" href="/">回到景點索引</a>
+        <a class="home-link" href="/">回到景點列表</a>
         <a class="about-link" href="/about/">認識 CarlTravel</a>
       </nav>
     </div>
@@ -55,6 +69,41 @@ import { notFoundIllustrationAlt } from "../site.ts";
     margin: 0;
     font-size: clamp(1.05rem, 1.5vw, 1.25rem);
     line-height: 1.8;
+  }
+  .search {
+    margin-top: 2rem;
+    max-width: 28rem;
+  }
+  .search label {
+    display: block;
+    font-weight: 700;
+  }
+  .search-row {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.25rem;
+  }
+  .search input {
+    flex: 1;
+    min-width: 0;
+    min-height: 44px;
+    padding: 0.5rem 0.75rem;
+    font: inherit;
+    color: var(--ink);
+    border: 1px solid var(--ground);
+    border-radius: 0.75rem;
+    background: var(--paper);
+  }
+  .search button {
+    min-height: 44px;
+    padding: 0.5rem 1.25rem;
+    font: inherit;
+    font-weight: 700;
+    color: var(--ground);
+    background: var(--cover);
+    border: 1px solid var(--ground);
+    border-radius: 0.75rem;
+    cursor: pointer;
   }
   .next-steps {
     display: flex;

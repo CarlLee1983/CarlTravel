@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import { execFileSync, spawnSync } from "node:child_process";
 import { join } from "node:path";
 import { workspace, devServer } from "./helpers/workspace.ts";
@@ -69,10 +69,8 @@ test(
         .match(/<meta\b[^>]*property="og:image:alt"[^>]*>/)![0];
       const transportHeading = originals
         .get(page)!
-        .match(/<h2\b[^>]*id="transport-heading"[^>]*>交通與停車<\/h2>/)![0];
-      const transportLink = originals
-        .get(page)!
-        .match(/<a\b[^>]*href="#transport"[^>]*>交通與停車<\/a>/)![0];
+        .match(/<span\b[^>]*class="section-title"[^>]*>交通與停車<\/span>/)![0];
+      const transportLink = '<a href="#transport">交通與停車</a>';
       for (const [file, suffix] of [
         [home, "<p>步道</p>"],
         [home, hero],
@@ -89,7 +87,7 @@ test(
         [page, transportHeading],
         [page, transportLink],
         [home, transportHeading],
-        [page, transportHeading.replace("<h2 ", '<h2 title="交通與停車" ')],
+        [page, transportHeading.replace("<span ", '<span title="交通與停車" ')],
         [home, `<!--${hero}-->`],
         [
           home,
@@ -119,6 +117,25 @@ test(
       await buildSearchIndex(join(root, "content/spots"), join(root, "dist"));
       await writeFile(page, originals.get(page)!);
       await assert.rejects(checkIsolation(root), /草稿專有文字/);
+      await buildSearchIndex(join(root, "content/spots"), join(root, "dist"));
+      // 列表 JSON 同樣受隔離保護：草稿文字或草稿 id 都不得出現
+      const [listName] = await readdir(join(root, "dist/spot-list"));
+      const list = join(root, "dist/spot-list", listName!);
+      const listOriginal = await readFile(list, "utf8");
+      assert.ok(listOriginal.includes("觀察樹木與季節變化。"));
+      await checkIsolation(root);
+      await writeFile(
+        list,
+        listOriginal.replace("觀察樹木與季節變化。", "未發布插畫測試景點"),
+      );
+      await assert.rejects(checkIsolation(root), /草稿專有文字/);
+      await writeFile(
+        list,
+        listOriginal.replace('"approved-park"', '"unpublished"'),
+      );
+      await assert.rejects(checkIsolation(root), /列表 JSON/);
+      await writeFile(list, listOriginal);
+      await checkIsolation(root);
     } finally {
       await cleanup();
     }

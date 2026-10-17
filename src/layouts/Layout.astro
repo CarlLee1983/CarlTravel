@@ -55,8 +55,12 @@ const preview = __CARLTRAVEL_DRAFT_PREVIEW__;
       <nav aria-label="站內導覽">
         <a
           href="/"
-          aria-current={Astro.url.pathname === "/" ? "page" : undefined}
-          >景點索引</a
+          aria-current={Astro.url.pathname === "/" ||
+          Astro.url.pathname.startsWith("/page/")
+            ? "page"
+            : Astro.url.pathname.startsWith("/spots/")
+              ? "true"
+              : undefined}>景點列表</a
         >
         <a
           href="/about/"
@@ -82,19 +86,14 @@ const preview = __CARLTRAVEL_DRAFT_PREVIEW__;
     <main id="main"><slot /></main>
     <footer class="site-footer">
       <div class="footer-copy">
-        <p>
-          出發前，請再確認官方公告。查證日期不代表資訊的有效期限。<a
-            href="/about/#disclaimer">完整免責聲明</a
-          >
-        </p>
-        <p>
-          本站撰寫的景點內容採 <a href="/about/#license">CC BY-NC 4.0</a
-          >，引文與官方資料除外。
-        </p>
+        <p>出發前，請再確認官方公告。查證日期不代表資訊的有效期限。</p>
+        <p>本站撰寫的景點內容採 CC BY-NC 4.0，引文與官方資料除外。</p>
       </div>
-      <a class="footer-signature" href="/" aria-label="CarlTravel 首頁"
-        >台灣親子出遊筆記</a
-      >
+      <nav class="footer-links" aria-label="頁尾連結">
+        <a href="/about/#disclaimer">使用前確認</a>
+        <a href="/about/#license">內容授權</a>
+      </nav>
+      <p class="footer-signature">台灣親子出遊筆記</p>
     </footer>
   </body>
 </html>
@@ -169,7 +168,8 @@ const preview = __CARLTRAVEL_DRAFT_PREVIEW__;
     align-items: center;
     text-decoration: none;
   }
-  .site-header [aria-current="page"] {
+  .site-header [aria-current="page"],
+  .site-header [aria-current="true"] {
     text-decoration: underline;
     text-decoration-thickness: 2px;
     background: var(--paper-deep);
@@ -231,14 +231,22 @@ const preview = __CARLTRAVEL_DRAFT_PREVIEW__;
     max-width: 44ch;
     margin: 0;
   }
+  .footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 24px;
+    margin-top: 24px;
+  }
+  .footer-links a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
   .footer-signature {
-    display: block;
     font-size: 18px;
-    text-decoration: none;
-    margin-top: 32px;
+    margin: 16px 0 0;
     padding-top: 24px;
     border-top: 1px solid #79a0b2;
-    min-height: 44px;
   }
   .fixture {
     background: var(--paper-deep);
@@ -251,8 +259,7 @@ const preview = __CARLTRAVEL_DRAFT_PREVIEW__;
     padding: 8px 12px;
     font-weight: 800;
   }
-  time,
-  #result-count {
+  time {
     font-variant-numeric: tabular-nums;
   }
   .meta {
