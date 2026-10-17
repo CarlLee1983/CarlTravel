@@ -275,3 +275,60 @@ test(
     }
   },
 );
+
+test(
+  "official reference list boundaries do not join public labels into draft-only phrases",
+  { timeout: 60_000 },
+  async () => {
+    const { root, cleanup } = await workspace();
+    const { parse, stringify } = await import("yaml");
+    try {
+      const formal = parse(
+        await readFile(
+          join(root, "content/spots/approved-park/spot.yaml"),
+          "utf8",
+        ),
+      );
+      formal.name = "已發布測試公園";
+      formal.officialRefs[0].title = "第一筆公告";
+      formal.officialRefs[0].organization = "凱達格蘭文化館";
+      formal.officialRefs.push({
+        id: "second-office",
+        kind: "page",
+        title: "休館日問答",
+        url: "https://example.org/hours",
+        organization: "臺北市政府",
+      });
+      formal.hoursAndFees.facts[0].ref = "second-office";
+      await writeFile(
+        join(root, "content/spots/approved-park/spot.yaml"),
+        stringify(formal),
+      );
+
+      const draft = {
+        ...formal,
+        name: "未發布草稿",
+        agentTips: ["文化館休館"],
+      };
+      await mkdir(join(root, "drafts/spots/unpublished"), { recursive: true });
+      await writeFile(
+        join(root, "drafts/spots/unpublished/spot.yaml"),
+        stringify(draft),
+      );
+      execFileSync(process.execPath, ["scripts/site.mjs", "build"], {
+        cwd: root,
+        stdio: "pipe",
+        timeout: 60_000,
+      });
+
+      const result = await checkIsolation(root);
+      assert.deepEqual(result.urls, ["/spots/approved-park/"]);
+      const page = join(root, "dist/spots/approved-park/index.html");
+      const html = await readFile(page, "utf8");
+      await writeFile(page, `${html}<p>文化館休館</p>`);
+      await assert.rejects(checkIsolation(root), /草稿專有文字/);
+    } finally {
+      await cleanup();
+    }
+  },
+);
