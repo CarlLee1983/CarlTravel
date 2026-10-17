@@ -46,7 +46,7 @@
 | 輸出預算 | `pnpm check:output`：檔案數與列表 JSON 邊界 | 自動化，verify |
 | 規模 | `pnpm check:scale`：6,000 筆的檔案數與列表 JSON | 自動化，PR CI 的 `scale` 工作 |
 | 計時預算 | `scripts/scale/perf.mjs` | 手動，結果見下 |
-| VoiceOver | [手動清單](voiceover-checklist.md) | 手動，待 Carl 走過；agent 無法執行 VoiceOver |
+| VoiceOver | [手動清單](voiceover-checklist.md) | 手動，Carl 於 2026-10-17 走過，9 項通過 |
 
 最終 `pnpm verify` 連跑兩次的結果見本節末尾的「關卡結果」。
 
@@ -86,4 +86,4 @@
 
 ### 關卡結果
 
-`E2E_PORT=4450 pnpm verify` 在同一份來源連跑兩次，兩次皆通過：152 個 Node 測試、165 個 Playwright 案例（Chromium 144 個加 WebKit 冒煙 21 個）、格式、型別、正式內容、兩次建置、輸出與索引檢查、Wrangler dry-run。`pnpm check:scale` 通過（6,000 筆，12,900 檔，列表 JSON 原始 1,039,670 B／brotli 129,556 B）。VoiceOver 清單尚未走過。
+`E2E_PORT=4450 pnpm verify` 在同一份來源連跑兩次，兩次皆通過：152 個 Node 測試、165 個 Playwright 案例（Chromium 144 個加 WebKit 冒煙 21 個）、格式、型別、正式內容、兩次建置、輸出與索引檢查、Wrangler dry-run。`pnpm check:scale` 通過（6,000 筆，12,900 檔，列表 JSON 原始 1,039,670 B／brotli 129,556 B）。VoiceOver 清單由 Carl 於 2026-10-17 走過（macOS 26.5.1、Safari 26.5，手機寬度的操作方式未記錄），9 項全部通過，沒有發現問題，不另開票。
